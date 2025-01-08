@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Doll } from '../../types/Doll';
+import React, { useState, useEffect } from "react";
+import { Doll } from "../../types/Doll";
 
 interface AddDollModalProps {
     isOpen: boolean;
@@ -8,39 +8,61 @@ interface AddDollModalProps {
 }
 
 const AddDollModal: React.FC<AddDollModalProps> = ({ isOpen, closeModal, onDollAdded }) => {
-    const [formData, setFormData] = useState<Doll>({
-        nombre: '',
-        marca: '',
-        modelo: '',
-        personaje: '',
+    const [formData, setFormData] = useState<Partial<Doll>>({
+        nombre: "",
+        marca_id: 0, // Cambiamos a marca_id
+        modelo: "",
+        personaje: "",
         anyo: new Date().getFullYear(),
-        estado: 'guardada',
-        commentarios: '',
-        imagen: '',
+        estado: "guardada",
+        commentarios: "",
+        imagen: "",
     });
+    const [marcas, setMarcas] = useState<{ id: number; nombre: string }[]>([]);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onDollAdded(formData);
-        closeModal();
-        setFormData({
-            nombre: '',
-            marca: '',
-            modelo: '',
-            personaje: '',
-            anyo: new Date().getFullYear(),
-            estado: 'guardada',
-            commentarios: '',
-            imagen: '',
-        });
-    };
+    // Fetch brands from the API
+    useEffect(() => {
+        const fetchMarcas = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/api/marcas");
+                if (!response.ok) throw new Error("Failed to fetch marcas");
+                const data = await response.json();
+                setMarcas(data);
+            } catch (error) {
+                console.error("Error fetching marcas:", error);
+            }
+        };
+
+        fetchMarcas();
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: name === 'anyo' ? parseInt(value) : value,
+            [name]: name === "anyo" ? parseInt(value) : value,
         }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (formData.marca_id === 0) {
+            alert("Por favor, selecciona una marca válida.");
+            return;
+        }
+
+        onDollAdded(formData as Doll);
+        closeModal();
+        setFormData({
+            nombre: "",
+            marca_id: 0,
+            modelo: "",
+            personaje: "",
+            anyo: new Date().getFullYear(),
+            estado: "guardada",
+            commentarios: "",
+            imagen: "",
+        });
     };
 
     if (!isOpen) return null;
@@ -63,14 +85,22 @@ const AddDollModal: React.FC<AddDollModalProps> = ({ isOpen, closeModal, onDollA
                     </div>
                     <div className="mb-4">
                         <label className="block mb-1">Marca</label>
-                        <input
-                            type="text"
-                            name="marca"
-                            value={formData.marca}
+                        <select
+                            name="marca_id"
+                            value={formData.marca_id}
                             onChange={handleChange}
                             required
                             className="w-full border rounded p-2"
-                        />
+                        >
+                            <option value={0} disabled>
+                                Selecciona una marca
+                            </option>
+                            {marcas.map((marca) => (
+                                <option key={marca.id} value={marca.id}>
+                                    {marca.nombre}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <div className="mb-4">
                         <label className="block mb-1">Modelo</label>
@@ -99,7 +129,7 @@ const AddDollModal: React.FC<AddDollModalProps> = ({ isOpen, closeModal, onDollA
                         <input
                             type="number"
                             name="anyo"
-                            value={formData.anyo}
+                            value={formData.anyo || ""}
                             onChange={handleChange}
                             required
                             className="w-full border rounded p-2"
@@ -123,7 +153,7 @@ const AddDollModal: React.FC<AddDollModalProps> = ({ isOpen, closeModal, onDollA
                         <label className="block mb-1">Comentarios</label>
                         <textarea
                             name="commentarios"
-                            value={formData.commentarios}
+                            value={formData.commentarios || ""}
                             onChange={handleChange}
                             className="w-full border rounded p-2"
                         />
@@ -133,7 +163,7 @@ const AddDollModal: React.FC<AddDollModalProps> = ({ isOpen, closeModal, onDollA
                         <input
                             type="text"
                             name="imagen"
-                            value={formData.imagen}
+                            value={formData.imagen || ""}
                             onChange={handleChange}
                             className="w-full border rounded p-2"
                         />

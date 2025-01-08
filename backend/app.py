@@ -43,99 +43,84 @@ def get_db_connection():
         logger.error(f"Database connection failed: {e}")
         return None
     
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    return response
-
-@app.route('/api/dolls', methods=['GET'])
-def get_dolls():
+@app.route('/api/marcas', methods=['GET'])
+def get_marcas():
     connection = get_db_connection()
-    if not connection:
-        return jsonify({"error": "Database connection failed"}), 500
-    
     try:
         with connection.cursor() as cursor:
-            # Get all dolls with optional filtering
-            query = """
-                SELECT id, nombre, marca, modelo, personaje, anyo, 
-                       estado, commentarios, imagen, created_at 
-                FROM dolls
-            """
-            
-            # Add filters if provided in query parameters
-            filters = []
-            params = []
-            
-            if request.args.get('estado'):
-                filters.append("estado = %s")
-                params.append(request.args.get('estado'))
-            
-            if request.args.get('marca'):
-                filters.append("marca = %s")
-                params.append(request.args.get('marca'))
-                
-            if filters:
-                query += " WHERE " + " AND ".join(filters)
-            
-            cursor.execute(query, params)
-            dolls = cursor.fetchall()
-            
-            # Convert datetime objects to string for JSON serialization
-            for doll in dolls:
-                if doll['created_at']:
-                    doll['created_at'] = doll['created_at'].isoformat()
-                    
-            return jsonify(dolls)
-            
+            cursor.execute("SELECT id, nombre FROM marca")
+            marcas = cursor.fetchall()
+            return jsonify(marcas)
     except Exception as e:
-        logger.error(f"Error fetching dolls: {e}")
+        logger.error(f"Error fetching marcas: {e}")
         return jsonify({"error": str(e)}), 500
     finally:
         connection.close()
 
+@app.route('/api/dolls', methods=['GET'])
+def get_dolls():
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT d.*, m.nombre as marca_nombre
+                FROM dolls d
+                JOIN marca m ON d.marca_id = m.id
+            """)
+            dolls = cursor.fetchall()
+            
+            # Convert datetime objects to ISO format string if present
+            for doll in dolls:
+                if doll.get('created_at'):
+                    doll['created_at'] = doll['created_at'].isoformat()
+                    
+            return jsonify(dolls)
+    except Exception as e:
+        logger.error(f"Error fetching dolls: {e}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if connection:
+            connection.close()
+            
 @app.route('/api/dolls', methods=['POST'])
 def add_doll():
     connection = get_db_connection()
-    if not connection:
-        return jsonify({"error": "Database connection failed"}), 500
-    
     try:
         data = request.get_json()
-        required_fields = ['nombre', 'marca', 'modelo', 'personaje', 'anyo', 'estado']
+        required_fields = ['nombre', 'marca_id', 'modelo', 'personaje', 'anyo', 'estado']
         
-        # Validate required fields
         for field in required_fields:
             if field not in data:
                 return jsonify({"error": f"Missing required field: {field}"}), 400
         
         with connection.cursor() as cursor:
             query = """
-                INSERT INTO dolls (nombre, marca, modelo, personaje, anyo, estado, commentarios, imagen)
+                INSERT INTO dolls (nombre, marca_id, modelo, personaje, anyo, estado, commentarios, imagen)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """
             
             cursor.execute(query, (
                 data['nombre'],
-                data['marca'],
+                data['marca_id'],
                 data['modelo'],
                 data['personaje'],
                 data['anyo'],
                 data['estado'],
-                data.get('commentarios', None),  # Optional field
-                data.get('imagen', None)         # Optional field
+                data.get('commentarios', None),
+                data.get('imagen', None)
             ))
             
             connection.commit()
             
-            # Return the newly created doll
             new_doll_id = cursor.lastrowid
-            cursor.execute("SELECT * FROM dolls WHERE id = %s", (new_doll_id,))
+            cursor.execute("""
+                SELECT d.*, m.nombre as marca_nombre
+                FROM dolls d
+                JOIN marca m ON d.marca_id = m.id
+                WHERE d.id = %s
+            """, (new_doll_id,))
             new_doll = cursor.fetchone()
             
-            # Convert datetime objects to string for JSON serialization
             if new_doll['created_at']:
                 new_doll['created_at'] = new_doll['created_at'].isoformat()
                 
@@ -187,6 +172,10 @@ def add_lote():
         missing_fields = [field for field in required_fields if field not in data]
         if missing_fields:
             return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
+        
+        # Validate type enum
+        if data.get('type') not in ['compra', 'venta']:
+            return jsonify({"error": "El tipo debe ser 'compra' o 'venta'"}), 400
             
         # Validate dolls array
         if not isinstance(data.get('dolls', []), list):
@@ -294,6 +283,33 @@ def update_doll(doll_id):
     except Exception as e:
         connection.rollback()
         logger.error(f"Error updating doll: {e}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        connection.close()
+
+@app.route('/api/lotes/<int:lote_id>/dolls', methods=['GET'])
+def get_lote_dolls(lote_id):
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT d.*, m.nombre as marca_nombre
+                FROM dolls d
+                JOIN marca m ON d.marca_id = m.id
+                JOIN lote_doll ld ON d.id = ld.doll_id
+                WHERE ld.lote_id = %s
+            """, (lote_id,))
+            
+            dolls = cursor.fetchall()
+            
+            for doll in dolls:
+                if doll.get('created_at'):
+                    doll['created_at'] = doll['created_at'].isoformat()
+                    
+            return jsonify(dolls)
+            
+    except Exception as e:
+        logger.error(f"Error fetching dolls for lote {lote_id}: {e}")
         return jsonify({"error": str(e)}), 500
     finally:
         connection.close()

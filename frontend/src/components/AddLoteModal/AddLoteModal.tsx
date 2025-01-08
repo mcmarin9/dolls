@@ -11,7 +11,7 @@ interface AddLoteModalProps {
 
 const initialFormData = {
   nombre: "",
-  type: "",
+  type: "Seleccionar tipo", // Set default value
   total_price: 0,
   dolls: [] as number[],
 };
@@ -132,18 +132,32 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-1">Tipo:</label>
-            <select
-              name="type"
-              value={formData.type}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
-              required
-            >
-              <option value="compra">Compra</option>
-              <option value="venta">Venta</option>
-            </select>
-          </div>
+  <label className="block mb-1">Tipo:</label>
+  <div className="flex space-x-4">
+    <label className="inline-flex items-center">
+      <input
+        type="radio"
+        name="type"
+        value="compra"
+        checked={formData.type === "compra"}
+        onChange={handleChange}
+        className="form-radio h-4 w-4 text-blue-600"
+      />
+      <span className="ml-2">Compra</span>
+    </label>
+    <label className="inline-flex items-center">
+      <input
+        type="radio"
+        name="type"
+        value="venta"
+        checked={formData.type === "venta"}
+        onChange={handleChange}
+        className="form-radio h-4 w-4 text-blue-600"
+      />
+      <span className="ml-2">Venta</span>
+    </label>
+  </div>
+</div>
           <div className="mb-4">
             <label className="block mb-1">Precio Total:</label>
             <input
@@ -168,7 +182,7 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
             >
               {availableDolls.map((doll) => (
                 <option key={doll.id} value={doll.id}>
-                  {doll.nombre} - {doll.marca}
+                  {doll.nombre} - {doll.marca_nombre}
                 </option>
               ))}
             </select>
