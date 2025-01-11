@@ -5,6 +5,7 @@ Para iniciar el backend, sigue estos pasos cada vez que lo quieras levantar:
 1. Crear el entorno virtual:
     ```ps
     PS D:\Programas\xampp\htdocs\dolls> python -m venv venv
+    si no funciona probar con py -m venv venv
     ```
 
 2. Activar el entorno virtual:

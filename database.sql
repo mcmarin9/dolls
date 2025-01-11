@@ -144,15 +144,16 @@ INSERT INTO dolls (nombre, marca_id, modelo, personaje, anyo, estado) VALUES
 ('LOL Surprise OMG', 5, 'OMG Series 4', 'Dollface', 2023, 'a la venta'),
 ('Ever After High', 3, 'Legacy Day', 'Apple White', 2022, 'guardada');
 
--- Insert sample lotes
-INSERT INTO lotes (nombre, type, total_price, quantity) VALUES
-('Compra 2022', 'compra', 100.00, 2),
-('Venta 2023', 'venta', 200.00, 3),
-('Compra 2023', 'compra', 150.00, 1),
-('Venta 2022', 'venta', 300.00, 4),
-('Compra 2021', 'compra', 50.00, 0),
-('Venta 2021', 'venta', 100.00, 0),
-('Compra 2020', 'compra', 25.00, 0),
-('Venta 2020', 'venta', 75.00, 0),
-('Compra 2019', 'compra', 10.00, 0),
-('Venta 2019', 'venta', 50.00, 0);
+-- Insert sample lotes (only required fields)
+INSERT INTO lotes (nombre, type, total_price) VALUES
+('Compra Navidad 2023', 'compra', 100.00),
+('Venta Verano 2023', 'venta', 200.00);
+
+-- Insert lote_doll associations
+INSERT INTO lote_doll (lote_id, doll_id) VALUES
+(1, 1), -- Compra Navidad 2023 - Barbie Fashionista
+(1, 2), -- Compra Navidad 2023 - Draculaura Core
+(1, 4), -- Compra Navidad 2023 - Clawdeen Wolf
+(2, 3), -- Venta Verano 2023 - Nancy Day
+(2, 5), -- Venta Verano 2023 - Rainbow High
+(2, 7); -- Venta Verano 2023 - LOL Surprise OMG
