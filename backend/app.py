@@ -231,6 +231,24 @@ def add_lote():
     finally:
         connection.close()
 
+@app.route('/api/lotes/<int:lote_id>', methods=['DELETE'])
+def delete_lote(lote_id):
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cursor:
+            # First delete from lote_doll table
+            cursor.execute("DELETE FROM lote_doll WHERE lote_id = %s", (lote_id,))
+            # Then delete the lote
+            cursor.execute("DELETE FROM lotes WHERE id = %s", (lote_id,))
+            connection.commit()
+            return jsonify({"message": "Lote deleted successfully"}), 200
+    except Exception as e:
+        connection.rollback()
+        logger.error(f"Error deleting lote: {e}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        connection.close()        
+
 @app.route('/api/dolls/<int:doll_id>', methods=['PUT', 'OPTIONS'])
 def update_doll(doll_id):
     if request.method == 'OPTIONS':
@@ -286,6 +304,24 @@ def update_doll(doll_id):
         return jsonify({"error": str(e)}), 500
     finally:
         connection.close()
+
+@app.route('/api/dolls/<int:doll_id>', methods=['DELETE'])
+def delete_doll(doll_id):
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cursor:
+            # First delete from lote_doll table to maintain referential integrity
+            cursor.execute("DELETE FROM lote_doll WHERE doll_id = %s", (doll_id,))
+            # Then delete the doll
+            cursor.execute("DELETE FROM dolls WHERE id = %s", (doll_id,))
+            connection.commit()
+            return jsonify({"message": "Doll deleted successfully"}), 200
+    except Exception as e:
+        connection.rollback()
+        logger.error(f"Error deleting doll: {e}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        connection.close()        
 
 @app.route('/api/lotes/<int:lote_id>/dolls', methods=['GET'])
 def get_lote_dolls(lote_id):

@@ -1,4 +1,5 @@
 import { Doll } from "../types/Doll";
+import { Lote } from "../types/Lote";
 
 const API_URL = "http://localhost:5000/api";
 
@@ -30,5 +31,22 @@ export const deleteDoll = async (id: number): Promise<void> => {
   });
   if (!response.ok) {
     throw new Error("Failed to delete doll");
+  }
+};
+
+export const getLotes = async (): Promise<Lote[]> => {
+  const response = await fetch(`${API_URL}/lotes`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch lotes");
+  }
+  return response.json();
+};
+
+export const deleteLote = async (id: number): Promise<void> => {
+  const response = await fetch(`${API_URL}/lotes/${id}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    throw new Error("Failed to delete lote");
   }
 };

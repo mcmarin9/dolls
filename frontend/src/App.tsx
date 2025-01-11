@@ -4,7 +4,8 @@ import AddDollModal from "./components/AddDollModal/AddDollModal";
 import DollDetail from "./components/DollDetail/DollDetail";
 import AddLoteModal from "./components/AddLoteModal/AddLoteModal";
 import LoteList from "./components/LoteList/LoteList";
-import { getDolls, addDoll } from "./services/api";
+import LoteDetail from "./components/LoteDetail/LoteDetail";
+import { getDolls, addDoll, deleteDoll, getLotes, deleteLote } from "./services/api";
 import { Doll } from "./types/Doll";
 import { Lote } from "./types/Lote";
 
@@ -14,18 +15,26 @@ const App: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isLoteModalOpen, setIsLoteModalOpen] = useState(false);
+  const [isLoteDetailOpen, setIsLoteDetailOpen] = useState(false);
   const [dolls, setDolls] = useState<Doll[]>([]);
   const [selectedDoll, setSelectedDoll] = useState<Doll | null>(null);
   const [lotes, setLotes] = useState<Lote[]>([]);
+  const [selectedLote, setSelectedLote] = useState<Lote | null>(null);
 
   // Modal handlers
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
   const openLoteModal = () => setIsLoteModalOpen(true);
   const closeLoteModal = () => setIsLoteModalOpen(false);
+  
   const closeDetailModal = () => {
     setIsDetailModalOpen(false);
     setSelectedDoll(null);
+  };
+
+  const handleCloseLoteDetail = () => {
+    setIsLoteDetailOpen(false);
+    setSelectedLote(null);
   };
 
   // Fetch functions
@@ -40,9 +49,7 @@ const App: React.FC = () => {
 
   const fetchLotes = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/lotes");
-      if (!response.ok) throw new Error("Failed to fetch lotes");
-      const data = await response.json();
+      const data = await getLotes();
       setLotes(data);
     } catch (error) {
       console.error("Error fetching lotes:", error);
@@ -57,40 +64,45 @@ const App: React.FC = () => {
 
   // Handlers
   const handleLoteAdded = async () => {
-    await fetchLotes(); // Refresh lotes after adding
+    await fetchLotes();
     closeLoteModal();
   };
 
   const handleDeleteLote = async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/lotes/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to delete lote");
-      setLotes(lotes.filter((lote) => lote.id !== id));
+      await deleteLote(id);
+      await fetchLotes();
     } catch (error) {
       console.error("Error deleting lote:", error);
+      alert("Failed to delete lote");
     }
   };
 
   const handleViewLote = (lote: Lote) => {
-    console.log("Viewing lote:", lote);
-    // Implement lote detail view logic here
+    setSelectedLote(lote);
+    setIsLoteDetailOpen(true);
   };
 
-  const addNewDoll = async (dollData: Doll) => {
+  const handleDollAdded = async (doll: Doll) => {
     try {
-      const newDoll = await addDoll(dollData);
-      setDolls((prevDolls) => [...prevDolls, newDoll]);
+      await addDoll(doll);
+      await fetchDolls(); // Refresh the list
       closeModal();
     } catch (error) {
       console.error("Error adding doll:", error);
       alert("Failed to add doll");
     }
   };
+  
 
-  const handleDeleteDoll = (id: number) => {
-    setDolls((prevDolls) => prevDolls.filter((doll) => doll.id !== id));
+  const handleDeleteDoll = async (id: number) => {
+    try {
+      await deleteDoll(id);
+      await fetchDolls();
+    } catch (error) {
+      console.error("Error deleting doll:", error);
+      alert("Failed to delete doll");
+    }
   };
 
   const handleViewDoll = (doll: Doll) => {
@@ -153,9 +165,7 @@ const App: React.FC = () => {
           <div className="p-4">
             <section className="bg-white rounded-lg shadow-sm p-6 flex-1 min-h-[400px]">
               <div className="border-b border-gray-200 pb-4 mb-6">
-                <h1 className="text-3xl font-bold text-gray-900">
-                  Gestión de Lotes
-                </h1>
+                <h1 className="text-3xl font-bold text-gray-900">Gestión de Lotes</h1>
               </div>
               <button
                 onClick={openLoteModal}
@@ -177,10 +187,10 @@ const App: React.FC = () => {
 
       {/* Modals */}
       <AddDollModal
-        isOpen={isModalOpen}
-        closeModal={closeModal}
-        onDollAdded={addNewDoll}
-      />
+  isOpen={isModalOpen}
+  closeModal={closeModal}
+  onDollAdded={handleDollAdded}
+/>
       <AddLoteModal
         isOpen={isLoteModalOpen}
         closeModal={closeLoteModal}
@@ -200,6 +210,13 @@ const App: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+      {selectedLote && (
+        <LoteDetail
+          lote={selectedLote}
+          isOpen={isLoteDetailOpen}
+          onClose={handleCloseLoteDetail}
+        />
       )}
     </div>
   );
