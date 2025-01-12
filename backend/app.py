@@ -1,10 +1,13 @@
-from flask import Flask, request, jsonify, current_app
+from flask import Flask, request, jsonify, current_app, send_from_directory
 from flask_cors import CORS
 import pymysql
 from pymysql.err import OperationalError
 import logging
+import os
+import time
+from werkzeug.utils import secure_filename
 
-# Initialize Flask app first
+# Initialize Flask app
 app = Flask(__name__)
 
 # Configure logging
@@ -12,13 +15,23 @@ logging.basicConfig(level=logging.INFO)
 logger = app.logger
 logger.setLevel(logging.INFO)
 
+# Configure file upload settings
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+# Create uploads directory if it doesn't exist
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+
 # Enable debug mode
 app.debug = True
 
-
-# Configure CORS
+# Configure CORS - Modificado para permitir acceso a las imágenes
 CORS(app, resources={
-    r"/api/*": {
+    r"/*": {  # Cambiado de /api/* a /* para incluir /uploads
         "origins": ["http://localhost:5173"],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],
@@ -26,6 +39,19 @@ CORS(app, resources={
         "supports_credentials": True
     }
 })
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# Modificada la ruta para servir imágenes
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    try:
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    except Exception as e:
+        logger.error(f"Error serving image {filename}: {e}")
+        return jsonify({"error": "Image not found"}), 404
 
 def get_db_connection():
     try:
@@ -42,7 +68,7 @@ def get_db_connection():
         print("Database connection failed!")
         logger.error(f"Database connection failed: {e}")
         return None
-    
+
 @app.route('/api/marcas', methods=['GET'])
 def get_marcas():
     connection = get_db_connection()
@@ -69,8 +95,10 @@ def get_dolls():
             """)
             dolls = cursor.fetchall()
             
-            # Convert datetime objects to ISO format string if present
+            # Modificar las URLs de las imágenes y convertir fechas
             for doll in dolls:
+                if doll.get('imagen'):
+                    doll['imagen'] = f'/uploads/{doll["imagen"]}'
                 if doll.get('created_at'):
                     doll['created_at'] = doll['created_at'].isoformat()
                     
@@ -86,13 +114,34 @@ def get_dolls():
 def add_doll():
     connection = get_db_connection()
     try:
-        data = request.get_json()
-        required_fields = ['nombre', 'marca_id', 'modelo', 'personaje', 'anyo', 'estado']
+        # Check if the post request has the file part
+        if 'imagen' not in request.files:
+            image_filename = None
+        else:
+            file = request.files['imagen']
+            if file.filename == '':
+                image_filename = None
+            elif file and allowed_file(file.filename):
+                # Generar nombre único para el archivo
+                original_filename = secure_filename(file.filename)
+                timestamp = int(time.time())
+                base, ext = os.path.splitext(original_filename)
+                image_filename = f"{base}_{timestamp}{ext}"
+                
+                # Guardar el archivo
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+                file.save(file_path)
+            else:
+                return jsonify({"error": "Invalid file type"}), 400
+
+        # Get other form data
+        data = request.form.to_dict()
         
+        required_fields = ['nombre', 'marca_id', 'modelo', 'personaje', 'anyo', 'estado']
         for field in required_fields:
             if field not in data:
                 return jsonify({"error": f"Missing required field: {field}"}), 400
-        
+
         with connection.cursor() as cursor:
             query = """
                 INSERT INTO dolls (nombre, marca_id, modelo, personaje, anyo, estado, commentarios, imagen)
@@ -107,11 +156,12 @@ def add_doll():
                 data['anyo'],
                 data['estado'],
                 data.get('commentarios', None),
-                data.get('imagen', None)
+                image_filename  # Guardamos solo el nombre del archivo
             ))
             
             connection.commit()
             
+            # Obtener la muñeca recién creada
             new_doll_id = cursor.lastrowid
             cursor.execute("""
                 SELECT d.*, m.nombre as marca_nombre
@@ -121,7 +171,11 @@ def add_doll():
             """, (new_doll_id,))
             new_doll = cursor.fetchone()
             
-            if new_doll['created_at']:
+            # Modificar la URL de la imagen en la respuesta
+            if new_doll and new_doll.get('imagen'):
+                new_doll['imagen'] = f'/uploads/{new_doll["imagen"]}'
+            
+            if new_doll and new_doll.get('created_at'):
                 new_doll['created_at'] = new_doll['created_at'].isoformat()
                 
             return jsonify(new_doll), 201
@@ -130,7 +184,8 @@ def add_doll():
         logger.error(f"Error adding doll: {e}")
         return jsonify({"error": str(e)}), 500
     finally:
-        connection.close()
+        if connection:
+            connection.close()
 
 # Add this new route for getting lotes
 @app.route('/api/lotes', methods=['GET'])
