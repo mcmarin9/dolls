@@ -93,12 +93,16 @@ const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
               {dolls.map((doll) => (
                 <div key={doll.id} className="border rounded p-3">
                   <div className="flex items-center space-x-3">
-                    {doll.imagen && (
+                    {doll.imagen ? (
                       <img
-                        src={doll.imagen}
+                        src={`http://localhost:5000${doll.imagen}`}
                         alt={doll.nombre}
                         className="w-16 h-16 object-cover rounded"
                       />
+                    ) : (
+                      <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
+                        <span className="text-gray-400 text-xs">No imagen</span>
+                      </div>
                     )}
                     <div>
                       <h4 className="font-semibold">{doll.nombre}</h4>

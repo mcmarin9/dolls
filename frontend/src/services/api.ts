@@ -18,12 +18,26 @@ export const getDoll = async (id: number): Promise<Doll> => {
 };
 
 export const createDoll = async (formData: FormData): Promise<Doll> => {
-  const response = await fetch(`${API_URL}/dolls`, {
-    method: "POST",
-    body: formData,
+  // Debug FormData contents
+  console.log('Debug - FormData contents:');
+  Array.from(formData.entries()).forEach(([key, value]) => {
+      console.log(`${key}: ${value}`);
   });
-  if (!response.ok) throw new Error("Failed to create doll");
-  return response.json();
+
+  const response = await fetch(`${API_URL}/dolls`, {
+      method: 'POST',
+      // Remove any Content-Type header to let browser handle multipart/form-data
+      body: formData
+  });
+
+  const data = await response.json();
+  console.log('Server response:', data);
+
+  if (!response.ok) {
+      throw new Error(data.error || 'Failed to create doll');
+  }
+
+  return data;
 };
 
 export const updateDoll = async (id: number, doll: Partial<Doll>): Promise<Doll> => {

@@ -97,8 +97,6 @@ def get_dolls():
             
             # Modificar las URLs de las imágenes y convertir fechas
             for doll in dolls:
-                if doll.get('imagen'):
-                    doll['imagen'] = f'/uploads/{doll["imagen"]}'
                 if doll.get('created_at'):
                     doll['created_at'] = doll['created_at'].isoformat()
                     
@@ -114,78 +112,115 @@ def get_dolls():
 def add_doll():
     connection = get_db_connection()
     try:
-        # Check if the post request has the file part
-        if 'imagen' not in request.files:
-            image_filename = None
-        else:
-            file = request.files['imagen']
-            if file.filename == '':
-                image_filename = None
-            elif file and allowed_file(file.filename):
-                # Generar nombre único para el archivo
-                original_filename = secure_filename(file.filename)
-                timestamp = int(time.time())
-                base, ext = os.path.splitext(original_filename)
-                image_filename = f"{base}_{timestamp}{ext}"
-                
-                # Guardar el archivo
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
-                file.save(file_path)
-            else:
-                return jsonify({"error": "Invalid file type"}), 400
-
-        # Get other form data
-        data = request.form.to_dict()
+        # Debug incoming request
+        print("Request Method:", request.method)
+        print("Content-Type:", request.headers.get('Content-Type'))
+        print("Raw form data:", request.form)
+        print("Files:", request.files)
         
+        # Get form data
+        data = request.form.to_dict()
+        print("Processed data:", data)
+        
+        # Validate required fields
         required_fields = ['nombre', 'marca_id', 'modelo', 'personaje', 'anyo', 'estado']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({"error": f"Missing required field: {field}"}), 400
-
+        missing_fields = [field for field in required_fields if field not in data]
+        
+        if missing_fields:
+            return jsonify({
+                "error": f"Missing required fields: {', '.join(missing_fields)}",
+                "received_data": data
+            }), 400
+            
+        # Handle image upload
+        image_path = None
+        if 'imagen' in request.files:
+            file = request.files['imagen']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                image_path = f'/uploads/{filename}'
+        
+        # Insert into database
         with connection.cursor() as cursor:
-            query = """
+            sql = """
                 INSERT INTO dolls (nombre, marca_id, modelo, personaje, anyo, estado, commentarios, imagen)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """
-            
-            cursor.execute(query, (
+            cursor.execute(sql, (
                 data['nombre'],
                 data['marca_id'],
                 data['modelo'],
                 data['personaje'],
                 data['anyo'],
                 data['estado'],
-                data.get('commentarios', None),
-                image_filename  # Guardamos solo el nombre del archivo
+                data.get('commentarios'),
+                image_path
             ))
             
-            connection.commit()
-            
-            # Obtener la muñeca recién creada
-            new_doll_id = cursor.lastrowid
-            cursor.execute("""
-                SELECT d.*, m.nombre as marca_nombre
-                FROM dolls d
-                JOIN marca m ON d.marca_id = m.id
-                WHERE d.id = %s
-            """, (new_doll_id,))
-            new_doll = cursor.fetchone()
-            
-            # Modificar la URL de la imagen en la respuesta
-            if new_doll and new_doll.get('imagen'):
-                new_doll['imagen'] = f'/uploads/{new_doll["imagen"]}'
-            
-            if new_doll and new_doll.get('created_at'):
-                new_doll['created_at'] = new_doll['created_at'].isoformat()
-                
-            return jsonify(new_doll), 201
-            
+        connection.commit()
+        return jsonify({"message": "Doll created successfully"}), 201
+        
     except Exception as e:
-        logger.error(f"Error adding doll: {e}")
+        print("Error:", str(e))
         return jsonify({"error": str(e)}), 500
+        
     finally:
         if connection:
             connection.close()
+    connection = get_db_connection()
+    try:
+        # Debug logging
+        print("Raw form data:", request.form)
+        print("Files:", request.files)
+        
+        # Validate required fields
+        required_fields = ['nombre', 'marca_id', 'modelo', 'personaje', 'anyo', 'estado']
+        data = request.form.to_dict()
+        
+        print("Processed data:", data)
+        
+        missing_fields = [field for field in required_fields if not data.get(field)]
+        if missing_fields:
+            return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
+            
+        # Handle image upload
+        image_path = None
+        if 'imagen' in request.files:
+            file = request.files['imagen']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                image_path = f'/uploads/{filename}'
+        
+        # Insert into database
+        with connection.cursor() as cursor:
+            sql = """
+                INSERT INTO dolls (nombre, marca_id, modelo, personaje, anyo, estado, commentarios, imagen)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            cursor.execute(sql, (
+                data['nombre'],
+                data['marca_id'],
+                data['modelo'],
+                data['personaje'],
+                data['anyo'],
+                data['estado'],
+                data.get('commentarios'),
+                image_path
+            ))
+            
+        connection.commit()
+        return jsonify({"message": "Doll created successfully"}), 201
+        
+    except Exception as e:
+        print("Error:", str(e))
+        return jsonify({"error": str(e)}), 500
+        
+    finally:
+        if connection:
+            connection.close()
+            
 
 # Add this new route for getting lotes
 @app.route('/api/lotes', methods=['GET'])

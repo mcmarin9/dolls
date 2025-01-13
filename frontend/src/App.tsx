@@ -5,7 +5,7 @@ import DollDetail from "./components/DollDetail/DollDetail";
 import AddLoteModal from "./components/AddLoteModal/AddLoteModal";
 import LoteList from "./components/LoteList/LoteList";
 import LoteDetail from "./components/LoteDetail/LoteDetail";
-import { getDolls, addDoll, deleteDoll, getLotes, deleteLote } from "./services/api";
+import { getDolls, createDoll, deleteDoll, getLotes, deleteLote } from "./services/api";
 import { Doll } from "./types/Doll";
 import { Lote } from "./types/Lote";
 
@@ -83,9 +83,9 @@ const App: React.FC = () => {
     setIsLoteDetailOpen(true);
   };
 
-  const handleDollAdded = async (doll: Doll) => {
+  const handleDollAdded = async (formData: FormData) => {
     try {
-      await addDoll(doll);
+      await createDoll(formData);
       await fetchDolls(); // Refresh the list
       closeModal();
     } catch (error) {

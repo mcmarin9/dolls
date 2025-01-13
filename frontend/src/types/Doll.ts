@@ -8,7 +8,7 @@ export interface Doll {
     anyo: number; // Año de la muñeca
     estado: 'vendida' | 'guardada' | 'a la venta'; // Estado actual de la muñeca
     commentarios?: string; // Comentarios opcionales
-    imagen?: string; // URL de la imagen
+    imagen?: File | string;
     created_at?: string; // Fecha de creación
     lote_id?: number; // ID del lote asociado
 }

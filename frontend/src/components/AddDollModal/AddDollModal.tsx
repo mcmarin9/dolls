@@ -4,7 +4,7 @@ import { Doll } from "../../types/Doll";
 interface AddDollModalProps {
     isOpen: boolean;
     closeModal: () => void;
-    onDollAdded: (doll: Doll) => void;
+    onDollAdded: (doll: FormData) => void;
 }
 
 const AddDollModal: React.FC<AddDollModalProps> = ({ isOpen, closeModal, onDollAdded }) => {
@@ -19,6 +19,7 @@ const AddDollModal: React.FC<AddDollModalProps> = ({ isOpen, closeModal, onDollA
         imagen: "",
     });
     const [marcas, setMarcas] = useState<{ id: number; nombre: string }[]>([]);
+    const [imageFile, setImageFile] = useState<File | null>(null);
 
     // Fetch brands from the API
     useEffect(() => {
@@ -36,6 +37,12 @@ const AddDollModal: React.FC<AddDollModalProps> = ({ isOpen, closeModal, onDollA
         fetchMarcas();
     }, []);
 
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setImageFile(e.target.files[0]);
+        }
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -44,15 +51,44 @@ const AddDollModal: React.FC<AddDollModalProps> = ({ isOpen, closeModal, onDollA
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (formData.marca_id === 0) {
-            alert("Por favor, selecciona una marca válida.");
-            return;
-        }
+// Update handleSubmit
+const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate required fields
+    if (!formData.nombre || !formData.marca_id || !formData.modelo || 
+        !formData.personaje || !formData.anyo || !formData.estado) {
+        alert('Please fill all required fields');
+        return;
+    }
 
-        onDollAdded(formData as Doll);
+    // Create new FormData instance
+    const submitData = new FormData();
+    
+    // Append required fields
+    submitData.append('nombre', formData.nombre);
+    submitData.append('marca_id', formData.marca_id.toString());
+    submitData.append('modelo', formData.modelo);
+    submitData.append('personaje', formData.personaje);
+    submitData.append('anyo', formData.anyo.toString());
+    submitData.append('estado', formData.estado);
+    
+    // Append optional fields
+    if (formData.commentarios) {
+        submitData.append('commentarios', formData.commentarios);
+    }
+    
+    if (imageFile) {
+        submitData.append('imagen', imageFile);
+    }
+
+    try {
+        // Debug output
+        console.log('Submitting form data:', Object.fromEntries(submitData));
+        
+        await onDollAdded(submitData);
         closeModal();
+        // Reset form
         setFormData({
             nombre: "",
             marca_id: 0,
@@ -63,7 +99,13 @@ const AddDollModal: React.FC<AddDollModalProps> = ({ isOpen, closeModal, onDollA
             commentarios: "",
             imagen: "",
         });
-    };
+        setImageFile(null);
+    } catch (error: unknown) {
+        console.error('Error details:', error);
+        const errorMessage = (error instanceof Error) ? error.message : 'Error adding doll';
+        alert(errorMessage);
+    }
+};
 
     if (!isOpen) return null;
 
@@ -159,15 +201,16 @@ const AddDollModal: React.FC<AddDollModalProps> = ({ isOpen, closeModal, onDollA
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="block mb-1">URL de la imagen</label>
-                        <input
-                            type="text"
-                            name="imagen"
-                            value={formData.imagen || ""}
-                            onChange={handleChange}
-                            className="w-full border rounded p-2"
-                        />
-                    </div>
+    <label className="block text-gray-700 text-sm font-bold mb-2">
+        Imagen
+    </label>
+    <input
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+        className="w-full px-3 py-2 border rounded"
+    />
+</div>
                     <div className="flex justify-end gap-2">
                         <button
                             type="button"
