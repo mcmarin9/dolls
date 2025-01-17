@@ -1,5 +1,5 @@
-import React from "react";
-import { deleteImage } from '../../services/api';
+import React, { useState, useMemo } from "react";
+import { deleteImage } from "../../services/api";
 import { Doll } from "../../types/Doll";
 
 interface DollsListProps {
@@ -9,11 +9,31 @@ interface DollsListProps {
 }
 
 const DollsList: React.FC<DollsListProps> = ({ dolls, onView, onDelete }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState("");
+
+  const uniqueBrands = useMemo(
+    () => Array.from(new Set(dolls.map((doll) => doll.marca_nombre))).sort(),
+    [dolls]
+  );
+
+  const filteredDolls = useMemo(
+    () =>
+      dolls.filter((doll) => {
+        const matchesName = doll.nombre
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase());
+        const matchesBrand =
+          !selectedBrand || doll.marca_nombre === selectedBrand;
+        return matchesName && matchesBrand;
+      }),
+    [dolls, searchTerm, selectedBrand]
+  );
 
   const handleDelete = async (doll: Doll) => {
     try {
       if (doll.imagen) {
-        if (typeof doll.imagen === 'string') {
+        if (typeof doll.imagen === "string") {
           await deleteImage(doll.imagen);
         }
       }
@@ -21,12 +41,33 @@ const DollsList: React.FC<DollsListProps> = ({ dolls, onView, onDelete }) => {
         onDelete(doll.id);
       }
     } catch (error) {
-      console.error('Error deleting doll:', error);
+      console.error("Error deleting doll:", error);
     }
   };
-  
+
   return (
     <div className="h-[calc(100vh-300px)]">
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Buscar por nombre..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-50 p-2 border rounded-lg"
+        />
+        <select
+          value={selectedBrand}
+          onChange={(e) => setSelectedBrand(e.target.value)}
+          className="w-50 p-2 border rounded-lg"
+        >
+          <option value="">Todas las marcas</option>
+          {uniqueBrands.map((brand) => (
+            <option key={brand} value={brand}>
+              {brand}
+            </option>
+          ))}
+        </select>
+      </div>
       <div className="relative h-full rounded-lg border border-gray-200">
         <div className="overflow-auto h-full">
           <table className="min-w-full divide-y divide-gray-200">
@@ -62,7 +103,7 @@ const DollsList: React.FC<DollsListProps> = ({ dolls, onView, onDelete }) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {dolls.map((doll) => (
+              {filteredDolls.map((doll) => (
                 <tr key={doll.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {doll.imagen ? (
@@ -106,11 +147,11 @@ const DollsList: React.FC<DollsListProps> = ({ dolls, onView, onDelete }) => {
                       Ver
                     </button>
                     <button
-  onClick={() => handleDelete(doll)}
-  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
->
-  Eliminar
-</button>
+                      onClick={() => handleDelete(doll)}
+                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
               ))}
