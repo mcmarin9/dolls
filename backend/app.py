@@ -439,6 +439,42 @@ def get_lote_dolls(lote_id):
         return jsonify({"error": str(e)}), 500
     finally:
         connection.close()
+
+        # Add after the existing GET /api/marcas route
+
+@app.route('/api/marcas', methods=['POST'])
+def add_marca():
+    connection = get_db_connection()
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        if not data or 'nombre' not in data:
+            return jsonify({"error": "El nombre de la marca es requerido"}), 400
+            
+        # Insert new marca
+        with connection.cursor() as cursor:
+            sql = """
+                INSERT INTO marca (nombre, fabricante)
+                VALUES (%s, %s)
+            """
+            cursor.execute(sql, (
+                data['nombre'],
+                data.get('fabricante')  # Optional field
+            ))
+            
+        connection.commit()
+        return jsonify({
+            "id": cursor.lastrowid,
+            "message": "Marca created successfully"
+        }), 201
+        
+    except Exception as e:
+        logger.error(f"Error creating marca: {e}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if connection:
+            connection.close()
         
 if __name__ == '__main__':
     app.run(debug=True)

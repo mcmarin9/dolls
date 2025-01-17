@@ -1,6 +1,6 @@
 import { Doll } from "../types/Doll";
 import { Lote } from "../types/Lote";
-import { Marca } from "../types/Marcas";
+import { Marca } from "../types/Marca";
 
 const API_URL = "http://localhost:5000/api";
 

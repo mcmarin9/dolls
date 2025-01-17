@@ -5,9 +5,17 @@ import DollDetail from "./components/DollDetail/DollDetail";
 import AddLoteModal from "./components/AddLoteModal/AddLoteModal";
 import LoteList from "./components/LoteList/LoteList";
 import LoteDetail from "./components/LoteDetail/LoteDetail";
-import { getDolls, createDoll, deleteDoll, getLotes, deleteLote } from "./services/api";
+import {
+  getDolls,
+  createDoll,
+  deleteDoll,
+  getLotes,
+  deleteLote,
+  createMarca,
+} from "./services/api";
 import { Doll } from "./types/Doll";
 import { Lote } from "./types/Lote";
+import AddMarcaModal from "./components/AddMarcaModal/AddMarcaModal";
 
 const App: React.FC = () => {
   // States
@@ -20,13 +28,16 @@ const App: React.FC = () => {
   const [selectedDoll, setSelectedDoll] = useState<Doll | null>(null);
   const [lotes, setLotes] = useState<Lote[]>([]);
   const [selectedLote, setSelectedLote] = useState<Lote | null>(null);
+  const [isMarcaModalOpen, setIsMarcaModalOpen] = useState(false);
 
   // Modal handlers
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
   const openLoteModal = () => setIsLoteModalOpen(true);
   const closeLoteModal = () => setIsLoteModalOpen(false);
-  
+  const openMarcaModal = () => setIsMarcaModalOpen(true);
+  const closeMarcaModal = () => setIsMarcaModalOpen(false);
+
   const closeDetailModal = () => {
     setIsDetailModalOpen(false);
     setSelectedDoll(null);
@@ -93,7 +104,6 @@ const App: React.FC = () => {
       alert("Failed to add doll");
     }
   };
-  
 
   const handleDeleteDoll = async (id: number) => {
     try {
@@ -109,6 +119,18 @@ const App: React.FC = () => {
     setSelectedDoll(doll);
     setIsDetailModalOpen(true);
   };
+
+  const handleMarcaAdded = async (marca: { nombre: string; fabricante?: string }) => {
+    try {
+      const newMarca = { ...marca, id: Date.now() }; // Assuming id is generated as a timestamp
+      await createMarca(newMarca);
+      closeMarcaModal();
+    } catch (error) {
+      console.error("Error adding marca:", error);
+      alert("Failed to add marca");
+    }
+  };
+  
 
   return (
     <div className="h-screen w-screen bg-gray-50 flex flex-col overflow-hidden">
@@ -134,6 +156,13 @@ const App: React.FC = () => {
         >
           Lotes
         </button>
+        <button
+  onClick={openMarcaModal}
+  className="px-6 py-3 font-medium text-purple-600 hover:text-purple-800"
+>
+  Añadir Marca
+</button>
+
       </nav>
 
       {/* Content based on active tab */}
@@ -142,7 +171,9 @@ const App: React.FC = () => {
           <div className="p-4">
             <section className="bg-white rounded-lg shadow-sm p-6 flex-1 min-h-[400px]">
               <div className="border-b border-gray-200 pb-4 mb-6">
-                <h1 className="text-3xl font-bold text-gray-900">Dolls Manager</h1>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  Dolls Manager
+                </h1>
               </div>
               <button
                 onClick={openModal}
@@ -165,7 +196,9 @@ const App: React.FC = () => {
           <div className="p-4">
             <section className="bg-white rounded-lg shadow-sm p-6 flex-1 min-h-[400px]">
               <div className="border-b border-gray-200 pb-4 mb-6">
-                <h1 className="text-3xl font-bold text-gray-900">Gestión de Lotes</h1>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  Gestión de Lotes
+                </h1>
               </div>
               <button
                 onClick={openLoteModal}
@@ -187,10 +220,10 @@ const App: React.FC = () => {
 
       {/* Modals */}
       <AddDollModal
-  isOpen={isModalOpen}
-  closeModal={closeModal}
-  onDollAdded={handleDollAdded}
-/>
+        isOpen={isModalOpen}
+        closeModal={closeModal}
+        onDollAdded={handleDollAdded}
+      />
       <AddLoteModal
         isOpen={isLoteModalOpen}
         closeModal={closeLoteModal}
@@ -218,7 +251,14 @@ const App: React.FC = () => {
           onClose={handleCloseLoteDetail}
         />
       )}
+
+          <AddMarcaModal
+    isOpen={isMarcaModalOpen}
+    closeModal={closeMarcaModal}
+    onMarcaAdded={handleMarcaAdded}
+  />
     </div>
+
   );
 };
 
