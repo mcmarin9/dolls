@@ -1,4 +1,5 @@
 import React from "react";
+import { deleteImage } from '../../services/api';
 import { Doll } from "../../types/Doll";
 
 interface DollsListProps {
@@ -8,6 +9,22 @@ interface DollsListProps {
 }
 
 const DollsList: React.FC<DollsListProps> = ({ dolls, onView, onDelete }) => {
+
+  const handleDelete = async (doll: Doll) => {
+    try {
+      if (doll.imagen) {
+        if (typeof doll.imagen === 'string') {
+          await deleteImage(doll.imagen);
+        }
+      }
+      if (doll.id) {
+        onDelete(doll.id);
+      }
+    } catch (error) {
+      console.error('Error deleting doll:', error);
+    }
+  };
+  
   return (
     <div className="h-[calc(100vh-300px)]">
       <div className="relative h-full rounded-lg border border-gray-200">
@@ -89,11 +106,11 @@ const DollsList: React.FC<DollsListProps> = ({ dolls, onView, onDelete }) => {
                       Ver
                     </button>
                     <button
-                      onClick={() => doll.id && onDelete(doll.id)}
-                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                    >
-                      Eliminar
-                    </button>
+  onClick={() => handleDelete(doll)}
+  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+>
+  Eliminar
+</button>
                   </td>
                 </tr>
               ))}

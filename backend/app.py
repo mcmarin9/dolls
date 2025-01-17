@@ -475,6 +475,25 @@ def add_marca():
     finally:
         if connection:
             connection.close()
+
+            import os
+import os
+
+@app.route('/api/delete-image', methods=['POST'])
+def delete_image():
+    try:
+        data = request.json
+        image_path = data.get('imagePath')
+        if not image_path:
+            return jsonify({'error': 'No image path provided'}), 400
+            
+        full_path = os.path.join(app.root_path, image_path.lstrip('/'))
+        if os.path.exists(full_path):
+            os.remove(full_path)
+            return jsonify({'message': 'Image deleted successfully'})
+        return jsonify({'error': 'Image not found'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
         
 if __name__ == '__main__':
     app.run(debug=True)

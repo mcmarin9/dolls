@@ -141,3 +141,24 @@ export const deleteMarca = async (id: number): Promise<void> => {
   });
   if (!response.ok) throw new Error("Failed to delete brand");
 };
+
+export const deleteImage = async (imagePath: string | null): Promise<void> => {
+  if (!imagePath) return;
+
+  try {
+    const response = await fetch(`${API_URL}/delete-image`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ imagePath }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete image');
+    }
+  } catch (error) {
+    console.error('Error deleting image:', error);
+    throw error;
+  }
+};
