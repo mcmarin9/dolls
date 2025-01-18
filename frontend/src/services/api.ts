@@ -18,25 +18,15 @@ export const getDoll = async (id: number): Promise<Doll> => {
 };
 
 export const createDoll = async (formData: FormData): Promise<Doll> => {
-  // Debug FormData contents
-  console.log('Debug - FormData contents:');
-  Array.from(formData.entries()).forEach(([key, value]) => {
-      console.log(`${key}: ${value}`);
-  });
-
   const response = await fetch(`${API_URL}/dolls`, {
-      method: 'POST',
-      // Remove any Content-Type header to let browser handle multipart/form-data
-      body: formData
+    method: "POST",
+    body: formData,
   });
 
   const data = await response.json();
-  console.log('Server response:', data);
-
   if (!response.ok) {
-      throw new Error(data.error || 'Failed to create doll');
+    throw new Error(data.error || "Failed to create doll");
   }
-
   return data;
 };
 
@@ -57,7 +47,7 @@ export const deleteDoll = async (id: number): Promise<void> => {
   if (!response.ok) throw new Error("Failed to delete doll");
 };
 
-// Lots Endpoints
+// Lotes Endpoints
 export const getLotes = async (): Promise<Lote[]> => {
   const response = await fetch(`${API_URL}/lotes`);
   if (!response.ok) throw new Error("Failed to fetch lotes");
@@ -76,7 +66,10 @@ export const createLote = async (lote: Lote): Promise<Lote> => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(lote),
   });
-  if (!response.ok) throw new Error("Failed to create lote");
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Failed to create lote");
+  }
   return response.json();
 };
 
@@ -87,19 +80,35 @@ export const deleteLote = async (id: number): Promise<void> => {
   if (!response.ok) throw new Error("Failed to delete lote");
 };
 
+// Lote-Doll Association Endpoints
 export const getLoteDolls = async (loteId: number): Promise<Doll[]> => {
   const response = await fetch(`${API_URL}/lotes/${loteId}/dolls`);
-  if (!response.ok) throw new Error("Failed to fetch lote dolls");
+  if (!response.ok) throw new Error("Failed to fetch dolls for lote");
   return response.json();
 };
 
 export const addDollToLote = async (loteId: number, dollId: number): Promise<void> => {
-  const response = await fetch(`${API_URL}/dolls/${dollId}`, {
-    method: "PUT",
+  const response = await fetch(`${API_URL}/lote-doll`, {
+    method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ lote_id: loteId }),
+    body: JSON.stringify({ lote_id: loteId, doll_id: dollId }),
   });
-  if (!response.ok) throw new Error("Failed to add doll to lote");
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Failed to add doll to lote");
+  }
+};
+
+export const removeDollFromLote = async (loteId: number, dollId: number): Promise<void> => {
+  const response = await fetch(`${API_URL}/lote-doll`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ lote_id: loteId, doll_id: dollId }),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Failed to remove doll from lote");
+  }
 };
 
 // Brands Endpoints

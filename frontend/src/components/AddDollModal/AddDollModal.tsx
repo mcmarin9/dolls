@@ -19,7 +19,7 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
     personaje: "",
     anyo: new Date().getFullYear(),
     estado: "guardada",
-    commentarios: "",
+    comentarios: "",
     imagen: "",
   });
   const [marcas, setMarcas] = useState<{ id: number; nombre: string }[]>([]);
@@ -92,8 +92,8 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
     submitData.append("estado", formData.estado);
 
     // Append optional fields
-    if (formData.commentarios) {
-      submitData.append("commentarios", formData.commentarios);
+    if (formData.comentarios) {
+      submitData.append("comentarios", formData.comentarios);
     }
 
     if (imageFile) {
@@ -114,7 +114,7 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
         personaje: "",
         anyo: new Date().getFullYear(),
         estado: "guardada",
-        commentarios: "",
+        comentarios: "",
         imagen: "",
       });
       setImageFile(null);
@@ -213,8 +213,8 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
           <div className="mb-4">
             <label className="block mb-1">Comentarios</label>
             <textarea
-              name="commentarios"
-              value={formData.commentarios || ""}
+              name="comentarios"
+              value={formData.comentarios || ""}
               onChange={handleChange}
               className="w-full border rounded p-2"
             />

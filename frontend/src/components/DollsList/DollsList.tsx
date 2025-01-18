@@ -137,7 +137,7 @@ const DollsList: React.FC<DollsListProps> = ({ dolls, onView, onDelete }) => {
                     {doll.estado}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {doll.commentarios}
+                    {doll.comentarios}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                     <button

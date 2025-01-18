@@ -9,31 +9,31 @@ interface LoteDetailProps {
 }
 
 const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
-  const [dolls, setDolls] = useState<Doll[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [dolls, setDolls] = useState<Doll[]>(lote.dolls || []); // Si el lote ya incluye las muñecas
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
-  useEffect(() => {
-    const fetchDolls = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/api/lotes/${lote.id}/dolls`
-        );
-        if (!response.ok) throw new Error("Failed to fetch dolls");
-        const data = await response.json();
-        setDolls(data);
-      } catch (err) {
-        setError("Error loading dolls");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const totalPrice =
+    lote.tipo === "compra" ? lote.precio_total || 0 : lote.precio_total || 0;
+  const quantity = dolls.length;
 
-    if (isOpen && lote.id) {
-      fetchDolls();
+  useEffect(() => {
+    if (isOpen && lote.id && !lote.dolls) {
+      // Si las muñecas no están en el lote, las cargamos
+      setLoading(true);
+      fetch(`http://localhost:5000/api/lotes/${lote.id}/dolls`)
+        .then((res) => {
+          if (!res.ok) throw new Error("Error al cargar las muñecas");
+          return res.json();
+        })
+        .then((data) => setDolls(data))
+        .catch((err) => {
+          setError("No se pudieron cargar las muñecas.");
+          console.error(err);
+        })
+        .finally(() => setLoading(false));
     }
-  }, [isOpen, lote.id]);
+  }, [isOpen, lote]);
 
   if (!isOpen) return null;
 
@@ -57,28 +57,24 @@ const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
             <span className="font-semibold">Tipo:</span>{" "}
             <span
               className={`px-2 py-1 rounded ${
-                lote.type === "compra"
+                lote.tipo === "compra"
                   ? "bg-green-100 text-green-800"
                   : "bg-blue-100 text-blue-800"
               }`}
             >
-              {lote.type.charAt(0).toUpperCase() + lote.type.slice(1)}
+              {lote.tipo.charAt(0).toUpperCase() + lote.tipo.slice(1)}
             </span>
           </p>
           <p className="text-gray-600">
-            <span className="font-semibold">Precio Total:</span>{" "}
-            {lote.total_price}€
+            <span className="font-semibold">Precio Total:</span> {totalPrice}€
           </p>
           <p className="text-gray-600">
             <span className="font-semibold">Cantidad de Muñecas:</span>{" "}
-            {lote.quantity}
+            {quantity}
           </p>
           <p className="text-gray-600">
             <span className="font-semibold">Precio Unitario:</span>{" "}
-            {lote.quantity
-              ? (lote.total_price / lote.quantity).toFixed(2)
-              : "0.00"}
-            €
+            {quantity > 0 ? (totalPrice / quantity).toFixed(2) : "0.00"}€
           </p>
         </div>
 

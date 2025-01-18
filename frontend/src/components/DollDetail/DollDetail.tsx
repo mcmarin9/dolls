@@ -26,8 +26,8 @@ const DollDetail: React.FC<DollDetailProps> = ({ doll }) => {
                 <p><span className="font-semibold">Personaje:</span> {doll.personaje}</p>
                 <p><span className="font-semibold">Año:</span> {doll.anyo}</p>
                 <p><span className="font-semibold">Estado:</span> {doll.estado}</p>
-                {doll.commentarios && (
-                    <p><span className="font-semibold">Comentarios:</span> {doll.commentarios}</p>
+                {doll.comentarios && (
+                    <p><span className="font-semibold">Comentarios:</span> {doll.comentarios}</p>
                 )}
             </div>
         </div>
