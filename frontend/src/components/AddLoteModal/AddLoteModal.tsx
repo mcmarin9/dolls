@@ -11,8 +11,8 @@ interface AddLoteModalProps {
 
 const initialFormData = {
   nombre: "",
-  type: "Seleccionar tipo", // Set default value
-  total_price: 0,
+  tipo: "Seleccionar tipo", // Set default value
+  precio_total: 0,
   dolls: [] as number[],
 };
 
@@ -54,7 +54,7 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "total_price" ? parseFloat(value) || 0 : value,
+      [name]: name === "precio_total" ? parseFloat(value) || 0 : value,
     }));
   };
 
@@ -69,7 +69,7 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
     e.preventDefault();
     setIsSubmitting(true);
 
-    if (formData.total_price <= 0) {
+    if (formData.precio_total <= 0) {
       setError("El precio total debe ser mayor que 0");
       setIsSubmitting(false);
       return;
@@ -137,9 +137,9 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
     <label className="inline-flex items-center">
       <input
         type="radio"
-        name="type"
+        name="tipo"
         value="compra"
-        checked={formData.type === "compra"}
+        checked={formData.tipo === "compra"}
         onChange={handleChange}
         className="form-radio h-4 w-4 text-blue-600"
       />
@@ -148,9 +148,9 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
     <label className="inline-flex items-center">
       <input
         type="radio"
-        name="type"
+        name="tipo"
         value="venta"
-        checked={formData.type === "venta"}
+        checked={formData.tipo === "venta"}
         onChange={handleChange}
         className="form-radio h-4 w-4 text-blue-600"
       />
@@ -162,8 +162,8 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
             <label className="block mb-1">Precio Total:</label>
             <input
               type="number"
-              name="total_price"
-              value={formData.total_price}
+              name="precio_total"
+              value={formData.precio_total}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-md"
               min="0.01"

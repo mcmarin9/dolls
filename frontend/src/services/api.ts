@@ -51,7 +51,12 @@ export const deleteDoll = async (id: number): Promise<void> => {
 export const getLotes = async (): Promise<Lote[]> => {
   const response = await fetch(`${API_URL}/lotes`);
   if (!response.ok) throw new Error("Failed to fetch lotes");
-  return response.json();
+  const data = await response.json();
+  // Ensure dolls array exists
+  return data.map((lote: Lote) => ({
+    ...lote,
+    dolls: lote.dolls || []
+  }));
 };
 
 export const getLote = async (id: number): Promise<Lote> => {

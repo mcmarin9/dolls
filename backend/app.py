@@ -182,17 +182,35 @@ def get_lotes():
     connection = get_db_connection()
     try:
         with connection.cursor() as cursor:
+            # First get all lotes
             query = """
-                SELECT 
-                    l.id, 
-                    l.nombre, 
-                    l.tipo, 
-                    l.precio_total, 
-                    l.created_at 
+                SELECT l.*, 
+                       GROUP_CONCAT(d.id) as doll_ids,
+                       COUNT(d.id) as doll_count
                 FROM lotes l
+                LEFT JOIN lote_doll ld ON l.id = ld.lote_id
+                LEFT JOIN dolls d ON ld.doll_id = d.id
+                GROUP BY l.id
             """
             cursor.execute(query)
             lotes = cursor.fetchall()
+            
+            # For each lote, get its dolls
+            for lote in lotes:
+                if lote['doll_ids']:
+                    cursor.execute("""
+                        SELECT d.*, m.nombre as marca_nombre
+                        FROM dolls d
+                        JOIN marca m ON d.marca_id = m.id
+                        WHERE d.id IN (%s)
+                    """ % lote['doll_ids'])
+                    lote['dolls'] = cursor.fetchall()
+                else:
+                    lote['dolls'] = []
+                
+                del lote['doll_ids']
+                del lote['doll_count']
+                
             return jsonify(lotes)
     except Exception as e:
         logger.error(f"Error fetching lotes: {e}")
