@@ -175,7 +175,27 @@ def add_doll():
     finally:
         connection.close()
 
-
+@app.route('/api/dolls/<int:doll_id>/lotes', methods=['GET'])
+def get_doll_lotes(doll_id):
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT l.*
+                FROM lotes l
+                JOIN lote_doll ld ON l.id = ld.lote_id
+                WHERE ld.doll_id = %s
+            """, (doll_id,))
+            
+            lotes = cursor.fetchall()
+            return jsonify(lotes)
+            
+    except Exception as e:
+        logger.error(f"Error fetching lotes for doll {doll_id}: {e}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        connection.close()
+        
 # Add this new route for getting lotes
 @app.route('/api/lotes', methods=['GET'])
 def get_lotes():
