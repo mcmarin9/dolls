@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Lote } from "../../types/Lote";
 import { Doll } from "../../types/Doll";
+import DollDetail from "../DollDetail/DollDetail";
 
 interface LoteDetailProps {
   lote: Lote;
@@ -9,9 +10,16 @@ interface LoteDetailProps {
 }
 
 const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
-  const [dolls, setDolls] = useState<Doll[]>(lote.dolls || []); // Si el lote ya incluye las muñecas
+  const [dolls, setDolls] = useState<Doll[]>(lote.dolls || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
+  const [selectedDoll, setSelectedDoll] = useState<Doll | null>(null);
+  const [isDollModalOpen, setIsDollModalOpen] = useState(false);
+
+  const handleDollClick = (doll: Doll) => {
+    setSelectedDoll(doll);
+    setIsDollModalOpen(true);
+  };
 
   const totalPrice =
     lote.tipo === "compra" ? lote.precio_total || 0 : lote.precio_total || 0;
@@ -38,7 +46,7 @@ const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40">
       <div className="bg-white rounded-lg max-w-2xl w-full p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">
@@ -86,32 +94,56 @@ const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
             <p className="text-red-500">{error}</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {dolls.map((doll) => (
-                <div key={doll.id} className="border rounded p-3">
-                  <div className="flex items-center space-x-3">
-                    {doll.imagen ? (
-                      <img
-                        src={`http://localhost:5000${doll.imagen}`}
-                        alt={doll.nombre}
-                        className="w-16 h-16 object-cover rounded"
-                      />
-                    ) : (
-                      <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
-                        <span className="text-gray-400 text-xs">No imagen</span>
+              {lote.dolls &&
+                lote.dolls.map((doll) => (
+                  <div
+                    key={doll.id}
+                    onClick={() => handleDollClick(doll)}
+                    className="cursor-pointer hover:bg-gray-50"
+                  >
+                    <div className="flex items-center space-x-3">
+                      {doll.imagen ? (
+                        <img
+                          src={`http://localhost:5000${doll.imagen}`}
+                          alt={doll.nombre}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
+                          <span className="text-gray-400 text-xs">
+                            No imagen
+                          </span>
+                        </div>
+                      )}
+                      <div>
+                        <h4 className="font-semibold">{doll.nombre}</h4>
+                        <p className="text-sm text-gray-600">
+                          {doll.marca_nombre} - {doll.modelo}
+                        </p>
+                        <p className="text-sm text-gray-500">{doll.estado}</p>
                       </div>
-                    )}
-                    <div>
-                      <h4 className="font-semibold">{doll.nombre}</h4>
-                      <p className="text-sm text-gray-600">
-                        {doll.marca_nombre} - {doll.modelo}
-                      </p>
-                      <p className="text-sm text-gray-500">{doll.estado}</p>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
+
+{selectedDoll && isDollModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
+                        <div className="p-6">
+                            <DollDetail 
+                                doll={selectedDoll} 
+                                isOpen={isDollModalOpen}
+                                onClose={() => {
+                                    setIsDollModalOpen(false);
+                                    setSelectedDoll(null);
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
       </div>
     </div>

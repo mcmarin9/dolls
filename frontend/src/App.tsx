@@ -130,6 +130,17 @@ const App: React.FC = () => {
       alert("Failed to add marca");
     }
   };
+
+  const handleLoteClickFromDoll = (loteId: number) => {
+    const lote = lotes.find(l => l.id === loteId);
+    if (lote) {
+      setSelectedDoll(null);
+      setIsDetailModalOpen(false);
+      setSelectedLote(lote);
+      setIsLoteDetailOpen(true);
+    }
+  };
+  
   
 
   return (
@@ -229,21 +240,20 @@ const App: React.FC = () => {
         closeModal={closeLoteModal}
         onLoteAdded={handleLoteAdded}
       />
-      {isDetailModalOpen && selectedDoll && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
-            <div className="p-6">
-              <DollDetail doll={selectedDoll} />
-              <button
-                onClick={closeDetailModal}
-                className="mt-6 w-full px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-md transition-colors duration-200 shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+{isDetailModalOpen && selectedDoll && (
+  <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
+      <div className="p-6">
+        <DollDetail 
+          doll={selectedDoll} 
+          isOpen={isDetailModalOpen}
+          onClose={closeDetailModal}
+          onLoteClick={handleLoteClickFromDoll}
+        />
+      </div>
+    </div>
+  </div>
+)}
       {selectedLote && (
         <LoteDetail
           lote={selectedLote}

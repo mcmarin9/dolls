@@ -83,7 +83,7 @@ def get_marcas():
     finally:
         connection.close()
 
-# Update get_dolls route
+# Update get_dolls route to include lotes information
 @app.route('/api/dolls', methods=['GET'])
 def get_dolls():
     connection = get_db_connection()
@@ -103,16 +103,32 @@ def get_dolls():
                     d.comentarios,
                     d.imagen,
                     d.created_at,
-                    m.nombre AS marca_nombre
+                    m.nombre AS marca_nombre,
+                    GROUP_CONCAT(DISTINCT l.id) as lote_ids,
+                    GROUP_CONCAT(DISTINCT l.nombre) as lote_nombres
                 FROM dolls d
                 LEFT JOIN marca m ON d.marca_id = m.id
+                LEFT JOIN lote_doll ld ON d.id = ld.doll_id
+                LEFT JOIN lotes l ON ld.lote_id = l.id
+                GROUP BY d.id
             """)
             dolls = cursor.fetchall()
             
-            # Debug logging
-            logger.info(f"Fetched {len(dolls)} dolls")
-            if dolls:
-                logger.info(f"Sample doll: {dolls[0]}")
+            # Process lotes data
+            for doll in dolls:
+                if doll['lote_ids']:
+                    lote_ids = doll['lote_ids'].split(',')
+                    lote_nombres = doll['lote_nombres'].split(',')
+                    doll['lotes'] = [
+                        {'id': int(id), 'nombre': nombre} 
+                        for id, nombre in zip(lote_ids, lote_nombres)
+                    ]
+                else:
+                    doll['lotes'] = []
+                    
+                # Remove unnecessary fields
+                del doll['lote_ids']
+                del doll['lote_nombres']
                 
             return jsonify(dolls)
     except Exception as e:
@@ -121,7 +137,6 @@ def get_dolls():
     finally:
         if connection:
             connection.close()
-
 
 
 @app.route('/api/dolls', methods=['POST'])
@@ -195,7 +210,7 @@ def get_doll_lotes(doll_id):
         return jsonify({"error": str(e)}), 500
     finally:
         connection.close()
-        
+
 # Add this new route for getting lotes
 @app.route('/api/lotes', methods=['GET'])
 def get_lotes():

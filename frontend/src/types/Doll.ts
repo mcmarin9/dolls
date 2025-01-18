@@ -1,3 +1,5 @@
+import { Lote } from './Lote';
+
 export interface Doll {
     id?: number;
     nombre: string;
@@ -14,4 +16,6 @@ export interface Doll {
     precio_compra?: number;
     fecha_venta?: string;
     precio_venta?: number;
+    lotes?: Lote[];  // Array of related lotes
+    lote_ids?: number[];  // Array of lote IDs
 }
