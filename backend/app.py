@@ -364,44 +364,52 @@ def update_doll(doll_id):
         return jsonify({"error": "Database connection failed"}), 500
     
     try:
-        data = request.get_json()
-        lote_id = data['lote_id']
+        data = request.form.to_dict()
         
-        connection.begin()  # Start transaction
+        # Handle image upload
+        image_path = None
+        if 'imagen' in request.files:
+            file = request.files['imagen']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                image_path = f'/uploads/{filename}'
+                data['imagen'] = image_path
+
+        # Build update query dynamically
+        update_fields = []
+        values = []
+        for field in ['nombre', 'marca_id', 'modelo', 'personaje', 'anyo', 'estado', 'comentarios']:
+            if field in data:
+                update_fields.append(f"{field} = %s")
+                values.append(data[field])
+        
+        if image_path:
+            update_fields.append("imagen = %s")
+            values.append(image_path)
+
+        if not update_fields:
+            return jsonify({"error": "No fields to update"}), 400
+
+        # Add doll_id to values
+        values.append(doll_id)
+        
+        # Execute update query
         with connection.cursor() as cursor:
-            # First, get the type of the new lote
-            cursor.execute("SELECT type FROM lotes WHERE id = %s", (lote_id,))
-            new_lote = cursor.fetchone()
-            if not new_lote:
-                connection.rollback()
-                return jsonify({"error": "Lote not found"}), 404
-            
-            new_lote_type = new_lote['type']
-            
-            # Check if doll is already in a lote of the same type
-            query = """
-                SELECT l.type, d.nombre 
-                FROM lotes l 
-                JOIN lote_doll ld ON l.id = ld.lote_id 
-                JOIN dolls d ON d.id = ld.doll_id 
-                WHERE ld.doll_id = %s AND l.type = %s
-            """
-            cursor.execute(query, (doll_id, new_lote_type))
-            existing_lote = cursor.fetchone()
-            
-            if existing_lote:
-                connection.rollback()
-                doll_name = existing_lote['nombre']
-                return jsonify({
-                    "error": f"La muñeca '{doll_name}' ya está en un lote de {new_lote_type}"
-                }), 400
-            
-            # If validation passes, insert into lote_doll
-            query = "INSERT INTO lote_doll (lote_id, doll_id) VALUES (%s, %s)"
-            cursor.execute(query, (lote_id, doll_id))
+            query = f"UPDATE dolls SET {', '.join(update_fields)} WHERE id = %s"
+            cursor.execute(query, values)
             connection.commit()
             
-            return jsonify({"message": "Doll added to lote successfully"}), 200
+            # Fetch updated doll
+            cursor.execute("""
+                SELECT d.*, m.nombre as marca_nombre
+                FROM dolls d
+                LEFT JOIN marca m ON d.marca_id = m.id
+                WHERE d.id = %s
+            """, (doll_id,))
+            updated_doll = cursor.fetchone()
+            
+            return jsonify(updated_doll), 200
             
     except Exception as e:
         connection.rollback()

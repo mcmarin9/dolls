@@ -30,14 +30,23 @@ export const createDoll = async (formData: FormData): Promise<Doll> => {
   return data;
 };
 
-export const updateDoll = async (id: number, doll: Partial<Doll>): Promise<Doll> => {
-  const response = await fetch(`${API_URL}/dolls/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(doll),
-  });
-  if (!response.ok) throw new Error("Failed to update doll");
-  return response.json();
+export const updateDoll = async (id: number, formData: FormData): Promise<Doll> => {
+  try {
+    const response = await fetch(`${API_URL}/dolls/${id}`, {
+      method: "PUT",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to update doll');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Update doll error:', error);
+    throw error;
+  }
 };
 
 export const deleteDoll = async (id: number): Promise<void> => {

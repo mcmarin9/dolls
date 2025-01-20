@@ -6,9 +6,10 @@ interface DollsListProps {
   dolls: Doll[];
   onDelete: (id: number) => void;
   onView: (doll: Doll) => void;
+  onEdit: (doll: Doll) => void;
 }
 
-const DollsList: React.FC<DollsListProps> = ({ dolls, onView, onDelete }) => {
+const DollsList: React.FC<DollsListProps> = ({ dolls, onView, onDelete, onEdit }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
 
@@ -146,6 +147,12 @@ const DollsList: React.FC<DollsListProps> = ({ dolls, onView, onDelete }) => {
                     >
                       Ver
                     </button>
+                    <button
+      onClick={() => onEdit(doll)}
+      className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 mr-2"
+    >
+      Editar
+    </button>
                     <button
                       onClick={() => handleDelete(doll)}
                       className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"

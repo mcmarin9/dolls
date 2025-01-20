@@ -3,6 +3,7 @@ import DollsList from "./components/DollsList/DollsList";
 import AddDollModal from "./components/AddDollModal/AddDollModal";
 import DollDetail from "./components/DollDetail/DollDetail";
 import AddLoteModal from "./components/AddLoteModal/AddLoteModal";
+import EditDoll from "./components/EditDoll/EditDoll";
 import LoteList from "./components/LoteList/LoteList";
 import LoteDetail from "./components/LoteDetail/LoteDetail";
 import {
@@ -12,6 +13,7 @@ import {
   getLotes,
   deleteLote,
   createMarca,
+  updateDoll
 } from "./services/api";
 import { Doll } from "./types/Doll";
 import { Lote } from "./types/Lote";
@@ -29,6 +31,8 @@ const App: React.FC = () => {
   const [lotes, setLotes] = useState<Lote[]>([]);
   const [selectedLote, setSelectedLote] = useState<Lote | null>(null);
   const [isMarcaModalOpen, setIsMarcaModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
 
   // Modal handlers
   const openModal = () => setIsModalOpen(true);
@@ -115,6 +119,22 @@ const App: React.FC = () => {
     }
   };
 
+  const handleEditDoll = async (doll: Doll) => {
+    setSelectedDoll(doll);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSubmit = async (id: number, formData: FormData) => {
+    try {
+      await updateDoll(id, formData);
+      fetchDolls();
+      setIsEditModalOpen(false);
+      setSelectedDoll(null);
+    } catch (error) {
+      console.error("Error updating doll:", error);
+    }
+  };
+
   const handleViewDoll = (doll: Doll) => {
     setSelectedDoll(doll);
     setIsDetailModalOpen(true);
@@ -193,11 +213,12 @@ const App: React.FC = () => {
                 <span className="mr-2">+</span> Add New Doll
               </button>
               <div className="mt-6">
-                <DollsList
-                  dolls={dolls}
-                  onDelete={handleDeleteDoll}
-                  onView={handleViewDoll}
-                />
+              <DollsList
+          dolls={dolls}
+          onDelete={handleDeleteDoll}
+          onView={handleViewDoll}
+          onEdit={handleEditDoll}
+        />
               </div>
             </section>
           </div>
@@ -267,6 +288,17 @@ const App: React.FC = () => {
     closeModal={closeMarcaModal}
     onMarcaAdded={handleMarcaAdded}
   />
+  {selectedDoll && (
+        <EditDoll
+          isOpen={isEditModalOpen}
+          closeModal={() => {
+            setIsEditModalOpen(false);
+            setSelectedDoll(null);
+          }}
+          doll={selectedDoll}
+          onEdit={handleEditSubmit}
+        />
+      )}
     </div>
 
   );
