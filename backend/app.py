@@ -461,6 +461,64 @@ def get_lote_dolls(lote_id):
     finally:
         connection.close()
 
+@app.route('/api/lotes/<int:lote_id>', methods=['PUT'])
+def update_lote(lote_id):
+    connection = get_db_connection()
+    try:
+        data = request.get_json()
+        
+        # Validate input
+        required_fields = ['nombre', 'tipo', 'precio_total', 'dolls']
+        if not all(field in data for field in required_fields):
+            return jsonify({"error": "Missing required fields"}), 400
+            
+        if data['tipo'] not in ['compra', 'venta']:
+            return jsonify({"error": "Invalid lote type"}), 400
+            
+        connection.begin()
+        with connection.cursor() as cursor:
+            # Update lote basic info
+            cursor.execute("""
+                UPDATE lotes 
+                SET nombre = %s, tipo = %s, precio_total = %s
+                WHERE id = %s
+            """, (data['nombre'], data['tipo'], data['precio_total'], lote_id))
+            
+            # Remove old doll associations
+            cursor.execute("DELETE FROM lote_doll WHERE lote_id = %s", (lote_id,))
+            
+            # Add new doll associations
+            precio_por_doll = float(data['precio_total']) / len(data['dolls'])
+            for doll_id in data['dolls']:
+                cursor.execute("""
+                    INSERT INTO lote_doll (lote_id, doll_id)
+                    VALUES (%s, %s)
+                """, (lote_id, doll_id))
+                
+                # Update doll prices
+                if data['tipo'] == 'compra':
+                    cursor.execute("""
+                        UPDATE dolls
+                        SET precio_compra = %s
+                        WHERE id = %s
+                    """, (precio_por_doll, doll_id))
+                else:
+                    cursor.execute("""
+                        UPDATE dolls
+                        SET precio_venta = %s
+                        WHERE id = %s
+                    """, (precio_por_doll, doll_id))
+            
+            connection.commit()
+            return jsonify({"message": "Lote updated successfully"}), 200
+            
+    except Exception as e:
+        connection.rollback()
+        logger.error(f"Error updating lote: {e}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        connection.close()
+        
         # Add after the existing GET /api/marcas route
 
 @app.route('/api/marcas', methods=['POST'])

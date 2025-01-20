@@ -4,6 +4,7 @@ import AddDollModal from "./components/AddDollModal/AddDollModal";
 import DollDetail from "./components/DollDetail/DollDetail";
 import AddLoteModal from "./components/AddLoteModal/AddLoteModal";
 import EditDoll from "./components/EditDoll/EditDoll";
+import EditLote from "./components/EditLote/EditLote"; // Ensure this path is correct or update it to the correct path
 import LoteList from "./components/LoteList/LoteList";
 import LoteDetail from "./components/LoteDetail/LoteDetail";
 import {
@@ -13,7 +14,8 @@ import {
   getLotes,
   deleteLote,
   createMarca,
-  updateDoll
+  updateDoll,
+  updateLote
 } from "./services/api";
 import { Doll } from "./types/Doll";
 import { Lote } from "./types/Lote";
@@ -32,6 +34,8 @@ const App: React.FC = () => {
   const [selectedLote, setSelectedLote] = useState<Lote | null>(null);
   const [isMarcaModalOpen, setIsMarcaModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditLoteModalOpen, setIsEditLoteModalOpen] = useState(false);
+
 
 
   // Modal handlers
@@ -160,6 +164,28 @@ const App: React.FC = () => {
       setIsLoteDetailOpen(true);
     }
   };
+  const handleEditLote = (lote: Lote) => {
+    setSelectedLote(lote);
+    setIsEditLoteModalOpen(true);
+  };
+
+  const handleEditLoteSubmit = async (
+    id: number,
+    loteData: Pick<Lote, 'nombre' | 'tipo'> & { 
+      precio_total: number;
+      dolls: number[];
+    }
+  ) => {
+    try {
+      await updateLote(id, loteData);
+      fetchLotes();
+      setIsEditLoteModalOpen(false);
+      setSelectedLote(null);
+    } catch (error) {
+      console.error("Error updating lote:", error);
+      alert("Error updating lote");
+    }
+  };
   
   
 
@@ -243,6 +269,7 @@ const App: React.FC = () => {
                   lotes={lotes}
                   onDelete={handleDeleteLote}
                   onView={handleViewLote}
+                  onEdit={handleEditLote}
                 />
               </div>
             </section>
@@ -299,7 +326,21 @@ const App: React.FC = () => {
           onEdit={handleEditSubmit}
         />
       )}
+
+{selectedLote && (
+        <EditLote
+          isOpen={isEditLoteModalOpen}
+          closeModal={() => {
+            setIsEditLoteModalOpen(false);
+            setSelectedLote(null);
+          }}
+          lote={selectedLote}
+          onEdit={handleEditLoteSubmit}
+        />
+      )}
     </div>
+
+    
 
   );
 };

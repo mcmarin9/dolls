@@ -94,6 +94,29 @@ export const deleteLote = async (id: number): Promise<void> => {
   if (!response.ok) throw new Error("Failed to delete lote");
 };
 
+export const updateLote = async (
+  id: number, 
+  lote: Pick<Lote, 'nombre' | 'tipo'> & { 
+    precio_total: number;
+    dolls: number[];
+  }
+): Promise<Lote> => {
+  const response = await fetch(`${API_URL}/lotes/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(lote),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to update lote');
+  }
+
+  return response.json();
+};
+
 // Lote-Doll Association Endpoints
 export const getLoteDolls = async (loteId: number): Promise<Doll[]> => {
   const response = await fetch(`${API_URL}/lotes/${loteId}/dolls`);
