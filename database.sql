@@ -15,7 +15,7 @@ CREATE TABLE marca (
 CREATE TABLE lotes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,
-    tipo ENUM('compra', 'venta') NOT NULL,
+    tipo ENUM('Compra', 'Venta') NOT NULL,
     precio_total DECIMAL(10,2), -- Precio manual
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -28,7 +28,7 @@ CREATE TABLE dolls (
     modelo VARCHAR(255) NOT NULL,
     personaje VARCHAR(255) NOT NULL,
     anyo INT NOT NULL,
-    estado ENUM('guardada', 'a_la_venta', 'vendida') NOT NULL DEFAULT 'guardada',
+    estado ENUM('Guardada', 'A la venta', 'Vendida') NOT NULL DEFAULT 'Guardada',
     precio_compra DECIMAL(10,2),
     precio_venta DECIMAL(10,2),
     comentarios TEXT,
@@ -63,14 +63,14 @@ INSERT INTO lotes (nombre, tipo, precio_total) VALUES
     ('Venta Verano 2023', 'venta', 200.00);
 
 INSERT INTO dolls (nombre, marca_id, modelo, personaje, anyo, estado, precio_compra, precio_venta, comentarios) VALUES
-    ('Barbie Fashionista', 1, 'Fashionista #167', 'Barbie', 2022, 'a_la_venta', 25.00, NULL, 'Muñeca nueva'),
-    ('Draculaura Core', 2, 'Core Doll', 'Draculaura', 2023, 'a_la_venta', 30.00, NULL, NULL),
+    ('Barbie Fashionista', 1, 'Fashionista #167', 'Barbie', 2022, 'a la venta', 25.00, NULL, 'Muñeca nueva'),
+    ('Draculaura Core', 2, 'Core Doll', 'Draculaura', 2023, 'a la venta', 30.00, NULL, NULL),
     ('Nancy Day', 7, 'Colección 2023', 'Nancy', 2023, 'vendida', 35.00, 50.00, NULL),
-    ('Clawdeen Wolf', 2, 'G3', 'Clawdeen', 2022, 'a_la_venta', 28.00, NULL, NULL),
+    ('Clawdeen Wolf', 2, 'G3', 'Clawdeen', 2022, 'a la venta', 28.00, NULL, NULL),
     ('Rainbow High Series 4', 6, 'Series 4', 'Delilah Fields', 2023, 'vendida', 40.00, 60.00, NULL),
     ('Bratz 20th Anniversary', 4, '20th Anniversary', 'Yasmin', 2022, 'guardada', 45.00, NULL, NULL),
     ('LOL Surprise OMG', 5, 'OMG Series 4', 'Dollface', 2023, 'vendida', 32.00, 50.00, NULL),
-    ('Ever After High', 3, 'Legacy Day', 'Apple White', 2022, 'a_la_venta', 38.00, NULL, NULL);
+    ('Ever After High', 3, 'Legacy Day', 'Apple White', 2022, 'a la venta', 38.00, NULL, NULL);
 
 INSERT INTO lote_doll (lote_id, doll_id) VALUES
     (1, 1), -- Compra Navidad 2023

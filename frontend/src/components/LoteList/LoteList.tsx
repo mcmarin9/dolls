@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Lote } from "../../types/Lote";
 import LoteDetail from "../LoteDetail/LoteDetail";
+import { getTypeStyle } from "../../utils/styleUtils";
+
 
 interface LoteListProps {
   lotes: Lote[];
@@ -18,12 +20,6 @@ const LoteList: React.FC<LoteListProps> = ({ lotes, onDelete, onView }) => {
     return Number(price).toFixed(2); // Ensure it's a number
   };
 
-  const getTypeStyle = (type: "compra" | "venta"): string => {
-    return type === "compra"
-      ? "bg-green-100 text-green-800"
-      : "bg-blue-100 text-blue-800";
-  };
-
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 min-h-0 rounded-lg border border-gray-200">
@@ -34,7 +30,7 @@ const LoteList: React.FC<LoteListProps> = ({ lotes, onDelete, onView }) => {
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                   Nombre
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Tipo
                 </th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
@@ -57,27 +53,16 @@ const LoteList: React.FC<LoteListProps> = ({ lotes, onDelete, onView }) => {
                 const quantity = lote.dolls?.length || 0; // Changed from 1 to 0
                 const unitPrice = quantity > 0 ? totalPrice / quantity : 0;
 
-                console.log("Lote completo:", JSON.stringify(lote, null, 2)); // Debug full lote
-
-                // Debug prices
-                console.log("Lote:", lote.nombre);
-                console.log("Total:", totalPrice);
-                console.log("Quantity:", lote.dolls?.length);
-                console.log("Unit:", unitPrice);
                 return (
                   <tr key={lote.id}>
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                       {lote.nombre}
                     </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-600">
-                      <span
-                        className={`px-2 py-1 rounded ${getTypeStyle(
-                          lote.tipo
-                        )}`}
-                      >
-                        {lote.tipo.charAt(0).toUpperCase() + lote.tipo.slice(1)}
-                      </span>
-                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <span className={`px-2 py-1 rounded ${getTypeStyle(lote.tipo.toLowerCase() as "compra" | "venta")}`}>
+                      {lote.tipo}
+                    </span>
+                  </td>
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-600">
                       {formatPrice(totalPrice)}€
                     </td>
