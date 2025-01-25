@@ -15,7 +15,6 @@ const LoteList: React.FC<LoteListProps> = ({ lotes, onDelete, onView }) => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const formatPrice = (price: number | undefined | null): string => {
-    console.log('Price before format:', price, typeof price); // Debug
     if (price === undefined || price === null) return "0.00";
     return Number(price).toFixed(2); // Ensure it's a number
   };

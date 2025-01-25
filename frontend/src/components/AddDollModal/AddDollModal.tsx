@@ -101,9 +101,6 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
     }
 
     try {
-      // Debug output
-      console.log("Submitting form data:", Object.fromEntries(submitData));
-
       await onDollAdded(submitData);
       closeModal();
       // Reset form

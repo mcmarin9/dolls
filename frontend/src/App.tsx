@@ -16,10 +16,13 @@ import {
 import { Doll } from "./types/Doll";
 import { Lote } from "./types/Lote";
 import AddMarcaModal from "./components/AddMarcaModal/AddMarcaModal";
+import Stats from "./components/Stats/Stats";
 
 const App: React.FC = () => {
   // States
-  const [activeTab, setActiveTab] = useState<"dolls" | "lotes">("dolls");
+  const [activeTab, setActiveTab] = useState<"dolls" | "lotes" | "stats">(
+    "dolls"
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isLoteModalOpen, setIsLoteModalOpen] = useState(false);
@@ -120,7 +123,10 @@ const App: React.FC = () => {
     setIsDetailModalOpen(true);
   };
 
-  const handleMarcaAdded = async (marca: { nombre: string; fabricante?: string }) => {
+  const handleMarcaAdded = async (marca: {
+    nombre: string;
+    fabricante?: string;
+  }) => {
     try {
       const newMarca = { ...marca, id: Date.now() }; // Assuming id is generated as a timestamp
       await createMarca(newMarca);
@@ -132,7 +138,7 @@ const App: React.FC = () => {
   };
 
   const handleLoteClickFromDoll = (loteId: number) => {
-    const lote = lotes.find(l => l.id === loteId);
+    const lote = lotes.find((l) => l.id === loteId);
     if (lote) {
       setSelectedDoll(null);
       setIsDetailModalOpen(false);
@@ -140,8 +146,6 @@ const App: React.FC = () => {
       setIsLoteDetailOpen(true);
     }
   };
-  
-  
 
   return (
     <div className="h-screen w-screen bg-gray-50 flex flex-col overflow-hidden">
@@ -168,12 +172,21 @@ const App: React.FC = () => {
           Lotes
         </button>
         <button
-  onClick={openMarcaModal}
-  className="px-6 py-3 font-medium text-purple-600 hover:text-purple-800"
->
-  Añadir Marca
-</button>
-
+          onClick={() => setActiveTab("stats")}
+          className={`px-6 py-3 font-medium ${
+            activeTab === "stats"
+              ? "text-purple-600 border-b-2 border-purple-600"
+              : "text-gray-600"
+          }`}
+        >
+          Estadísticas
+        </button>
+        <button
+          onClick={openMarcaModal}
+          className="px-6 py-3 font-medium text-purple-600 hover:text-purple-800"
+        >
+          Añadir Marca
+        </button>
       </nav>
 
       {/* Content based on active tab */}
@@ -183,14 +196,14 @@ const App: React.FC = () => {
             <section className="bg-white rounded-lg shadow-sm p-6 flex-1 min-h-[400px]">
               <div className="border-b border-gray-200 pb-4 mb-6">
                 <h1 className="text-3xl font-bold text-gray-900">
-                  Dolls Manager
+                  Muñequitas
                 </h1>
               </div>
               <button
                 onClick={openModal}
                 className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200 shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                <span className="mr-2">+</span> Add New Doll
+                <span className="mr-2">+</span> Añadir muñeca
               </button>
               <div className="mt-6">
                 <DollsList
@@ -229,6 +242,17 @@ const App: React.FC = () => {
         )}
       </div>
 
+      {activeTab === "stats" && (
+        <div className="p-4">
+          <section className="bg-white rounded-lg shadow-sm p-6 flex-1 min-h-[400px]">
+            <div className="border-b border-gray-200 pb-4 mb-6">
+              <h1 className="text-3xl font-bold text-gray-900">Estadísticas</h1>
+            </div>
+            <Stats dolls={dolls} lotes={lotes} />
+          </section>
+        </div>
+      )}
+
       {/* Modals */}
       <AddDollModal
         isOpen={isModalOpen}
@@ -240,20 +264,20 @@ const App: React.FC = () => {
         closeModal={closeLoteModal}
         onLoteAdded={handleLoteAdded}
       />
-{isDetailModalOpen && selectedDoll && (
-  <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
-      <div className="p-6">
-        <DollDetail 
-          doll={selectedDoll} 
-          isOpen={isDetailModalOpen}
-          onClose={closeDetailModal}
-          onLoteClick={handleLoteClickFromDoll}
-        />
-      </div>
-    </div>
-  </div>
-)}
+      {isDetailModalOpen && selectedDoll && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
+            <div className="p-6">
+              <DollDetail
+                doll={selectedDoll}
+                isOpen={isDetailModalOpen}
+                onClose={closeDetailModal}
+                onLoteClick={handleLoteClickFromDoll}
+              />
+            </div>
+          </div>
+        </div>
+      )}
       {selectedLote && (
         <LoteDetail
           lote={selectedLote}
@@ -262,13 +286,12 @@ const App: React.FC = () => {
         />
       )}
 
-          <AddMarcaModal
-    isOpen={isMarcaModalOpen}
-    closeModal={closeMarcaModal}
-    onMarcaAdded={handleMarcaAdded}
-  />
+      <AddMarcaModal
+        isOpen={isMarcaModalOpen}
+        closeModal={closeMarcaModal}
+        onMarcaAdded={handleMarcaAdded}
+      />
     </div>
-
   );
 };
 
