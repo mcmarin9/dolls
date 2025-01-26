@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Lote } from "../../types/Lote";
 import { Doll } from "../../types/Doll";
 import DollDetail from "../DollDetail/DollDetail";
+import { getTypeStyle, getStatusStyle } from "../../utils/styleUtils";
 
 interface LoteDetailProps {
   lote: Lote;
@@ -21,13 +22,11 @@ const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
     setIsDollModalOpen(true);
   };
 
-  const totalPrice =
-    lote.tipo === "compra" ? lote.precio_total || 0 : lote.precio_total || 0;
+  const totalPrice = lote.precio_total || 0;
   const quantity = dolls.length;
 
   useEffect(() => {
     if (isOpen && lote.id && !lote.dolls) {
-      // Si las muñecas no están en el lote, las cargamos
       setLoading(true);
       fetch(`http://localhost:5000/api/lotes/${lote.id}/dolls`)
         .then((res) => {
@@ -63,13 +62,7 @@ const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
         <div className="mb-4">
           <p className="text-gray-600">
             <span className="font-semibold">Tipo:</span>{" "}
-            <span
-              className={`px-2 py-1 rounded ${
-                lote.tipo === "compra"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-blue-100 text-blue-800"
-              }`}
-            >
+            <span className={`px-2 py-1 rounded-full ${getTypeStyle(lote.tipo.toLowerCase() as "compra" | "venta")}`}>
               {lote.tipo.charAt(0).toUpperCase() + lote.tipo.slice(1)}
             </span>
           </p>
@@ -94,57 +87,62 @@ const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
             <p className="text-red-500">{error}</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {lote.dolls &&
-                lote.dolls.map((doll) => (
-                  <div
-                    key={doll.id}
-                    onClick={() => handleDollClick(doll)}
-                    className="cursor-pointer hover:bg-gray-50"
-                  >
-                    <div className="flex items-center space-x-3">
-                      {doll.imagen ? (
-                        <img
-                          src={`http://localhost:5000${doll.imagen}`}
-                          alt={doll.nombre}
-                          className="w-16 h-16 object-cover rounded"
-                        />
-                      ) : (
-                        <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
-                          <span className="text-gray-400 text-xs">
-                            No imagen
-                          </span>
-                        </div>
-                      )}
-                      <div>
-                        <h4 className="font-semibold">{doll.nombre}</h4>
-                        <p className="text-sm text-gray-600">
-                          {doll.marca_nombre} - {doll.modelo}
-                        </p>
-                        <p className="text-sm text-gray-500">{doll.estado}</p>
+              {dolls.map((doll) => (
+                <div
+                  key={doll.id}
+                  onClick={() => handleDollClick(doll)}
+                  className="cursor-pointer hover:bg-gray-50 p-3 rounded-lg"
+                >
+                  <div className="flex items-center space-x-3">
+                    {doll.imagen ? (
+                      <img
+                        src={`http://localhost:5000${doll.imagen}`}
+                        alt={doll.nombre}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
+                        <span className="text-gray-400 text-xs">
+                          No imagen
+                        </span>
                       </div>
+                    )}
+                    <div>
+                      <h4 className="font-semibold">{doll.nombre}</h4>
+                      <p className="text-sm text-gray-600">
+                        {doll.marca_nombre} - {doll.modelo}
+                      </p>
+                      <span className={`px-2 py-1 text-xs rounded-full ${getStatusStyle(doll.estado || '')}`}>
+                        {doll.estado}
+                      </span>
                     </div>
                   </div>
-                ))}
+                </div>
+              ))}
             </div>
           )}
-
-{selectedDoll && isDollModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
-                        <div className="p-6">
-                            <DollDetail 
-                                doll={selectedDoll} 
-                                isOpen={isDollModalOpen}
-                                onClose={() => {
-                                    setIsDollModalOpen(false);
-                                    setSelectedDoll(null);
-                                }}
-                            />
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
+
+        {selectedDoll && isDollModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
+              <div className="p-6">
+                <DollDetail 
+                  doll={selectedDoll} 
+                  isOpen={isDollModalOpen}
+                  onClose={() => {
+                    setIsDollModalOpen(false);
+                    setSelectedDoll(null);
+                  }}
+                  onLoteClick={() => {
+                    setIsDollModalOpen(false);
+                    setSelectedDoll(null);
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

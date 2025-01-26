@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { deleteImage } from "../../services/api";
 import { Doll } from "../../types/Doll";
+import { getStatusStyle } from "../../utils/styleUtils";
 
 interface DollsListProps {
   dolls: Doll[];
@@ -134,8 +135,14 @@ const DollsList: React.FC<DollsListProps> = ({ dolls, onView, onDelete, onEdit }
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {doll.anyo}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {doll.estado}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <span
+                      className={`px-2 py-1 rounded ${getStatusStyle(
+                        doll.estado || ""
+                      )}`}
+                    >
+                      {doll.estado}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {doll.comentarios}

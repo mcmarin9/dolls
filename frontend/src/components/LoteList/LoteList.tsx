@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Lote } from "../../types/Lote";
 import LoteDetail from "../LoteDetail/LoteDetail";
+import { getTypeStyle } from "../../utils/styleUtils";
+
 
 interface LoteListProps {
   lotes: Lote[];
@@ -18,19 +20,11 @@ const LoteList: React.FC<LoteListProps> = ({ lotes, onDelete, onView, onEdit }) 
     return Number(price).toFixed(2);
   };
 
-  const getTypeStyle = (type: "compra" | "venta"): string => {
-    return type === "compra"
-      ? "bg-green-100 text-green-800"
-      : "bg-blue-100 text-blue-800";
-  };
-
   const handleView = (lote: Lote) => {
     setSelectedLote(lote);
     setIsDetailOpen(true);
     onView(lote);
   };
-
-  
 
   return (
     <div className="flex flex-col h-full">
@@ -42,7 +36,7 @@ const LoteList: React.FC<LoteListProps> = ({ lotes, onDelete, onView, onEdit }) 
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                   Nombre
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Tipo
                 </th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
@@ -70,15 +64,11 @@ const LoteList: React.FC<LoteListProps> = ({ lotes, onDelete, onView, onEdit }) 
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                       {lote.nombre}
                     </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-600">
-                      <span
-                        className={`px-2 py-1 rounded ${getTypeStyle(
-                          lote.tipo
-                        )}`}
-                      >
-                        {lote.tipo.charAt(0).toUpperCase() + lote.tipo.slice(1)}
-                      </span>
-                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <span className={`px-2 py-1 rounded ${getTypeStyle(lote.tipo.toLowerCase() as "compra" | "venta")}`}>
+                      {lote.tipo}
+                    </span>
+                  </td>
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-600">
                       {formatPrice(totalPrice)}€
                     </td>

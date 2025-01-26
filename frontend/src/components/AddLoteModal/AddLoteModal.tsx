@@ -89,9 +89,7 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
         body: JSON.stringify(submitData),
       });
 
-      console.log("Response status:", response.status);
       const responseData = await response.json();
-      console.log("Response data:", responseData);
 
       if (!response.ok) {
         setError(responseData.error || "Error creating lote");
