@@ -15,7 +15,7 @@ CREATE TABLE marca (
 CREATE TABLE lotes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,
-    tipo ENUM('Compra', 'Venta') NOT NULL,
+    tipo ENUM('compra', 'venta') NOT NULL,
     precio_total DECIMAL(10,2), -- Precio manual
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -28,7 +28,7 @@ CREATE TABLE dolls (
     modelo VARCHAR(255) NOT NULL,
     personaje VARCHAR(255) NOT NULL,
     anyo INT NOT NULL,
-    estado ENUM('Guardada', 'A la venta', 'Vendida') NOT NULL DEFAULT 'Guardada',
+    estado ENUM('guardada', 'a la venta', 'vendida') NOT NULL DEFAULT 'guardada',
     precio_compra DECIMAL(10,2),
     precio_venta DECIMAL(10,2),
     comentarios TEXT,

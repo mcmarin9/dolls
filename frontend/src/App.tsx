@@ -15,12 +15,13 @@ import {
   deleteLote,
   createMarca,
   updateDoll,
-  updateLote
+  updateLote,
 } from "./services/api";
 import { Doll } from "./types/Doll";
 import { Lote } from "./types/Lote";
 import AddMarcaModal from "./components/AddMarcaModal/AddMarcaModal";
 import Stats from "./components/Stats/Stats";
+import { Marca } from "./types/Marca";
 
 const App: React.FC = () => {
   // States
@@ -35,11 +36,10 @@ const App: React.FC = () => {
   const [selectedDoll, setSelectedDoll] = useState<Doll | null>(null);
   const [lotes, setLotes] = useState<Lote[]>([]);
   const [selectedLote, setSelectedLote] = useState<Lote | null>(null);
+  const [brands, setBrands] = useState<Marca[]>([]);
   const [isMarcaModalOpen, setIsMarcaModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isEditLoteModalOpen, setIsEditLoteModalOpen] = useState(false);
-
-
 
   // Modal handlers
   const openModal = () => setIsModalOpen(true);
@@ -78,10 +78,21 @@ const App: React.FC = () => {
     }
   };
 
+  const fetchBrands = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/marcas");
+      const data = await response.json();
+      setBrands(data);
+    } catch (error) {
+      console.error("Error fetching brands:", error);
+    }
+  };
+
   // Initial data loading
   useEffect(() => {
     fetchDolls();
     fetchLotes();
+    fetchBrands();
   }, []);
 
   // Handlers
@@ -152,8 +163,10 @@ const App: React.FC = () => {
     fabricante?: string;
   }) => {
     try {
-      const newMarca = { ...marca, id: Date.now() }; // Assuming id is generated as a timestamp
+      const newMarca = { ...marca, id: Date.now() };
       await createMarca(newMarca);
+      await fetchDolls();
+      await fetchBrands(); // Add this line
       closeMarcaModal();
     } catch (error) {
       console.error("Error adding marca:", error);
@@ -177,23 +190,26 @@ const App: React.FC = () => {
 
   const handleEditLoteSubmit = async (
     id: number,
-    loteData: Pick<Lote, 'nombre' | 'tipo'> & { 
+    loteData: Pick<Lote, "nombre" | "tipo"> & {
       precio_total: number;
       dolls: number[];
     }
   ) => {
     try {
-      await updateLote(id, loteData);
-      fetchLotes();
+      console.log('Updating lote with data:', loteData); // Debug log
+      const response = await updateLote(id, loteData);
+      console.log('Update response:', response); // Debug log
+      await fetchLotes();
       setIsEditLoteModalOpen(false);
       setSelectedLote(null);
     } catch (error) {
       console.error("Error updating lote:", error);
-      alert("Error updating lote");
+      throw new Error(error instanceof Error ? 
+        error.message : 
+        "No se pudo actualizar el lote. Verifica la conexión con el servidor."
+      );
     }
   };
-  
-  
 
   return (
     <div className="h-screen w-screen bg-gray-50 flex flex-col overflow-hidden">
@@ -243,9 +259,7 @@ const App: React.FC = () => {
           <div className="p-4">
             <section className="bg-white rounded-lg shadow-sm p-6 flex-1 min-h-[400px]">
               <div className="border-b border-gray-200 pb-4 mb-6">
-                <h1 className="text-3xl font-bold text-gray-900">
-                  Muñequitas
-                </h1>
+                <h1 className="text-3xl font-bold text-gray-900">Muñequitas</h1>
               </div>
               <button
                 onClick={openModal}
@@ -254,12 +268,13 @@ const App: React.FC = () => {
                 <span className="mr-2">+</span> Añadir muñeca
               </button>
               <div className="mt-6">
-              <DollsList
-          dolls={dolls}
-          onDelete={handleDeleteDoll}
-          onView={handleViewDoll}
-          onEdit={handleEditDoll}
-        />
+                <DollsList
+                  dolls={dolls}
+                  brands={brands}
+                  onDelete={handleDeleteDoll}
+                  onView={handleViewDoll}
+                  onEdit={handleEditDoll}
+                />
               </div>
             </section>
           </div>
@@ -336,12 +351,12 @@ const App: React.FC = () => {
         />
       )}
 
-          <AddMarcaModal
-    isOpen={isMarcaModalOpen}
-    closeModal={closeMarcaModal}
-    onMarcaAdded={handleMarcaAdded}
-  />
-  {selectedDoll && (
+      <AddMarcaModal
+        isOpen={isMarcaModalOpen}
+        closeModal={closeMarcaModal}
+        onMarcaAdded={handleMarcaAdded}
+      />
+      {selectedDoll && (
         <EditDoll
           isOpen={isEditModalOpen}
           closeModal={() => {
@@ -353,7 +368,7 @@ const App: React.FC = () => {
         />
       )}
 
-{selectedLote && (
+      {selectedLote && (
         <EditLote
           isOpen={isEditLoteModalOpen}
           closeModal={() => {
@@ -365,9 +380,6 @@ const App: React.FC = () => {
         />
       )}
     </div>
-
-    
-
   );
 };
 

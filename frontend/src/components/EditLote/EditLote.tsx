@@ -28,14 +28,16 @@ const EditLote: React.FC<EditLoteProps> = ({
     lote.dolls?.map((d) => d.id!) || []
   );
   const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchDolls = async () => {
       try {
         const dollsData = await getDolls();
         setDolls(dollsData);
-      } catch (error) {
+      } catch {
         console.error("Error fetching dolls:", error);
+        setError("Error al cargar las muñecas");
       }
     };
 
@@ -50,7 +52,12 @@ const EditLote: React.FC<EditLoteProps> = ({
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "precio_total" ? parseFloat(value) : value,
+      [name]:
+        name === "tipo"
+          ? value.toLowerCase()
+          : name === "precio_total"
+          ? parseFloat(value)
+          : value,
     }));
   };
 
@@ -62,30 +69,52 @@ const EditLote: React.FC<EditLoteProps> = ({
     );
   };
 
+  const isValidTipo = (tipo: string): tipo is "compra" | "venta" => {
+    return tipo === "compra" || tipo === "venta";
+  };
+
+  // In EditLote component
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
+
+    // Validate tipo
+    if (!isValidTipo(formData.tipo)) {
+      setError("El tipo debe ser 'compra' o 'venta'");
+      setIsLoading(false);
+      return;
+    }
 
     if (selectedDolls.length < 2) {
       setError("Un lote debe contener al menos 2 muñecas");
+      setIsLoading(false);
       return;
     }
 
     if (!formData.precio_total || formData.precio_total <= 0) {
       setError("El precio total debe ser mayor que 0");
+      setIsLoading(false);
       return;
     }
 
     try {
-      await onEdit(lote.id, {
+      const updateData = {
         nombre: formData.nombre,
-        tipo: formData.tipo,
-        precio_total: formData.precio_total,
+        tipo: formData.tipo, // Type is now guaranteed to be valid
+        precio_total: Number(formData.precio_total),
         dolls: selectedDolls,
-      });
+      };
+
+      await onEdit(lote.id, updateData);
       closeModal();
-    } catch {
-      setError("Error al actualizar el lote");
+    } catch (error) {
+      console.error("Error updating lote:", error);
+      setError(
+        error instanceof Error ? error.message : "Error al actualizar el lote"
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -145,13 +174,14 @@ const EditLote: React.FC<EditLoteProps> = ({
                 <div key={doll.id} className="flex items-center mb-2">
                   <input
                     type="checkbox"
+                    id={`doll-${doll.id}`}
                     checked={selectedDolls.includes(doll.id!)}
                     onChange={() => handleDollSelection(doll.id!)}
                     className="mr-2"
                   />
-                  <span>
+                  <label htmlFor={`doll-${doll.id}`}>
                     {doll.nombre} - {doll.marca_nombre}
-                  </span>
+                  </label>
                 </div>
               ))}
             </div>
@@ -161,14 +191,17 @@ const EditLote: React.FC<EditLoteProps> = ({
               type="button"
               onClick={closeModal}
               className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              disabled={isLoading}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              disabled={isLoading}
+              className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 
+                ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              Guardar
+              {isLoading ? "Guardando..." : "Guardar"}
             </button>
           </div>
         </form>
