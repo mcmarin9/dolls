@@ -1,8 +1,9 @@
-from flask import Flask, request, jsonify, current_app, send_from_directory
+from flask import Flask, request, jsonify, current_app, send_from_directory, Response
 from flask_cors import CORS
 import pymysql
 from pymysql.err import OperationalError
 import logging
+import json
 import os
 import time
 from werkzeug.utils import secure_filename
@@ -366,6 +367,12 @@ def update_doll(doll_id):
     try:
         data = request.form.to_dict()
         
+        # Validate estado value if present
+        if 'estado' in data:
+            valid_estados = ['guardada', 'a la venta', 'vendida']
+            if data['estado'] not in valid_estados:
+                return jsonify({"error": f"Estado inválido. Debe ser uno de: {', '.join(valid_estados)}"}), 400
+        
         # Handle image upload
         image_path = None
         if 'imagen' in request.files:
@@ -380,7 +387,7 @@ def update_doll(doll_id):
         update_fields = []
         values = []
         for field in ['nombre', 'marca_id', 'modelo', 'personaje', 'anyo', 'estado', 'comentarios']:
-            if field in data:
+            if field in data and data[field] != '':  # Check for non-empty values
                 update_fields.append(f"{field} = %s")
                 values.append(data[field])
         
@@ -397,6 +404,8 @@ def update_doll(doll_id):
         # Execute update query
         with connection.cursor() as cursor:
             query = f"UPDATE dolls SET {', '.join(update_fields)} WHERE id = %s"
+            logger.info(f"Update query: {query}")
+            logger.info(f"Values: {values}")
             cursor.execute(query, values)
             connection.commit()
             
@@ -467,22 +476,47 @@ def update_lote(lote_id):
     try:
         data = request.get_json()
         
-        # Validate input
-        required_fields = ['nombre', 'tipo', 'precio_total', 'dolls']
-        if not all(field in data for field in required_fields):
+        # Validation for required fields
+        if not all(field in data for field in ['nombre', 'tipo', 'precio_total', 'dolls']):
             return jsonify({"error": "Missing required fields"}), 400
             
         if data['tipo'] not in ['compra', 'venta']:
             return jsonify({"error": "Invalid lote type"}), 400
-            
+
+
         connection.begin()
         with connection.cursor() as cursor:
-            # Update lote basic info
+            # Check if dolls are already in other lotes of different type
+             # Check if dolls are in lotes of the SAME type
+            cursor.execute("""
+                SELECT d.id, d.nombre, l.tipo
+                FROM dolls d 
+                JOIN lote_doll ld ON d.id = ld.doll_id
+                JOIN lotes l ON ld.lote_id = l.id
+                WHERE d.id IN %s 
+                AND l.id != %s 
+                AND l.tipo = %s
+            """, (tuple(data['dolls']), lote_id, data['tipo']))
+
+            existing = cursor.fetchone()
+            if existing:
+                connection.rollback()
+                error_message = {
+                    "error": f"La muñeca '{existing['nombre']}' ya está en otro lote de {existing['tipo']}"
+                }
+                return Response(
+                    json.dumps(error_message, ensure_ascii=False),
+                    status=400,
+                    content_type='application/json; charset=utf-8'
+                )
+
+            # Continue with update if validation passes
             cursor.execute("""
                 UPDATE lotes 
                 SET nombre = %s, tipo = %s, precio_total = %s
                 WHERE id = %s
             """, (data['nombre'], data['tipo'], data['precio_total'], lote_id))
+            
             
             # Remove old doll associations
             cursor.execute("DELETE FROM lote_doll WHERE lote_id = %s", (lote_id,))
@@ -518,7 +552,7 @@ def update_lote(lote_id):
         return jsonify({"error": str(e)}), 500
     finally:
         connection.close()
-        
+
         # Add after the existing GET /api/marcas route
 
 @app.route('/api/marcas', methods=['POST'])

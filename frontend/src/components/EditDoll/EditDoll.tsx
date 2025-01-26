@@ -59,16 +59,16 @@ const EditDoll: React.FC<EditDollProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     if (!doll.id) return;
-
+  
     const submitData = new FormData();
     submitData.append("nombre", formData.nombre);
     submitData.append("marca_id", formData.marca_id.toString());
     submitData.append("modelo", formData.modelo);
     submitData.append("personaje", formData.personaje);
     submitData.append("anyo", formData.anyo.toString());
-    submitData.append("estado", formData.estado || "guardada");
+    submitData.append("estado", formData.estado || doll.estado || "guardada");
     
     if (formData.comentarios) {
       submitData.append("comentarios", formData.comentarios);
@@ -158,16 +158,16 @@ const EditDoll: React.FC<EditDollProps> = ({
           <div className="mb-4">
             <label className="block mb-1">Estado</label>
             <select
-              name="estado"
-              value={formData.estado}
-              onChange={handleChange}
-              required
-              className="w-full border rounded p-2"
-            >
-              <option value="guardada">Guardada</option>
-              <option value="a_la_venta">A la venta</option>
-              <option value="vendida">Vendida</option>
-            </select>
+  name="estado"
+  value={formData.estado || 'guardada'}
+  onChange={handleChange}
+  required
+  className="w-full border rounded p-2"
+>
+  <option value="guardada">Guardada</option>
+  <option value="a la venta">A la venta</option>
+  <option value="vendida">Vendida</option>
+</select>
           </div>
           <div className="mb-4">
             <label className="block mb-1">Comentarios</label>
