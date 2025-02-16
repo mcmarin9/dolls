@@ -44,7 +44,7 @@ const EditLote: React.FC<EditLoteProps> = ({
     if (isOpen) {
       fetchDolls();
     }
-  }, [isOpen]);
+  }, [error, isOpen]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

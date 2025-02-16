@@ -145,6 +145,52 @@ def add_doll():
     connection = get_db_connection()
     try:
         data = request.form.to_dict()
+        
+        # Convert price strings to float or None
+        precio_compra = float(data['precio_compra']) if 'precio_compra' in data and data['precio_compra'] else None
+        precio_venta = float(data['precio_venta']) if 'precio_venta' in data and data['precio_venta'] else None
+
+        # Handle image upload
+        image_path = None
+        if 'imagen' in request.files:
+            file = request.files['imagen']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                image_path = f'/uploads/{filename}'
+
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                INSERT INTO dolls (
+                    nombre, marca_id, modelo, personaje, anyo, estado, 
+                    precio_compra, precio_venta, comentarios, imagen
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (
+                data['nombre'],
+                data['marca_id'],
+                data['modelo'],
+                data['personaje'],
+                data['anyo'],
+                data.get('estado', 'guardada'),
+                precio_compra,
+                precio_venta,
+                data.get('comentarios'),
+                image_path
+            ))
+        
+        connection.commit()
+        return jsonify({"message": "Doll created successfully"}), 201
+
+    except Exception as e:
+        connection.rollback()
+        logger.error(f"Error adding doll: {e}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        connection.close()
+    connection = get_db_connection()
+    try:
+        data = request.form.to_dict()
         required_fields = ['nombre', 'marca_id', 'modelo', 'personaje', 'anyo']
 
         # Validar campos requeridos
@@ -357,6 +403,80 @@ def delete_lote(lote_id):
 
 @app.route('/api/dolls/<int:doll_id>', methods=['PUT', 'OPTIONS'])
 def update_doll(doll_id):
+    if request.method == 'OPTIONS':
+        return '', 200
+        
+    connection = get_db_connection()
+    if not connection:
+        return jsonify({"error": "Database connection failed"}), 500
+    
+    try:
+        data = request.form.to_dict()
+        
+        # Validate estado value if present
+        if 'estado' in data:
+            valid_estados = ['guardada', 'a la venta', 'vendida', 'fuera']
+            if data['estado'] not in valid_estados:
+                return jsonify({"error": f"Estado inválido. Debe ser uno de: {', '.join(valid_estados)}"}), 400
+        
+        # Handle image upload
+        image_path = None
+        if 'imagen' in request.files:
+            file = request.files['imagen']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                image_path = f'/uploads/{filename}'
+                data['imagen'] = image_path
+
+        # Build update query dynamically
+        update_fields = []
+        values = []
+        for field in ['nombre', 'marca_id', 'modelo', 'personaje', 'anyo', 'estado', 'comentarios', 'precio_compra', 'precio_venta']:
+            if field in data and data[field] != '':
+                # Convert price fields to float or None
+                if field in ['precio_compra', 'precio_venta']:
+                    value = float(data[field]) if data[field] else None
+                else:
+                    value = data[field]
+                update_fields.append(f"{field} = %s")
+                values.append(value)
+        
+        if image_path:
+            update_fields.append("imagen = %s")
+            values.append(image_path)
+
+        if not update_fields:
+            return jsonify({"error": "No fields to update"}), 400
+
+        # Add doll_id to values
+        values.append(doll_id)
+        
+        # Execute update query
+        with connection.cursor() as cursor:
+            query = f"UPDATE dolls SET {', '.join(update_fields)} WHERE id = %s"
+            logger.info(f"Update query: {query}")
+            logger.info(f"Values: {values}")
+            cursor.execute(query, values)
+            connection.commit()
+            
+            # Fetch updated doll
+            cursor.execute("""
+                SELECT d.*, m.nombre as marca_nombre
+                FROM dolls d
+                LEFT JOIN marca m ON d.marca_id = m.id
+                WHERE d.id = %s
+            """, (doll_id,))
+            updated_doll = cursor.fetchone()
+            
+            return jsonify(updated_doll), 200
+            
+    except Exception as e:
+        connection.rollback()
+        logger.error(f"Error updating doll: {e}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        connection.close()
     if request.method == 'OPTIONS':
         return '', 200
         

@@ -28,7 +28,7 @@ CREATE TABLE dolls (
     modelo VARCHAR(255) NOT NULL,
     personaje VARCHAR(255) NOT NULL,
     anyo INT NOT NULL,
-    estado ENUM('guardada', 'a la venta', 'vendida') NOT NULL DEFAULT 'guardada',
+    estado ENUM('guardada', 'a la venta', 'vendida', 'fuera') NOT NULL DEFAULT 'guardada',
     precio_compra DECIMAL(10,2),
     precio_venta DECIMAL(10,2),
     comentarios TEXT,

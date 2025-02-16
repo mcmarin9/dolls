@@ -7,137 +7,163 @@ interface StatsProps {
   lotes: Lote[];
 }
 
+// Constantes y tipos auxiliares
+const STATE_DISPLAY_NAMES: Record<string, string> = {
+  guardada: "Guardada",
+  "a la venta": "A la venta",
+  vendida: "Vendida",
+  fuera: "Fuera",
+};
+
+// Componentes auxiliares para la UI
+const StatRow: React.FC<{
+  label: string;
+  value: string | number;
+  isSmall?: boolean;
+}> = ({ label, value, isSmall = false }) => (
+  <div className={`flex justify-between ${isSmall ? "text-sm" : ""}`}>
+    <span>{label}</span>
+    <span className="font-bold">{value}</span>
+  </div>
+);
+
 const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
-  // General Stats
+  // Verifica si los datos están cargados
+  if (!dolls || dolls.length === 0) {
+    return <div>Cargando datos...</div>;
+  }
+
+  // Cálculos generales
   const totalDolls = dolls.length;
   const totalLotes = lotes.length;
-  const soldDolls = dolls.filter((doll) => doll.estado === "Vendida");
-  const unsoldDolls = dolls.filter((doll) => doll.estado !== "Vendida");
+  const soldDolls = dolls.filter((doll) => doll.estado === "vendida");
+  const unsoldDolls = dolls.filter((doll) => doll.estado !== "vendida");
+  const savedDolls = dolls.filter((doll) => doll.estado === "guardada");
+  const forSaleDolls = dolls.filter((doll) => doll.estado === "a la venta");
+  const outDolls = dolls.filter((doll) => doll.estado === "fuera");
+
+  // Cálculos financieros
   const totalSales = soldDolls.reduce((sum, doll) => {
-    const price = doll.precio_venta
-      ? parseFloat(doll.precio_venta.toString())
-      : 0;
-    return isNaN(price) ? sum : sum + price;
+    const price = doll.precio_venta !== null ? Number(doll.precio_venta) : 0; // Maneja null
+    return sum + price;
   }, 0);
-  const avgSalePrice = soldDolls.length > 0 ? totalSales / soldDolls.length : 0;
-  const soldPercentage = totalDolls > 0 ? (soldDolls.length / totalDolls) * 100 : 0;
-  const savedDolls = dolls.filter((doll) => doll.estado === "Guardada");
-const savedPercentage = totalDolls > 0 ? (savedDolls.length / totalDolls) * 100 : 0;
-
-
-  // Financial Calculations
+  
   const totalInvestment = dolls.reduce((sum, doll) => {
-    const price = doll.precio_compra
-      ? parseFloat(doll.precio_compra.toString())
-      : 0;
-    return isNaN(price) ? sum : sum + price;
+    const price = doll.precio_compra !== null ? Number(doll.precio_compra) : 0; // Maneja null
+    return sum + price;
   }, 0);
+  
   const totalProfit = totalSales - totalInvestment;
   const profitMargin =
     totalSales > 0 ? ((totalProfit / totalSales) * 100).toFixed(1) : "0";
-
+  
+  const avgSalePrice =
+    soldDolls.length > 0 ? totalSales / soldDolls.length : 0;
+  
   const avgPurchasePrice = totalDolls > 0 ? totalInvestment / totalDolls : 0;
+  
+  const currentStockValue = unsoldDolls.reduce((sum, doll) => {
+    const price = doll.precio_compra !== null ? Number(doll.precio_compra) : 0; // Maneja null
+    return sum + price;
+  }, 0);
 
-  console.log("Stats Debug:", {
-    totalDolls,
-    soldDolls: soldDolls.length,
-    totalInvestment,
-    totalSales,
-    totalProfit,
-    profitMargin,
-    avgPurchasePrice,
-    avgSalePrice,
-  });
+  const soldPercentage =
+    totalDolls > 0 ? (soldDolls.length / totalDolls) * 100 : 0;
+  const savedPercentage =
+    totalDolls > 0 ? (savedDolls.length / totalDolls) * 100 : 0;
+  const forSalePercentage =
+    totalDolls > 0 ? (forSaleDolls.length / totalDolls) * 100 : 0;
+  const outPercentage =
+    totalDolls > 0 ? (outDolls.length / totalDolls) * 100 : 0;
 
-  // Distribution Stats
+
+  // Distribución por estado
   const dollsByState = dolls.reduce((acc, doll) => {
     const state = doll.estado || "No especificado";
     acc[state] = (acc[state] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
+  // Distribución por marca
   const dollsByBrand = dolls.reduce((acc, doll) => {
     const brand = doll.marca_nombre || "Unknown";
     acc[brand] = (acc[brand] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
+  // Distribución por año
   const dollsByYear = dolls.reduce((acc, doll) => {
     const year = doll.anyo || "Unknown";
     acc[year] = (acc[year] || 0) + 1;
     return acc;
   }, {} as Record<string | number, number>);
 
+  // Estadísticas de años
+  const numericYears = Object.keys(dollsByYear)
+    .map(Number)
+    .filter((year) => !isNaN(year));
+
   const yearStats = {
-    oldest: Math.min(
-      ...Object.keys(dollsByYear)
-        .map(Number)
-        .filter((year) => !isNaN(year))
-    ),
-    newest: Math.max(
-      ...Object.keys(dollsByYear)
-        .map(Number)
-        .filter((year) => !isNaN(year))
-    ),
+    oldest: numericYears.length > 0 ? Math.min(...numericYears) : 0,
+    newest: numericYears.length > 0 ? Math.max(...numericYears) : 0,
     byDecade: dolls.reduce((acc, doll) => {
-      const decade = Math.floor(doll.anyo / 10) * 10;
-      acc[`${decade}s`] = (acc[`${decade}s`] || 0) + 1;
+      if (doll.anyo) {
+        const decade = Math.floor(doll.anyo / 10) * 10;
+        const key = `${decade}s`;
+        acc[key] = (acc[key] || 0) + 1;
+      }
       return acc;
     }, {} as Record<string, number>),
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {/* General Stats Card */}
+      {/* Tarjeta de Estadísticas Generales */}
       <div className="bg-purple-50 p-6 rounded-lg shadow">
         <h3 className="text-xl font-semibold text-purple-900 mb-4">
           Resumen General
         </h3>
         <div className="space-y-3">
-          <div className="flex justify-between">
-            <span>Total Muñecas:</span>
-            <span className="font-bold">{totalDolls}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Muñecas Vendidas:</span>
-            <span className="font-bold">
-              {soldDolls.length} ({soldPercentage}%)
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span>Muñecas en Stock:</span>
-            <span className="font-bold">{unsoldDolls.length}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Total Lotes:</span>
-            <span className="font-bold">{totalLotes}</span>
-          </div>
+          <StatRow label="Total Muñecas:" value={totalDolls} />
+          <StatRow
+            label="Muñecas Vendidas:"
+            value={`${soldDolls.length} (${soldPercentage.toFixed(1)}%)`}
+          />
+          <StatRow label="Muñecas en Stock:" value={unsoldDolls.length} />
+          <StatRow
+            label="Muñecas Guardadas:"
+            value={`${savedDolls.length} (${savedPercentage.toFixed(1)}%)`}
+          />
+          <StatRow
+            label="Muñecas a la Venta:"
+            value={`${forSaleDolls.length} (${forSalePercentage.toFixed(1)}%)`}
+          />
+          <StatRow
+            label="Muñecas Fuera:"
+            value={`${outDolls.length} (${outPercentage.toFixed(1)}%)`}
+          />
+          <StatRow label="Total Lotes:" value={totalLotes} />
         </div>
-        <div className="flex justify-between">
-  <span>Muñecas Guardadas:</span>
-  <span className="font-bold">
-    {savedDolls.length} ({savedPercentage.toFixed(1)}%)
-  </span>
-</div>
-
       </div>
 
-      {/* Financial Stats Card */}
+      {/* Tarjeta de Estadísticas Financieras */}
       <div className="bg-green-50 p-6 rounded-lg shadow">
         <h3 className="text-xl font-semibold text-green-900 mb-4">
           Datos Financieros
         </h3>
         <div className="space-y-3">
-          <div className="flex justify-between">
-            <span>Inversión Total:</span>
-            <span className="font-bold">
-              {Number(totalInvestment).toFixed(2)}€
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span>Ventas Totales:</span>
-            <span className="font-bold">{Number(totalSales).toFixed(2)}€</span>
-          </div>
+          <StatRow
+            label="Inversión Total:"
+            value={`${Number(totalInvestment).toFixed(2)}€`}
+          />
+          <StatRow
+            label="Valor Stock Actual:"
+            value={`${Number(currentStockValue).toFixed(2)}€`}
+          />
+          <StatRow
+            label="Ventas Totales:"
+            value={`${Number(totalSales).toFixed(2)}€`}
+          />
           <div className="flex justify-between">
             <span>Beneficio:</span>
             <span
@@ -148,18 +174,18 @@ const savedPercentage = totalDolls > 0 ? (savedDolls.length / totalDolls) * 100 
               {Number(totalProfit).toFixed(2)}€ ({profitMargin}%)
             </span>
           </div>
-          <div className="flex justify-between">
-            <span>Precio Medio Compra:</span>
-            <span className="font-bold">{avgPurchasePrice.toFixed(2)}€</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Precio Medio Venta:</span>
-            <span className="font-bold">{avgSalePrice.toFixed(2)}€</span>
-          </div>
+          <StatRow
+            label="Precio Medio Compra:"
+            value={`${avgPurchasePrice.toFixed(2)}€`}
+          />
+          <StatRow
+            label="Precio Medio Venta:"
+            value={`${avgSalePrice.toFixed(2)}€`}
+          />
         </div>
       </div>
 
-      {/* Distribution Stats Card */}
+      {/* Tarjeta de Distribución */}
       <div className="bg-blue-50 p-6 rounded-lg shadow">
         <h3 className="text-xl font-semibold text-blue-900 mb-4">
           Distribución
@@ -167,14 +193,16 @@ const savedPercentage = totalDolls > 0 ? (savedDolls.length / totalDolls) * 100 
         <div className="space-y-4">
           <div>
             <h4 className="font-medium mb-2">Por Estado:</h4>
-            {Object.entries(dollsByState).map(([state, count]) => (
-              <div key={state} className="flex justify-between text-sm">
-                <span>{state}</span>
-                <span className="font-bold">
-                  {count} ({((count / totalDolls) * 100).toFixed(1)}%)
-                </span>
-              </div>
-            ))}
+            {Object.entries(dollsByState)
+              .sort(([stateA], [stateB]) => stateA.localeCompare(stateB))
+              .map(([state, count]) => (
+                <div key={state} className="flex justify-between text-sm">
+                  <span>{STATE_DISPLAY_NAMES[state] || state}</span>
+                  <span className="font-bold">
+                    {count} ({((count / totalDolls) * 100).toFixed(1)}%)
+                  </span>
+                </div>
+              ))}
           </div>
           <div>
             <h4 className="font-medium mb-2">Por Marca:</h4>
@@ -193,7 +221,7 @@ const savedPercentage = totalDolls > 0 ? (savedDolls.length / totalDolls) * 100 
         </div>
       </div>
 
-      {/* Year Distribution Card */}
+      {/* Tarjeta de Distribución por Año */}
       <div className="bg-yellow-50 p-6 rounded-lg shadow">
         <h3 className="text-xl font-semibold text-yellow-900 mb-4">
           Distribución por Año

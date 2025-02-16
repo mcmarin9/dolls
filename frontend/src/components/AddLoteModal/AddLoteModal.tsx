@@ -39,9 +39,8 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
       const response = await axios.get<Doll[]>(
         "http://localhost:5000/api/dolls"
       );
-      setAvailableDolls(
-        response.data.filter((doll) => doll.estado !== "vendida")
-      );
+      // Remove filter and set all dolls
+      setAvailableDolls(response.data);
     } catch (error) {
       console.error("Error fetching dolls:", error);
       setError("Error loading available dolls");
@@ -130,32 +129,32 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
             />
           </div>
           <div className="mb-4">
-  <label className="block mb-1">Tipo:</label>
-  <div className="flex space-x-4">
-    <label className="inline-flex items-center">
-      <input
-        type="radio"
-        name="tipo"
-        value="compra"
-        checked={formData.tipo === "compra"}
-        onChange={handleChange}
-        className="form-radio h-4 w-4 text-blue-600"
-      />
-      <span className="ml-2">Compra</span>
-    </label>
-    <label className="inline-flex items-center">
-      <input
-        type="radio"
-        name="tipo"
-        value="venta"
-        checked={formData.tipo === "venta"}
-        onChange={handleChange}
-        className="form-radio h-4 w-4 text-blue-600"
-      />
-      <span className="ml-2">Venta</span>
-    </label>
-  </div>
-</div>
+            <label className="block mb-1">Tipo:</label>
+            <div className="flex space-x-4">
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="compra"
+                  checked={formData.tipo === "compra"}
+                  onChange={handleChange}
+                  className="form-radio h-4 w-4 text-blue-600"
+                />
+                <span className="ml-2">Compra</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="venta"
+                  checked={formData.tipo === "venta"}
+                  onChange={handleChange}
+                  className="form-radio h-4 w-4 text-blue-600"
+                />
+                <span className="ml-2">Venta</span>
+              </label>
+            </div>
+          </div>
           <div className="mb-4">
             <label className="block mb-1">Precio Total:</label>
             <input
