@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Lote } from "../../types/Lote";
+import { Lote } from "../../../types/Lote";
 import LoteDetail from "../LoteDetail/LoteDetail";
-import { getTypeStyle } from "../../utils/styleUtils";
+import { getTypeStyle } from "../../../utils/styleUtils";
 
 
 interface LoteListProps {

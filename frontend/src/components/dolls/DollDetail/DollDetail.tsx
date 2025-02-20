@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Doll } from "../../types/Doll";
-import { getStatusStyle, getTypeStyle } from "../../utils/styleUtils";
+import { Doll } from "../../../types/Doll";
+import { getStatusStyle, getTypeStyle } from "../../../utils/styleUtils";
 
 interface DollDetailProps {
   doll: Doll;
@@ -47,13 +47,6 @@ const DollDetail: React.FC<DollDetailProps> = ({
 
   return (
     <div className="w-full">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">{doll.nombre}</h2>
-        <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-          ✕
-        </button>
-      </div>
-
       <div className="doll-detail">
         {doll.imagen ? (
           <img

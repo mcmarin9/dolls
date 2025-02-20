@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
-import Navbar from './components/Navbar/Navbar';
-import DollsList from "./components/DollsList/DollsList";
-import AddDollModal from "./components/AddDollModal/AddDollModal";
-import DollDetail from "./components/DollDetail/DollDetail";
-import AddLoteModal from "./components/AddLoteModal/AddLoteModal";
-import EditDoll from "./components/EditDoll/EditDoll";
-import EditLote from "./components/EditLote/EditLote"; // Ensure this path is correct or update it to the correct path
-import LoteList from "./components/LoteList/LoteList";
-import LoteDetail from "./components/LoteDetail/LoteDetail";
+import Layout from './components/layout/Layout/Layout';
+import Section from './components/common/Section/Section';
+import Modal from './components/common/Modal/Modal';
+import Button from './components/common/Button/Button';
+import DollsList from "./components/dolls/DollsList/DollsList";
+import AddDollModal from "./components/dolls/AddDollModal/AddDollModal";
+import DollDetail from "./components/dolls/DollDetail/DollDetail";
+import AddLoteModal from "./components/lotes/AddLoteModal/AddLoteModal";
+import EditDoll from "./components/dolls/EditDoll/EditDoll";
+import EditLote from "./components/lotes/EditLote/EditLote"; // Ensure this path is correct or update it to the correct path
+import LoteList from "./components/lotes/LoteList/LoteList";
+import LoteDetail from "./components/lotes/LoteDetail/LoteDetail";
 import {
   getDolls,
   createDoll,
@@ -20,7 +23,7 @@ import {
 } from "./services/api";
 import { Doll } from "./types/Doll";
 import { Lote } from "./types/Lote";
-import AddMarcaModal from "./components/AddMarcaModal/AddMarcaModal";
+import AddMarcaModal from "./components/marcas/AddMarcaModal/AddMarcaModal";
 import Stats from "./components/Stats/Stats";
 import { Marca } from "./types/Marca";
 
@@ -213,78 +216,58 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-screen bg-gray-50 flex flex-col overflow-hidden">
-    <Navbar 
+    <Layout
       activeTab={activeTab}
       setActiveTab={setActiveTab}
       openMarcaModal={openMarcaModal}
-    />
-
-      {/* Content based on active tab */}
-      <div className="flex-1 overflow-auto">
-        {activeTab === "dolls" && (
-          <div className="p-4">
-            <section className="bg-white rounded-lg shadow-sm p-6 flex-1 min-h-[400px]">
-              <div className="border-b border-gray-200 pb-4 mb-6">
-                <h1 className="text-3xl font-bold text-gray-900">Muñequitas</h1>
-              </div>
-              <button
-                onClick={openModal}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200 shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                <span className="mr-2">+</span> Añadir muñeca
-              </button>
-              <div className="mt-6">
-                <DollsList
-                  dolls={dolls}
-                  brands={brands}
-                  onDelete={handleDeleteDoll}
-                  onView={handleViewDoll}
-                  onEdit={handleEditDoll}
-                />
-              </div>
-            </section>
+    >
+      {activeTab === "dolls" && (
+        <Section title="Muñequitas">
+          <Button
+            onClick={openModal}
+            variant="primary"
+            icon={<span>+</span>}
+          >
+            Añadir muñeca
+          </Button>
+          <div className="mt-6">
+            <DollsList
+              dolls={dolls}
+              brands={brands}
+              onDelete={handleDeleteDoll}
+              onView={handleViewDoll}
+              onEdit={handleEditDoll}
+            />
           </div>
-        )}
-
-        {activeTab === "lotes" && (
-          <div className="p-4">
-            <section className="bg-white rounded-lg shadow-sm p-6 flex-1 min-h-[400px]">
-              <div className="border-b border-gray-200 pb-4 mb-6">
-                <h1 className="text-3xl font-bold text-gray-900">
-                  Gestión de Lotes
-                </h1>
-              </div>
-              <button
-                onClick={openLoteModal}
-                className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md transition-colors duration-200 shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-              >
-                <span className="mr-2">+</span> Crear Lote
-              </button>
-              <div className="mt-6">
-                <LoteList
-                  lotes={lotes}
-                  onDelete={handleDeleteLote}
-                  onView={handleViewLote}
-                  onEdit={handleEditLote}
-                />
-              </div>
-            </section>
-          </div>
-        )}
-      </div>
-
-      {activeTab === "stats" && (
-        <div className="p-4">
-          <section className="bg-white rounded-lg shadow-sm p-6 flex-1 min-h-[400px]">
-            <div className="border-b border-gray-200 pb-4 mb-6">
-              <h1 className="text-3xl font-bold text-gray-900">Estadísticas</h1>
-            </div>
-            <Stats dolls={dolls} lotes={lotes} />
-          </section>
-        </div>
+        </Section>
       )}
-
+  
+      {activeTab === "lotes" && (
+        <Section title="Gestión de Lotes">
+          <Button
+            onClick={openLoteModal}
+            variant="success"
+            icon={<span>+</span>}
+          >
+            Crear Lote
+          </Button>
+          <div className="mt-6">
+            <LoteList
+              lotes={lotes}
+              onDelete={handleDeleteLote}
+              onView={handleViewLote}
+              onEdit={handleEditLote}
+            />
+          </div>
+        </Section>
+      )}
+  
+      {activeTab === "stats" && (
+        <Section title="Estadísticas">
+          <Stats dolls={dolls} lotes={lotes} />
+        </Section>
+      )}
+  
       {/* Modals */}
       <AddDollModal
         isOpen={isModalOpen}
@@ -296,20 +279,23 @@ const App: React.FC = () => {
         closeModal={closeLoteModal}
         onLoteAdded={handleLoteAdded}
       />
+      
       {isDetailModalOpen && selectedDoll && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
-            <div className="p-6">
-              <DollDetail
-                doll={selectedDoll}
-                isOpen={isDetailModalOpen}
-                onClose={closeDetailModal}
-                onLoteClick={handleLoteClickFromDoll}
-              />
-            </div>
-          </div>
-        </div>
+        <Modal
+          isOpen={isDetailModalOpen}
+          onClose={closeDetailModal}
+          title="Detalle de Muñeca"
+          size="lg"
+        >
+          <DollDetail
+            doll={selectedDoll}
+            isOpen={isDetailModalOpen}
+            onClose={closeDetailModal}
+            onLoteClick={handleLoteClickFromDoll}
+          />
+        </Modal>
       )}
+  
       {selectedLote && (
         <LoteDetail
           lote={selectedLote}
@@ -317,12 +303,13 @@ const App: React.FC = () => {
           onClose={handleCloseLoteDetail}
         />
       )}
-
+  
       <AddMarcaModal
         isOpen={isMarcaModalOpen}
         closeModal={closeMarcaModal}
         onMarcaAdded={handleMarcaAdded}
       />
+  
       {selectedDoll && (
         <EditDoll
           isOpen={isEditModalOpen}
@@ -334,7 +321,7 @@ const App: React.FC = () => {
           onEdit={handleEditSubmit}
         />
       )}
-
+  
       {selectedLote && (
         <EditLote
           isOpen={isEditLoteModalOpen}
@@ -346,7 +333,7 @@ const App: React.FC = () => {
           onEdit={handleEditLoteSubmit}
         />
       )}
-    </div>
+    </Layout>
   );
 };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Lote } from "../../types/Lote";
-import { Doll } from "../../types/Doll";
-import { getDolls } from "../../services/api";
+import { Lote } from "../../../types/Lote";
+import { Doll } from "../../../types/Doll";
+import { getDolls } from "../../../services/api";
 
 interface EditLoteProps {
   isOpen: boolean;

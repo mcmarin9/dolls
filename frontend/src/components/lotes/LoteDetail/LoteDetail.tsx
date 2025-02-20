@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Lote } from "../../types/Lote";
-import { Doll } from "../../types/Doll";
-import DollDetail from "../DollDetail/DollDetail";
-import { getTypeStyle, getStatusStyle } from "../../utils/styleUtils";
+import { Lote } from "../../../types/Lote";
+import { Doll } from "../../../types/Doll";
+import DollDetail from "../../dolls/DollDetail/DollDetail";
+import { getTypeStyle, getStatusStyle } from "../../../utils/styleUtils";
 
 interface LoteDetailProps {
   lote: Lote;

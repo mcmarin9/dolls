@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Doll } from "../../types/Doll";
+import { Doll } from "../../../types/Doll";
 
 interface AddDollModalProps {
   isOpen: boolean;

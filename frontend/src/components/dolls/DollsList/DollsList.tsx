@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from "react";
-import { deleteImage } from "../../services/api";
-import { Doll } from "../../types/Doll";
-import { getStatusStyle } from "../../utils/styleUtils";
-import { Marca } from "../../types/Marca";
+import { deleteImage } from "../../../services/api";
+import { Doll } from "../../../types/Doll";
+import { getStatusStyle } from "../../../utils/styleUtils";
+import { Marca } from "../../../types/Marca";
 
 interface DollsListProps {
   dolls: Doll[];
