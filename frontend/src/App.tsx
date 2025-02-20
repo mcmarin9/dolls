@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Navbar from './components/Navbar/Navbar';
 import DollsList from "./components/DollsList/DollsList";
 import AddDollModal from "./components/AddDollModal/AddDollModal";
 import DollDetail from "./components/DollDetail/DollDetail";
@@ -213,45 +214,11 @@ const App: React.FC = () => {
 
   return (
     <div className="h-screen w-screen bg-gray-50 flex flex-col overflow-hidden">
-      {/* Tabs navigation */}
-      <nav className="flex justify-center bg-white shadow-md">
-        <button
-          onClick={() => setActiveTab("dolls")}
-          className={`px-6 py-3 font-medium ${
-            activeTab === "dolls"
-              ? "text-blue-600 border-b-2 border-blue-600"
-              : "text-gray-600"
-          }`}
-        >
-          Muñecas
-        </button>
-        <button
-          onClick={() => setActiveTab("lotes")}
-          className={`px-6 py-3 font-medium ${
-            activeTab === "lotes"
-              ? "text-green-600 border-b-2 border-green-600"
-              : "text-gray-600"
-          }`}
-        >
-          Lotes
-        </button>
-        <button
-          onClick={() => setActiveTab("stats")}
-          className={`px-6 py-3 font-medium ${
-            activeTab === "stats"
-              ? "text-purple-600 border-b-2 border-purple-600"
-              : "text-gray-600"
-          }`}
-        >
-          Estadísticas
-        </button>
-        <button
-          onClick={openMarcaModal}
-          className="px-6 py-3 font-medium text-purple-600 hover:text-purple-800"
-        >
-          Añadir Marca
-        </button>
-      </nav>
+    <Navbar 
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+      openMarcaModal={openMarcaModal}
+    />
 
       {/* Content based on active tab */}
       <div className="flex-1 overflow-auto">

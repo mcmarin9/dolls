@@ -116,7 +116,7 @@ const DollsList: React.FC<DollsListProps> = ({
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredDolls.map((doll) => (
                 <tr key={doll.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-wrap">
                     {doll.imagen ? (
                       <img
                         src={`http://localhost:5000${doll.imagen}`}
@@ -129,22 +129,22 @@ const DollsList: React.FC<DollsListProps> = ({
                       </div>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-wrap text-sm text-gray-900">
                     {doll.nombre}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <td className="px-6 py-4 whitespace-wrap text-sm text-gray-600">
                     {doll.marca_nombre}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <td className="px-6 py-4 whitespace-wrap text-sm text-gray-600">
                     {doll.modelo}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <td className="px-6 py-4 whitespace-wrap text-sm text-gray-600">
                     {doll.personaje}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <td className="px-6 py-4 whitespace-wrap text-sm text-gray-600">
                     {doll.anyo}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-6 py-4 whitespace-wrap text-sm">
                     <span
                       className={`px-2 py-1 rounded ${getStatusStyle(
                         doll.estado || ""
@@ -153,13 +153,13 @@ const DollsList: React.FC<DollsListProps> = ({
                       {doll.estado}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <td className="px-6 py-4 whitespace-wrap text-sm text-gray-600">
                     {doll.precio_compra}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <td className="px-6 py-4 whitespace-wrap text-sm text-gray-600">
                     {doll.precio_venta}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <td className="px-6 py-4 whitespace-wrap text-sm text-gray-600">
                     {doll.comentarios}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
