@@ -5,6 +5,8 @@ export interface Doll {
     nombre: string;
     marca_id: number;
     marca_nombre?: string;
+    fabricante_id?: number;
+    fabricante_nombre?: string;
     modelo: string;
     personaje: string;
     anyo: number;

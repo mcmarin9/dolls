@@ -1,7 +1,7 @@
-
+import { Fabricante } from './Fabricante';
 export interface Marca {
     id: number;
     nombre: string;
-    fabricante?: string;
+    fabricantes?: Fabricante[];
     created_at?: string;
 }

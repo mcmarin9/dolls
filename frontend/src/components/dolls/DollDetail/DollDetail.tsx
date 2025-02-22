@@ -61,7 +61,11 @@ const DollDetail: React.FC<DollDetailProps> = ({
         )}
         <div className="grid gap-2">
           <p>
-            <span className="font-semibold">Marca:</span> {doll.marca_nombre}
+            <span className="font-semibold">Nombre:</span> {doll.nombre}
+          </p>
+          <p>
+            <span className="font-semibold">Marca:</span> {doll.marca_nombre} -{" "}
+            {doll.fabricante_nombre}
           </p>
           <p>
             <span className="font-semibold">Modelo:</span> {doll.modelo}

@@ -1,20 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Fabricante } from '../../../types/Fabricante';
 
 interface AddMarcaModalProps {
   isOpen: boolean;
   closeModal: () => void;
-  onMarcaAdded: (marca: { nombre: string; fabricante?: string }) => void;
+  onMarcaAdded: (marca: { nombre: string; fabricanteIds: number[] }) => void;
 }
 
 const AddMarcaModal: React.FC<AddMarcaModalProps> = ({ isOpen, closeModal, onMarcaAdded }) => {
   const [nombre, setNombre] = useState('');
-  const [fabricante, setFabricante] = useState('');
+  const [fabricantes, setFabricantes] = useState<Fabricante[]>([]);
+  const [selectedFabricantes, setSelectedFabricantes] = useState<number[]>([]);
+
+  useEffect(() => {
+    // Aquí cargaríamos la lista de fabricantes disponibles
+    const fetchFabricantes = async () => {
+      try {
+        const response = await fetch('/api/fabricantes');
+        const data = await response.json();
+        setFabricantes(data);
+      } catch (error) {
+        console.error('Error al cargar fabricantes:', error);
+      }
+    };
+
+    if (isOpen) {
+      fetchFabricantes();
+    }
+  }, [isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onMarcaAdded({ nombre, fabricante });
+    onMarcaAdded({ 
+      nombre, 
+      fabricanteIds: selectedFabricantes 
+    });
     setNombre('');
-    setFabricante('');
+    setSelectedFabricantes([]);
+  };
+
+  const handleFabricanteChange = (fabricanteId: number) => {
+    setSelectedFabricantes(prev => 
+      prev.includes(fabricanteId)
+        ? prev.filter(id => id !== fabricanteId)
+        : [...prev, fabricanteId]
+    );
   };
 
   if (!isOpen) return null;
@@ -35,13 +65,20 @@ const AddMarcaModal: React.FC<AddMarcaModalProps> = ({ isOpen, closeModal, onMar
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Fabricante</label>
-            <input
-              type="text"
-              value={fabricante}
-              onChange={(e) => setFabricante(e.target.value)}
-              className="w-full p-2 border rounded"
-            />
+            <label className="block text-gray-700 mb-2">Fabricantes</label>
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {fabricantes.map((fabricante) => (
+                <label key={fabricante.id} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={selectedFabricantes.includes(fabricante.id)}
+                    onChange={() => handleFabricanteChange(fabricante.id)}
+                    className="mr-2"
+                  />
+                  {fabricante.nombre}
+                </label>
+              ))}
+            </div>
           </div>
           <div className="flex justify-end gap-2">
             <button

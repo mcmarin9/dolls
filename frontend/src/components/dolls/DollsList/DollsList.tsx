@@ -21,6 +21,7 @@ const DollsList: React.FC<DollsListProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedManufacturer, setSelectedManufacturer] = useState("");
 
   const filteredDolls = useMemo(
     () =>
@@ -30,10 +31,32 @@ const DollsList: React.FC<DollsListProps> = ({
           .includes(searchTerm.toLowerCase());
         const matchesBrand =
           !selectedBrand || doll.marca_nombre === selectedBrand;
-        return matchesName && matchesBrand;
+        const matchesManufacturer =
+          !selectedManufacturer ||
+          doll.fabricante_nombre === selectedManufacturer;
+        return matchesName && matchesBrand && matchesManufacturer;
       }),
-    [dolls, searchTerm, selectedBrand]
+    [dolls, searchTerm, selectedBrand, selectedManufacturer]
   );
+
+  const manufacturers = useMemo(() => {
+    if (!selectedBrand) {
+      // Si no hay marca seleccionada, mostrar todos los fabricantes únicos
+      return Array.from(
+        new Set(dolls.map((doll) => doll.fabricante_nombre).filter(Boolean))
+      ).sort();
+    } else {
+      // Si hay una marca seleccionada, mostrar solo sus fabricantes
+      return Array.from(
+        new Set(
+          dolls
+            .filter((doll) => doll.marca_nombre === selectedBrand)
+            .map((doll) => doll.fabricante_nombre)
+            .filter(Boolean)
+        )
+      ).sort();
+    }
+  }, [dolls, selectedBrand]);
 
   const handleDelete = async (doll: Doll) => {
     try {
@@ -72,6 +95,18 @@ const DollsList: React.FC<DollsListProps> = ({
             </option>
           ))}
         </select>
+        <select
+          value={selectedManufacturer}
+          onChange={(e) => setSelectedManufacturer(e.target.value)}
+          className="w-50 p-2 border rounded-lg"
+        >
+          <option value="">Todos los fabricantes</option>
+          {manufacturers.map((manufacturer) => (
+            <option key={manufacturer} value={manufacturer}>
+              {manufacturer}
+            </option>
+          ))}
+        </select>
       </div>
       <div className="relative h-full rounded-lg border border-gray-200">
         <div className="overflow-auto h-full">
@@ -86,6 +121,9 @@ const DollsList: React.FC<DollsListProps> = ({
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Marca
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Fabricante
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Modelo
@@ -134,6 +172,9 @@ const DollsList: React.FC<DollsListProps> = ({
                   </td>
                   <td className="px-6 py-4 whitespace-wrap text-sm text-gray-600">
                     {doll.marca_nombre}
+                  </td>
+                  <td className="px-6 py-4 whitespace-wrap text-sm text-gray-600">
+                    {doll.fabricante_nombre}
                   </td>
                   <td className="px-6 py-4 whitespace-wrap text-sm text-gray-600">
                     {doll.modelo}

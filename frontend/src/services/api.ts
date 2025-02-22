@@ -1,5 +1,6 @@
 import { Doll } from "../types/Doll";
 import { Lote } from "../types/Lote";
+import { Fabricante } from "../types/Fabricante";
 import { Marca } from "../types/Marca";
 
 const API_URL = "http://localhost:5000/api";
@@ -61,7 +62,6 @@ export const getLotes = async (): Promise<Lote[]> => {
   const response = await fetch(`${API_URL}/lotes`);
   if (!response.ok) throw new Error("Failed to fetch lotes");
   const data = await response.json();
-  // Ensure dolls array exists
   return data.map((lote: Lote) => ({
     ...lote,
     dolls: lote.dolls || []
@@ -163,25 +163,41 @@ export const getMarca = async (id: number): Promise<Marca> => {
   return response.json();
 };
 
-export const createMarca = async (marca: Marca): Promise<Marca> => {
+export const getFabricantes = async (): Promise<Fabricante[]> => {
+  const response = await fetch(`${API_URL}/fabricantes`);
+  if (!response.ok) throw new Error("Failed to fetch manufacturers");
+  return response.json();
+};
+
+export const createMarca = async (data: { 
+  nombre: string; 
+  fabricanteIds: number[] 
+}): Promise<Marca> => {
   const response = await fetch(`${API_URL}/marcas`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(marca),
+    body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create brand");
   return response.json();
 };
 
-export const updateMarca = async (id: number, marca: Partial<Marca>): Promise<Marca> => {
+export const updateMarca = async (
+  id: number, 
+  data: { 
+    nombre?: string; 
+    fabricanteIds?: number[] 
+  }
+): Promise<Marca> => {
   const response = await fetch(`${API_URL}/marcas/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(marca),
+    body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to update brand");
   return response.json();
 };
+
 
 export const deleteMarca = async (id: number): Promise<void> => {
   const response = await fetch(`${API_URL}/marcas/${id}`, {
