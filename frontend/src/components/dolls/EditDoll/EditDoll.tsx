@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Doll } from "../../../types/Doll";
 import MarcaSelector from "../../common/MarcaSelector/MarcaSelector";
+import {
+  checkEnLoteCompra,
+  checkEnLoteVenta,
+} from "../../../utils/checkIfLote";
 
 interface EditDollProps {
   isOpen: boolean;
@@ -22,14 +26,45 @@ const EditDoll: React.FC<EditDollProps> = ({
 }) => {
   const [formData, setFormData] = useState<Doll>(doll);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [enLoteCompraState, setEnLoteCompraState] = useState(false);
+  const [enLoteVentaState, setEnLoteVentaState] = useState(false);
   const [pricingMethod, setPricingMethod] = useState<PricingMethod>({
-    compra: doll.precio_compra ? "individual" : "lote",
-    venta: doll.precio_venta ? "individual" : "lote",
+    compra: "lote", // Default to lote
+    venta: "lote", // Default to lote
   });
 
   useEffect(() => {
     setFormData(doll);
   }, [doll]);
+
+  useEffect(() => {
+    const verificarLotes = async () => {
+      const [esLoteCompra, esLoteVenta] = await Promise.all([
+        checkEnLoteCompra(doll),
+        checkEnLoteVenta(doll),
+      ]);
+      setEnLoteCompraState(esLoteCompra);
+      setEnLoteVentaState(esLoteVenta);
+
+      // Update pricingMethod based on lot status and prices
+      setPricingMethod({
+        compra: esLoteCompra
+          ? "lote"
+          : doll.precio_compra !== null && doll.precio_compra !== undefined
+          ? "individual"
+          : "lote",
+        venta: esLoteVenta
+          ? "lote"
+          : doll.precio_venta !== null && doll.precio_venta !== undefined
+          ? "individual"
+          : "lote",
+      });
+    };
+
+    if (doll.id) {
+      verificarLotes();
+    }
+  }, [doll, doll.id, doll.precio_compra, doll.precio_venta]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -57,7 +92,6 @@ const EditDoll: React.FC<EditDollProps> = ({
   };
 
   const handleFabricanteChange = (fabricanteId: number) => {
-    console.log(fabricanteId, "fabricanteId");
     setFormData((prev) => ({
       ...prev,
       fabricante_id: fabricanteId,
@@ -70,16 +104,18 @@ const EditDoll: React.FC<EditDollProps> = ({
     if (!doll.id) return;
 
     const submitData = new FormData();
-    submitData.append("nombre", formData.nombre);
+    submitData.append("nombre", formData.nombre.trim());
     submitData.append("marca_id", formData.marca_id.toString());
-    if (formData.fabricante_id !== undefined) {
-      console.log("Sending fabricante_id:", formData.fabricante_id);
+    if (formData.fabricante_id && typeof formData.fabricante_id === "number") {
       submitData.append("fabricante_id", formData.fabricante_id.toString());
     }
-    submitData.append("modelo", formData.modelo);
-    submitData.append("personaje", formData.personaje);
+    submitData.append("modelo", formData.modelo.trim());
+    submitData.append("personaje", formData.personaje.trim());
     submitData.append("anyo", formData.anyo.toString());
     submitData.append("estado", formData.estado || doll.estado || "guardada");
+    
+    const comentarios = formData.comentarios?.trim() ?? "";
+    submitData.append("comentarios", comentarios);
 
     if (
       pricingMethod.compra === "individual" &&
@@ -93,10 +129,6 @@ const EditDoll: React.FC<EditDollProps> = ({
       formData.precio_venta !== undefined
     ) {
       submitData.append("precio_venta", formData.precio_venta.toString());
-    }
-
-    if (formData.comentarios) {
-      submitData.append("comentarios", formData.comentarios);
     }
 
     if (imageFile) {
@@ -222,9 +254,14 @@ const EditDoll: React.FC<EditDollProps> = ({
                             compra: "individual",
                           }))
                         }
+                        disabled={enLoteCompraState}
                         className="mr-2"
                       />
-                      <span>Individual</span>
+                      <span
+                        className={enLoteCompraState ? "text-gray-400" : ""}
+                      >
+                        Individual
+                      </span>
                     </label>
                     <label className="flex items-center">
                       <input
@@ -238,9 +275,14 @@ const EditDoll: React.FC<EditDollProps> = ({
                             compra: "lote",
                           }))
                         }
+                        disabled={enLoteCompraState}
                         className="mr-2"
                       />
-                      <span>Por Lote</span>
+                      <span
+                        className={enLoteCompraState ? "text-gray-400" : ""}
+                      >
+                        Por Lote
+                      </span>
                     </label>
                   </div>
                   {pricingMethod.compra === "individual" && (
@@ -251,14 +293,31 @@ const EditDoll: React.FC<EditDollProps> = ({
                       onChange={handleChange}
                       step="0.01"
                       min="0"
+                      disabled={enLoteCompraState}
                       className="w-full border rounded p-2"
                     />
                   )}
                   {pricingMethod.compra === "lote" && (
-                    <p className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
-                      ℹ️ No olvides añadir la muñeca a un lote de compra para
-                      establecer su precio.
-                    </p>
+                    <div>
+                      {enLoteCompraState ? (
+                        <>
+                          <input
+                            type="number"
+                            value={formData.precio_compra || ""}
+                            disabled
+                            className="w-full border rounded p-2 bg-gray-100"
+                          />
+                          <span className="text-sm text-orange-600 mt-1 block">
+                            Precio establecido en lote
+                          </span>
+                        </>
+                      ) : (
+                        <p className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
+                          ℹ️ No olvides añadir la muñeca a un lote de compra
+                          para establecer su precio.
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
 
@@ -280,9 +339,12 @@ const EditDoll: React.FC<EditDollProps> = ({
                             venta: "individual",
                           }))
                         }
+                        disabled={enLoteVentaState}
                         className="mr-2"
                       />
-                      <span>Individual</span>
+                      <span className={enLoteVentaState ? "text-gray-400" : ""}>
+                        Individual
+                      </span>
                     </label>
                     <label className="flex items-center">
                       <input
@@ -296,9 +358,12 @@ const EditDoll: React.FC<EditDollProps> = ({
                             venta: "lote",
                           }))
                         }
+                        disabled={enLoteVentaState}
                         className="mr-2"
                       />
-                      <span>Por Lote</span>
+                      <span className={enLoteVentaState ? "text-gray-400" : ""}>
+                        Por Lote
+                      </span>
                     </label>
                   </div>
                   {pricingMethod.venta === "individual" && (
@@ -309,14 +374,31 @@ const EditDoll: React.FC<EditDollProps> = ({
                       onChange={handleChange}
                       step="0.01"
                       min="0"
+                      disabled={enLoteVentaState}
                       className="w-full border rounded p-2"
                     />
                   )}
                   {pricingMethod.venta === "lote" && (
-                    <p className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
-                      ℹ️ No olvides añadir la muñeca a un lote de venta para
-                      establecer su precio.
-                    </p>
+                    <div>
+                      {enLoteVentaState ? (
+                        <>
+                          <input
+                            type="number"
+                            value={formData.precio_venta || ""}
+                            disabled
+                            className="w-full border rounded p-2 bg-gray-100"
+                          />
+                          <span className="text-sm text-orange-600 mt-1 block">
+                            Precio establecido en lote
+                          </span>
+                        </>
+                      ) : (
+                        <p className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
+                          ℹ️ No olvides añadir la muñeca a un lote de venta para
+                          establecer su precio.
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
 

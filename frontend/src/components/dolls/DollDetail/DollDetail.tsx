@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Doll } from "../../../types/Doll";
 import { getStatusStyle, getTypeStyle } from "../../../utils/styleUtils";
+import { fetchDollLotes } from "../../../utils/checkIfLote";
+
 
 interface DollDetailProps {
   doll: Doll;
@@ -20,15 +22,11 @@ const DollDetail: React.FC<DollDetailProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchDollLotes = async () => {
+    const loadDollLotes = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(
-          `http://localhost:5000/api/dolls/${doll.id}/lotes`
-        );
-        if (!response.ok) throw new Error("Error al cargar los lotes");
-        const lotes = await response.json();
+        const lotes = await fetchDollLotes(doll.id);
         setDollWithLotes((prev) => ({ ...prev, lotes }));
       } catch (error) {
         setError("No se pudieron cargar los lotes");
@@ -37,9 +35,9 @@ const DollDetail: React.FC<DollDetailProps> = ({
         setIsLoading(false);
       }
     };
-
+  
     if (isOpen && doll.id) {
-      fetchDollLotes();
+      loadDollLotes();
     }
   }, [doll.id, isOpen]);
 
