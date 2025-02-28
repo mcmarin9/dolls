@@ -1,3 +1,6 @@
+import io
+from PIL import Image
+import uuid
 from flask import Flask, request, jsonify, current_app, send_from_directory, Response
 from flask_cors import CORS
 import pymysql
@@ -44,6 +47,63 @@ CORS(app, resources={
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# Move these utility functions to the top of the file, after the imports and before route definitions
+def optimize_image(image_file, max_size=(800, 800)):
+    """Optimiza una imagen redimensionándola y comprimiéndola"""
+    try:
+        # Abrir la imagen usando Pillow
+        img = Image.open(image_file)
+        
+        # Convertir a RGB si es necesario
+        if img.mode in ('RGBA', 'P'):
+            img = img.convert('RGB')
+        
+        # Redimensionar manteniendo la proporción
+        try:
+            img.thumbnail(max_size, Image.Resampling.LANCZOS)
+        except AttributeError:
+            img.thumbnail(max_size, Image.ANTIALIAS)
+        
+        buffer = io.BytesIO()
+        img.save(buffer, format='JPEG', quality=85, optimize=True)
+        buffer.seek(0)
+        
+        return buffer
+        
+    except Exception as e:
+        logger.error(f"Error optimizing image: {e}")
+        return None
+
+def save_image(file):
+    try:
+        if file and allowed_file(file.filename):
+            unique_filename = f"{uuid.uuid4().hex}.jpg"
+            optimized = optimize_image(file)
+            if optimized:
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+                with open(filepath, 'wb') as f:
+                    f.write(optimized.getvalue())
+                return f'/uploads/{unique_filename}'
+        return None
+        
+    except Exception as e:
+        logger.error(f"Error saving image: {e}")
+        return None
+
+def delete_old_image(image_path):
+    """Borra una imagen del sistema de archivos"""
+    if image_path:
+        try:
+            full_path = os.path.join(app.root_path, image_path.lstrip('/'))
+            if os.path.exists(full_path):
+                os.remove(full_path)
+                return True
+        except Exception as e:
+            logger.error(f"Error deleting image: {e}")
+    return False
+
+
 
 # Modificada la ruta para servir imágenes
 @app.route('/uploads/<filename>')
@@ -194,11 +254,8 @@ def add_doll():
         # Handle image upload
         image_path = None
         if 'imagen' in request.files:
-            file = request.files['imagen']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                image_path = f'/uploads/{filename}'
+            image_path = save_image(request.files['imagen'])
+            
 
         with connection.cursor() as cursor:
             cursor.execute("""
@@ -394,6 +451,7 @@ def delete_lote(lote_id):
     finally:
         connection.close()        
 
+
 @app.route('/api/dolls/<int:doll_id>', methods=['PUT', 'OPTIONS'])
 def update_doll(doll_id):
     if request.method == 'OPTIONS':
@@ -404,46 +462,50 @@ def update_doll(doll_id):
         return jsonify({"error": "Database connection failed"}), 500
     
     try:
-        data = request.form.to_dict()
-        logger.info(f"Received data for update: {data}")
-        
-        # Handle image upload
-        if 'imagen' in request.files:
-            file = request.files['imagen']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                data['imagen'] = f'/uploads/{filename}'
-                logger.info(f"New image path: {data['imagen']}")
+        with connection.cursor() as cursor:  # Move cursor creation here
+            data = request.form.to_dict()
+            logger.info(f"Received data for update: {data}")
+            
+            # Handle image upload
+            if 'imagen' in request.files:
+                # Obtener imagen actual
+                cursor.execute("SELECT imagen FROM dolls WHERE id = %s", (doll_id,))
+                old_image = cursor.fetchone()['imagen']
+                
+                # Guardar nueva imagen
+                image_path = save_image(request.files['imagen'])
+                if image_path:
+                    data['imagen'] = image_path
+                    # Borrar imagen antigua
+                    delete_old_image(old_image)
 
-        # Construir query dinámicamente
-        update_fields = []
-        values = []
-        for field in ['nombre', 'marca_id', 'fabricante_id', 'modelo', 'personaje', 
-                     'anyo', 'estado', 'comentarios', 'precio_compra', 'precio_venta']:
-            if field in data and data[field] != '':
-                if field in ['precio_compra', 'precio_venta']:
-                    value = float(data[field]) if data[field] else None
-                else:
-                    value = data[field]
-                update_fields.append(f"{field} = %s")
-                values.append(value)
+            # Construir query dinámicamente
+            update_fields = []
+            values = []
+            for field in ['nombre', 'marca_id', 'fabricante_id', 'modelo', 'personaje', 
+                         'anyo', 'estado', 'comentarios', 'precio_compra', 'precio_venta']:
+                if field in data and data[field] != '':
+                    if field in ['precio_compra', 'precio_venta']:
+                        value = float(data[field]) if data[field] else None
+                    else:
+                        value = data[field]
+                    update_fields.append(f"{field} = %s")
+                    values.append(value)
 
-        # Add image update if present
-        if 'imagen' in data:
-            update_fields.append("imagen = %s")
-            values.append(data['imagen'])
+            # Add image update if present
+            if 'imagen' in data:
+                update_fields.append("imagen = %s")
+                values.append(data['imagen'])
 
-        if not update_fields:
-            return jsonify({"error": "No fields to update"}), 400
+            if not update_fields:
+                return jsonify({"error": "No fields to update"}), 400
 
-        values.append(doll_id)
-        
-        query = f"UPDATE dolls SET {', '.join(update_fields)} WHERE id = %s"
-        logger.info(f"Update query: {query}")
-        logger.info(f"Update values: {values}")
-        
-        with connection.cursor() as cursor:
+            values.append(doll_id)
+            
+            query = f"UPDATE dolls SET {', '.join(update_fields)} WHERE id = %s"
+            logger.info(f"Update query: {query}")
+            logger.info(f"Update values: {values}")
+            
             cursor.execute(query, values)
             connection.commit()
             
@@ -464,65 +526,7 @@ def update_doll(doll_id):
         return jsonify({"error": str(e)}), 500
     finally:
         connection.close()
-    if request.method == 'OPTIONS':
-        return '', 200
-        
-    connection = get_db_connection()
-    if not connection:
-        return jsonify({"error": "Database connection failed"}), 500
-    
-    try:
-        data = request.form.to_dict()
-        logger.info(f"Received data for update: {data}")  # Añadir log
-        
-        # Construir query dinámicamente
-        update_fields = []
-        values = []
-        for field in ['nombre', 'marca_id', 'fabricante_id', 'modelo', 'personaje', 
-                     'anyo', 'estado', 'comentarios', 'precio_compra', 'precio_venta', 'imagen']:
-            if field in data and data[field] != '':
-                if field in ['precio_compra', 'precio_venta']:
-                    value = float(data[field]) if data[field] else None
-                else:
-                    value = data[field]
-                update_fields.append(f"{field} = %s")
-                values.append(value)
-                logger.info(f"Adding field {field} with value {value}")  # Añadir log
-
-        if not update_fields:
-            return jsonify({"error": "No fields to update"}), 400
-
-        values.append(doll_id)
-        
-        # Log de la query final
-        query = f"UPDATE dolls SET {', '.join(update_fields)} WHERE id = %s"
-        logger.info(f"Update query: {query}")
-        logger.info(f"Update values: {values}")
-        
-        # Ejecutar actualización
-        with connection.cursor() as cursor:
-            cursor.execute(query, values)
-            connection.commit()
-            
-            # Verificar la actualización
-            cursor.execute("""
-                SELECT d.*, m.nombre as marca_nombre, f.nombre as fabricante_nombre
-                FROM dolls d
-                LEFT JOIN marca m ON d.marca_id = m.id
-                LEFT JOIN fabricantes f ON d.fabricante_id = f.id
-                WHERE d.id = %s
-            """, (doll_id,))
-            updated_doll = cursor.fetchone()
-            logger.info(f"Updated doll data: {updated_doll}")  # Añadir log
-            
-            return jsonify(updated_doll), 200
-            
-    except Exception as e:
-        connection.rollback()
-        logger.error(f"Error updating doll: {e}")
-        return jsonify({"error": str(e)}), 500
-    finally:
-        connection.close()
+ 
 
 @app.route('/api/dolls/<int:doll_id>', methods=['DELETE'])
 def delete_doll(doll_id):
@@ -745,5 +749,3 @@ def delete_image():
         
 if __name__ == '__main__':
     app.run(debug=True)
-
-
