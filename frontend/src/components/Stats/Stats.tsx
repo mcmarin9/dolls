@@ -34,48 +34,47 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
   }
 
   // Cálculos generales
-  const totalDolls = dolls.length;
   const totalLotes = lotes.length;
-  const soldDolls = dolls.filter((doll) => doll.estado === "vendida");
-  const unsoldDolls = dolls.filter((doll) => doll.estado !== "vendida");
   const savedDolls = dolls.filter((doll) => doll.estado === "guardada");
   const forSaleDolls = dolls.filter((doll) => doll.estado === "a la venta");
   const outDolls = dolls.filter((doll) => doll.estado === "fuera");
 
   // Cálculos financieros
-  const totalSales = soldDolls.reduce((sum, doll) => {
-    const price = doll.precio_venta !== null ? Number(doll.precio_venta) : 0; // Maneja null
-    return sum + price;
-  }, 0);
-  
+  const totalDolls = dolls.length;
+  const soldDolls = dolls.filter((doll) => doll.estado === "vendida");
+  const unsoldDolls = dolls.filter((doll) => doll.estado !== "vendida");
+  const soldPercentage = (soldDolls.length / totalDolls) * 100;
+  const savedPercentage = (savedDolls.length / totalDolls) * 100;
+  const forSalePercentage = (forSaleDolls.length / totalDolls) * 100;
+  const outPercentage = (outDolls.length / totalDolls) * 100;
+
+  // Inversión total (suma de todos los precios de compra)
   const totalInvestment = dolls.reduce((sum, doll) => {
-    const price = doll.precio_compra !== null ? Number(doll.precio_compra) : 0; // Maneja null
+    const price = Number(doll.precio_compra) || 0;
     return sum + price;
   }, 0);
-  
-  const totalProfit = totalSales - totalInvestment;
+
+  // Ventas totales (suma de precios de venta de muñecas vendidas)
+  const totalSales = soldDolls.reduce((sum, doll) => {
+    const price = Number(doll.precio_venta) || 0;
+    return sum + price;
+  }, 0);
+
+  // Beneficio total (ventas - inversión en muñecas vendidas)
+  const soldDollsInvestment = soldDolls.reduce((sum, doll) => {
+    const price = Number(doll.precio_compra) || 0;
+    return sum + price;
+  }, 0);
+  const totalProfit = totalSales - soldDollsInvestment;
+
+  // Margen de beneficio (beneficio / ventas * 100)
   const profitMargin =
-    totalSales > 0 ? ((totalProfit / totalSales) * 100).toFixed(1) : "0";
-  
-  const avgSalePrice =
-    soldDolls.length > 0 ? totalSales / soldDolls.length : 0;
-  
+    totalSales > 0 ? ((totalProfit / totalSales) * 100).toFixed(1) : "0.0";
+
+  // Precios medios
   const avgPurchasePrice = totalDolls > 0 ? totalInvestment / totalDolls : 0;
-  
-  const currentStockValue = unsoldDolls.reduce((sum, doll) => {
-    const price = doll.precio_compra !== null ? Number(doll.precio_compra) : 0; // Maneja null
-    return sum + price;
-  }, 0);
 
-  const soldPercentage =
-    totalDolls > 0 ? (soldDolls.length / totalDolls) * 100 : 0;
-  const savedPercentage =
-    totalDolls > 0 ? (savedDolls.length / totalDolls) * 100 : 0;
-  const forSalePercentage =
-    totalDolls > 0 ? (forSaleDolls.length / totalDolls) * 100 : 0;
-  const outPercentage =
-    totalDolls > 0 ? (outDolls.length / totalDolls) * 100 : 0;
-
+  const avgSalePrice = soldDolls.length > 0 ? totalSales / soldDolls.length : 0;
 
   // Distribución por estado
   const dollsByState = dolls.reduce((acc, doll) => {
@@ -91,30 +90,21 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
     return acc;
   }, {} as Record<string, number>);
 
-  // Distribución por año
-  const dollsByYear = dolls.reduce((acc, doll) => {
-    const year = doll.anyo || "Unknown";
-    acc[year] = (acc[year] || 0) + 1;
-    return acc;
-  }, {} as Record<string | number, number>);
-
-  // Estadísticas de años
-  const numericYears = Object.keys(dollsByYear)
-    .map(Number)
-    .filter((year) => !isNaN(year));
-
-  const yearStats = {
-    oldest: numericYears.length > 0 ? Math.min(...numericYears) : 0,
-    newest: numericYears.length > 0 ? Math.max(...numericYears) : 0,
-    byDecade: dolls.reduce((acc, doll) => {
-      if (doll.anyo) {
-        const decade = Math.floor(doll.anyo / 10) * 10;
-        const key = `${decade}s`;
-        acc[key] = (acc[key] || 0) + 1;
-      }
-      return acc;
-    }, {} as Record<string, number>),
-  };
+  const topProfitDolls = dolls
+    .filter(
+      (doll) =>
+        doll.estado === "vendida" && doll.precio_venta && doll.precio_compra
+    )
+    .map((doll) => ({
+      ...doll,
+      profit: Number(doll.precio_venta) - Number(doll.precio_compra),
+      profitPercentage:
+        ((Number(doll.precio_venta) - Number(doll.precio_compra)) /
+          Number(doll.precio_compra)) *
+        100,
+    }))
+    .sort((a, b) => b.profit - a.profit)
+    .slice(0, 5);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -154,15 +144,11 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
         <div className="space-y-3">
           <StatRow
             label="Inversión Total:"
-            value={`${Number(totalInvestment).toFixed(2)}€`}
-          />
-          <StatRow
-            label="Valor Stock Actual:"
-            value={`${Number(currentStockValue).toFixed(2)}€`}
+            value={`${totalInvestment.toFixed(2)}€`}
           />
           <StatRow
             label="Ventas Totales:"
-            value={`${Number(totalSales).toFixed(2)}€`}
+            value={`${totalSales.toFixed(2)}€`}
           />
           <div className="flex justify-between">
             <span>Beneficio:</span>
@@ -171,7 +157,7 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
                 totalProfit >= 0 ? "text-green-600" : "text-red-600"
               }`}
             >
-              {Number(totalProfit).toFixed(2)}€ ({profitMargin}%)
+              {totalProfit.toFixed(2)}€ ({profitMargin}%)
             </span>
           </div>
           <StatRow
@@ -221,76 +207,27 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
         </div>
       </div>
 
-      {/* Tarjeta de Distribución por Año */}
+      {/* Tarjeta de Top Ventas */}
       <div className="bg-yellow-50 p-6 rounded-lg shadow">
         <h3 className="text-xl font-semibold text-yellow-900 mb-4">
-          Distribución por Año
+          Top Ventas
         </h3>
-        <div className="space-y-3">
-          <div className="mb-4">
-            <span className="text-sm text-gray-600">
-              Rango de años: {yearStats.oldest} - {yearStats.newest}
-            </span>
-          </div>
-          <div className="space-y-2 max-h-[300px] overflow-y-auto">
-            {Object.entries(dollsByYear)
-              .filter(([year]) => year !== "Unknown")
-              .sort(([a], [b]) => Number(b) - Number(a))
-              .map(([year, count]) => {
-                const percentage = (count / totalDolls) * 100;
-                return (
-                  <div
-                    key={year}
-                    className="flex justify-between items-center py-1"
-                  >
-                    <span className="w-16">{year}</span>
-                    <div className="flex-1 mx-4">
-                      <div
-                        className={`h-5 rounded ${
-                          percentage > 15
-                            ? "bg-yellow-400"
-                            : percentage > 10
-                            ? "bg-yellow-300"
-                            : "bg-yellow-200"
-                        }`}
-                        style={{ width: `${Math.max(percentage * 3, 20)}px` }}
-                      />
-                    </div>
-                    <span className="font-bold w-24 text-right">
-                      {count} ({percentage.toFixed(1)}%)
-                    </span>
-                  </div>
-                );
-              })}
-          </div>
-          <div className="mt-6 pt-4 border-t border-yellow-200">
-            <h4 className="font-medium mb-2">Por Década:</h4>
-            {Object.entries(yearStats.byDecade)
-              .filter(([decade]) => decade !== "undefineds")
-              .sort(
-                ([a], [b]) => Number(b.slice(0, -1)) - Number(a.slice(0, -1))
-              )
-              .map(([decade, count]) => {
-                const percentage = (count / totalDolls) * 100;
-                return (
-                  <div
-                    key={decade}
-                    className="flex justify-between items-center py-1"
-                  >
-                    <span className="text-sm">{decade}</span>
-                    <div className="flex-1 mx-4">
-                      <div
-                        className="bg-yellow-300 h-4 rounded"
-                        style={{ width: `${Math.max(percentage * 3, 20)}px` }}
-                      />
-                    </div>
-                    <span className="font-bold text-sm w-24 text-right">
-                      {count} ({percentage.toFixed(1)}%)
-                    </span>
-                  </div>
-                );
-              })}
-          </div>
+        <div className="space-y-4">
+          {topProfitDolls.map((doll) => (
+            <div key={doll.id} className="border-b border-yellow-200 pb-3">
+              <div className="flex justify-between mb-1">
+                <span className="font-medium">{doll.nombre}</span>
+                <span className="text-green-600 font-bold">
+                  +{doll.profit.toFixed(2)}€
+                </span>
+              </div>
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>Compra: {doll.precio_compra}€</span>
+                <span>Venta: {doll.precio_venta}€</span>
+                <span>ROI: {doll.profitPercentage.toFixed(1)}%</span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -294,6 +294,7 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
                       step="0.01"
                       min="0"
                       className="w-full border rounded p-2"
+                      placeholder="Introduce el precio de compra"
                     />
                   )}
                   {pricingMethod.compra === "lote" && (
@@ -352,6 +353,7 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
                       step="0.01"
                       min="0"
                       className="w-full border rounded p-2"
+                      placeholder="Introduce el precio de venta"
                     />
                   )}
                   {pricingMethod.venta === "lote" && (

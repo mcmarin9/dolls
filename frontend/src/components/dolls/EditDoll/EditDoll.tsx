@@ -295,6 +295,7 @@ const EditDoll: React.FC<EditDollProps> = ({
                       min="0"
                       disabled={enLoteCompraState}
                       className="w-full border rounded p-2"
+                      placeholder="Introduce el precio de compra"
                     />
                   )}
                   {pricingMethod.compra === "lote" && (
@@ -376,6 +377,7 @@ const EditDoll: React.FC<EditDollProps> = ({
                       min="0"
                       disabled={enLoteVentaState}
                       className="w-full border rounded p-2"
+                      placeholder="Introduce el precio de venta"
                     />
                   )}
                   {pricingMethod.venta === "lote" && (

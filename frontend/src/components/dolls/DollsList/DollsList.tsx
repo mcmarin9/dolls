@@ -22,6 +22,7 @@ const DollsList: React.FC<DollsListProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedManufacturer, setSelectedManufacturer] = useState("");
+  const [dollToDelete, setDollToDelete] = useState<Doll | null>(null);
 
   const filteredDolls = useMemo(
     () =>
@@ -73,6 +74,70 @@ const DollsList: React.FC<DollsListProps> = ({
     }
   };
 
+  const handleDeleteClick = (doll: Doll) => {
+    setDollToDelete(doll);
+  };
+
+  const confirmDelete = async () => {
+    if (dollToDelete) {
+      await handleDelete(dollToDelete);
+      setDollToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setDollToDelete(null);
+  };
+
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof Doll | null;
+    direction: "asc" | "desc";
+  }>({ key: null, direction: "asc" });
+
+  const requestSort = (key: keyof Doll) => {
+    let direction: "asc" | "desc" = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedDolls = useMemo(() => {
+    const sortedItems = [...filteredDolls];
+    if (sortConfig.key !== null) {
+      sortedItems.sort((a, b) => {
+        const aValue = a[sortConfig.key!];
+        const bValue = b[sortConfig.key!];
+
+        // Manejar específicamente los campos numéricos
+        if (
+          sortConfig.key &&
+          ["precio_compra", "precio_venta", "anyo"].includes(sortConfig.key)
+        ) {
+          const aNum = Number(aValue) || 0;
+          const bNum = Number(bValue) || 0;
+          return sortConfig.direction === "asc" ? aNum - bNum : bNum - aNum;
+        }
+
+        // Para el resto de campos, mantener la ordenación por string
+        const aString = String(aValue || "").toLowerCase();
+        const bString = String(bValue || "").toLowerCase();
+
+        if (aString < bString) return sortConfig.direction === "asc" ? -1 : 1;
+        if (aString > bString) return sortConfig.direction === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+    return sortedItems;
+  }, [filteredDolls, sortConfig]);
+
+  const getSortIcon = (key: keyof Doll) => {
+    if (sortConfig.key !== key) {
+      return "";
+    }
+    return sortConfig.direction === "asc" ? "↑" : "↓";
+  };
+
   return (
     <div className="h-[calc(100vh-300px)]">
       <div className="mb-4">
@@ -116,35 +181,65 @@ const DollsList: React.FC<DollsListProps> = ({
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Imagen
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Nombre
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => requestSort("nombre")}
+                >
+                  Nombre {getSortIcon("nombre")}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Marca
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => requestSort("marca_nombre")}
+                >
+                  Marca {getSortIcon("marca_nombre")}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Fabricante
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => requestSort("fabricante_nombre")}
+                >
+                  Fabricante {getSortIcon("fabricante_nombre")}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Modelo
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => requestSort("modelo")}
+                >
+                  Modelo {getSortIcon("modelo")}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Personaje
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => requestSort("personaje")}
+                >
+                  Personaje {getSortIcon("personaje")}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Año
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => requestSort("anyo")}
+                >
+                  Año {getSortIcon("anyo")}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Estado
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => requestSort("estado")}
+                >
+                  Estado {getSortIcon("estado")}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Precio compra
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => requestSort("precio_compra")}
+                >
+                  Precio compra {getSortIcon("precio_compra")}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Precio venta
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => requestSort("precio_venta")}
+                >
+                  Precio venta {getSortIcon("precio_venta")}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Comentarios
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => requestSort("comentarios")}
+                >
+                  Comentarios {getSortIcon("comentarios")}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Acciones
@@ -152,7 +247,7 @@ const DollsList: React.FC<DollsListProps> = ({
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredDolls.map((doll) => (
+              {sortedDolls.map((doll) => (
                 <tr key={doll.id}>
                   <td className="px-6 py-4 whitespace-wrap">
                     {doll.imagen ? (
@@ -217,7 +312,7 @@ const DollsList: React.FC<DollsListProps> = ({
                       Editar
                     </button>
                     <button
-                      onClick={() => handleDelete(doll)}
+                      onClick={() => handleDeleteClick(doll)}
                       className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
                     >
                       Eliminar
@@ -229,6 +324,37 @@ const DollsList: React.FC<DollsListProps> = ({
           </table>
         </div>
       </div>
+
+      {dollToDelete && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+          <div className="relative mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3 text-center">
+              <h3 className="text-lg leading-6 font-medium text-gray-900">
+                Confirmar eliminación
+              </h3>
+              <div className="mt-2 px-7 py-3">
+                <p className="text-sm text-gray-500">
+                  ¿Estás seguro de que deseas eliminar {dollToDelete.nombre}?
+                </p>
+              </div>
+              <div className="items-center px-4 py-3">
+                <button
+                  onClick={confirmDelete}
+                  className="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-600 mr-2"
+                >
+                  Eliminar
+                </button>
+                <button
+                  onClick={cancelDelete}
+                  className="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-gray-600"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
