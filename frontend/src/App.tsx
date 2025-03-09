@@ -167,7 +167,7 @@ const App: React.FC = () => {
     fabricante?: string;
   }) => {
     try {
-      const newMarca = { ...marca, id: Date.now() };
+      const newMarca = { ...marca, id: Date.now(), fabricanteIds: [] };
       await createMarca(newMarca);
       await fetchDolls();
       await fetchBrands(); // Add this line
