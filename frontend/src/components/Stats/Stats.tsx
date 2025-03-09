@@ -20,10 +20,16 @@ const StatRow: React.FC<{
   label: string;
   value: string | number;
   isSmall?: boolean;
-}> = ({ label, value, isSmall = false }) => (
-  <div className={`flex justify-between ${isSmall ? "text-sm" : ""}`}>
-    <span>{label}</span>
-    <span className="font-bold">{value}</span>
+  description?: string;
+}> = ({ label, value, isSmall = false, description }) => (
+  <div>
+    <div className={`flex justify-between ${isSmall ? "text-sm" : ""}`}>
+      <span>{label}</span>
+      <span className="font-bold">{value}</span>
+    </div>
+    {description && (
+      <div className="text-xs text-gray-500 mt-1">{description}</div>
+    )}
   </div>
 );
 
@@ -42,7 +48,7 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
   // Cálculos financieros
   const totalDolls = dolls.length;
   const soldDolls = dolls.filter((doll) => doll.estado === "vendida");
-  
+
   const unsoldDolls = dolls.filter((doll) => doll.estado !== "vendida");
   const soldPercentage = (soldDolls.length / totalDolls) * 100;
   const savedPercentage = (savedDolls.length / totalDolls) * 100;
@@ -66,23 +72,18 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
     const price = Number(doll.precio_compra) || 0;
     return sum + price;
   }, 0);
-  
+
   const totalProfit = totalSales - soldDollsInvestment;
 
   // Margen de beneficio (beneficio / ventas * 100)
-  const profitMargin = totalSales > 0 
-  ? ((totalProfit / totalSales) * 100).toFixed(1) 
-  : "0.0";
-
+  const profitMargin =
+    totalSales > 0 ? ((totalProfit / totalSales) * 100).toFixed(1) : "0.0";
 
   // Precios medios
-  const avgPurchasePrice = soldDolls.length > 0 
-  ? soldDollsInvestment / soldDolls.length 
-  : 0;
+  const avgPurchasePrice =
+    soldDolls.length > 0 ? soldDollsInvestment / soldDolls.length : 0;
 
-const avgSalePrice = soldDolls.length > 0 
-  ? totalSales / soldDolls.length 
-  : 0;
+  const avgSalePrice = soldDolls.length > 0 ? totalSales / soldDolls.length : 0;
 
   // Distribución por estado
   const dollsByState = dolls.reduce((acc, doll) => {
@@ -153,28 +154,42 @@ const avgSalePrice = soldDolls.length > 0
           <StatRow
             label="Inversión Total:"
             value={`${totalInvestment.toFixed(2)}€`}
+            description="Suma del precio de compra de todas las muñecas"
+          />
+          <StatRow
+            label="Inversión en Vendidas:"
+            value={`${soldDollsInvestment.toFixed(2)}€`}
+            description="Suma del precio de compra solo de las muñecas vendidas"
           />
           <StatRow
             label="Ventas Totales:"
             value={`${totalSales.toFixed(2)}€`}
+            description="Suma del precio de venta de todas las muñecas vendidas"
           />
-          <div className="flex justify-between">
-            <span>Beneficio:</span>
-            <span
-              className={`font-bold ${
-                totalProfit >= 0 ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              {totalProfit.toFixed(2)}€ ({profitMargin}%)
-            </span>
+          <div className="flex flex-col">
+            <div className="flex justify-between">
+              <span>Beneficio:</span>
+              <span
+                className={`font-bold ${
+                  totalProfit >= 0 ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {totalProfit.toFixed(2)}€ ({profitMargin}%)
+              </span>
+            </div>
+            <div className="text-xs text-gray-500 mt-1">
+              Diferencia entre ventas totales e inversión en vendidas
+            </div>
           </div>
           <StatRow
             label="Precio Medio Compra:"
             value={`${avgPurchasePrice.toFixed(2)}€`}
+            description="Precio medio de compra de las muñecas vendidas"
           />
           <StatRow
             label="Precio Medio Venta:"
             value={`${avgSalePrice.toFixed(2)}€`}
+            description="Precio medio de venta de las muñecas vendidas"
           />
         </div>
       </div>
