@@ -42,6 +42,7 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
   // Cálculos financieros
   const totalDolls = dolls.length;
   const soldDolls = dolls.filter((doll) => doll.estado === "vendida");
+  
   const unsoldDolls = dolls.filter((doll) => doll.estado !== "vendida");
   const soldPercentage = (soldDolls.length / totalDolls) * 100;
   const savedPercentage = (savedDolls.length / totalDolls) * 100;
@@ -65,16 +66,23 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
     const price = Number(doll.precio_compra) || 0;
     return sum + price;
   }, 0);
+  
   const totalProfit = totalSales - soldDollsInvestment;
 
   // Margen de beneficio (beneficio / ventas * 100)
-  const profitMargin =
-    totalSales > 0 ? ((totalProfit / totalSales) * 100).toFixed(1) : "0.0";
+  const profitMargin = totalSales > 0 
+  ? ((totalProfit / totalSales) * 100).toFixed(1) 
+  : "0.0";
+
 
   // Precios medios
-  const avgPurchasePrice = totalDolls > 0 ? totalInvestment / totalDolls : 0;
+  const avgPurchasePrice = soldDolls.length > 0 
+  ? soldDollsInvestment / soldDolls.length 
+  : 0;
 
-  const avgSalePrice = soldDolls.length > 0 ? totalSales / soldDolls.length : 0;
+const avgSalePrice = soldDolls.length > 0 
+  ? totalSales / soldDolls.length 
+  : 0;
 
   // Distribución por estado
   const dollsByState = dolls.reduce((acc, doll) => {
