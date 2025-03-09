@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { deleteImage } from "../../../services/api";
 import { Doll } from "../../../types/Doll";
 import { getStatusStyle } from "../../../utils/styleUtils";
+import { searchItems } from "../../../utils/searchUtils";
 import { Marca } from "../../../types/Marca";
 import {
   compareValues,
@@ -31,18 +32,23 @@ const DollsList: React.FC<DollsListProps> = ({
   const [dollToDelete, setDollToDelete] = useState<Doll | null>(null);
 
   const filteredDolls = useMemo(
-    () =>
-      dolls.filter((doll) => {
-        const matchesName = doll.nombre
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase());
+    () => {
+      // Primero aplicamos la búsqueda
+      const searchResults = searchItems(dolls, {
+        searchTerm,
+        searchFields: ["nombre"]
+      });
+  
+      // Luego aplicamos los filtros de marca y fabricante
+      return searchResults.filter((doll) => {
         const matchesBrand =
           !selectedBrand || doll.marca_nombre === selectedBrand;
         const matchesManufacturer =
           !selectedManufacturer ||
           doll.fabricante_nombre === selectedManufacturer;
-        return matchesName && matchesBrand && matchesManufacturer;
-      }),
+        return matchesBrand && matchesManufacturer;
+      });
+    },
     [dolls, searchTerm, selectedBrand, selectedManufacturer]
   );
 

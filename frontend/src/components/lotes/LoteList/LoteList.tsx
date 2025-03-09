@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Lote } from "../../../types/Lote";
 import LoteDetail from "../LoteDetail/LoteDetail";
 import { getTypeStyle } from "../../../utils/styleUtils";
+import { searchItems } from "../../../utils/searchUtils";
 import {
   getSortIcon,
   getNextSortDirection,
@@ -22,9 +23,13 @@ const LoteList: React.FC<LoteListProps> = ({
   onView,
   onEdit,
 }) => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedLote, setSelectedLote] = useState<Lote | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [loteToDelete, setLoteToDelete] = useState<Lote | null>(null);
+  const [selectedType, setSelectedType] = useState<
+    "todos" | "compra" | "venta"
+  >("todos");
 
   const formatPrice = (price: number | undefined | null): string => {
     if (price === undefined || price === null) return "0.00";
@@ -37,13 +42,24 @@ const LoteList: React.FC<LoteListProps> = ({
     onView(lote);
   };
 
+  const filteredLotes = useMemo(() => {
+    const searchResults = searchItems(lotes, {
+      searchTerm,
+      searchFields: ["nombre"],
+    });
+
+    return searchResults.filter(
+      (lote) => selectedType === "todos" || lote.tipo === selectedType
+    );
+  }, [lotes, searchTerm, selectedType]);
+
   const [sortConfig, setSortConfig] = useState<{
     key: keyof Lote | null;
     direction: "asc" | "desc";
   }>({ key: null, direction: "asc" });
 
   const sortedLotes = useMemo(() => {
-    const sortedItems = [...lotes];
+    const sortedItems = [...filteredLotes];
     if (sortConfig.key !== null) {
       sortedItems.sort((a, b) => {
         // Caso especial para precio unitario
@@ -81,7 +97,7 @@ const LoteList: React.FC<LoteListProps> = ({
       });
     }
     return sortedItems;
-  }, [lotes, sortConfig]);
+  }, [filteredLotes, sortConfig]);
 
   const requestSort = (key: keyof Lote) => {
     const direction = getNextSortDirection(key, sortConfig);
@@ -105,6 +121,27 @@ const LoteList: React.FC<LoteListProps> = ({
 
   return (
     <div className="flex flex-col h-full">
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Buscar por nombre..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-50 p-2 border rounded-lg"
+        />
+        <select
+          value={selectedType}
+          onChange={(e) =>
+            setSelectedType(e.target.value as "todos" | "compra" | "venta")
+          }
+          className="w-50 p-2 border rounded-lg"
+        >
+          <option value="todos">Todos los lotes</option>
+          <option value="compra">Lotes de compra</option>
+          <option value="venta">Lotes de venta</option>
+        </select>
+      </div>
+
       <div className="flex-1 min-h-0 rounded-lg border border-gray-200">
         <div className="h-full overflow-auto">
           <table className="min-w-full divide-y divide-gray-200">
