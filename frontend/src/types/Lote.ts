@@ -4,7 +4,9 @@ export interface Lote {
   id: number;
   nombre: string;
   tipo: "compra" | "venta";
-  precio_total?: number; // Match DB field
-  created_at?: string; // Match DB field
+  precio_total?: number; 
+  created_at?: string; 
   dolls?: Doll[];
+  cantidad_munecas?: number; 
+  precio_unitario?: number; 
 }

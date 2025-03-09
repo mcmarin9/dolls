@@ -3,6 +3,12 @@ import { deleteImage } from "../../../services/api";
 import { Doll } from "../../../types/Doll";
 import { getStatusStyle } from "../../../utils/styleUtils";
 import { Marca } from "../../../types/Marca";
+import {
+  compareValues,
+  getSortIcon,
+  getNextSortDirection,
+  SortConfig,
+} from "../../../utils/sortUtils";
 
 interface DollsListProps {
   dolls: Doll[];
@@ -89,16 +95,13 @@ const DollsList: React.FC<DollsListProps> = ({
     setDollToDelete(null);
   };
 
-  const [sortConfig, setSortConfig] = useState<{
-    key: keyof Doll | null;
-    direction: "asc" | "desc";
-  }>({ key: null, direction: "asc" });
+  const [sortConfig, setSortConfig] = useState<SortConfig<Doll>>({
+    key: null,
+    direction: "asc",
+  });
 
   const requestSort = (key: keyof Doll) => {
-    let direction: "asc" | "desc" = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
-    }
+    const direction = getNextSortDirection(key, sortConfig);
     setSortConfig({ key, direction });
   };
 
@@ -106,37 +109,39 @@ const DollsList: React.FC<DollsListProps> = ({
     const sortedItems = [...filteredDolls];
     if (sortConfig.key !== null) {
       sortedItems.sort((a, b) => {
-        const aValue = a[sortConfig.key!];
-        const bValue = b[sortConfig.key!];
-
-        // Manejar específicamente los campos numéricos
         if (
           sortConfig.key &&
           ["precio_compra", "precio_venta", "anyo"].includes(sortConfig.key)
         ) {
-          const aNum = Number(aValue) || 0;
-          const bNum = Number(bValue) || 0;
-          return sortConfig.direction === "asc" ? aNum - bNum : bNum - aNum;
+          const aValue = a[sortConfig.key as keyof Doll];
+          const bValue = b[sortConfig.key as keyof Doll];
+          return compareValues(
+            Number(aValue) || 0,
+            Number(bValue) || 0,
+            sortConfig.direction
+          );
         }
 
-        // Para el resto de campos, mantener la ordenación por string
-        const aString = String(aValue || "").toLowerCase();
-        const bString = String(bValue || "").toLowerCase();
+        // Para el resto de campos
+        const key = sortConfig.key as keyof Doll;
+        const aValue = a[key];
+        const bValue = b[key];
 
-        if (aString < bString) return sortConfig.direction === "asc" ? -1 : 1;
-        if (aString > bString) return sortConfig.direction === "asc" ? 1 : -1;
+        // Si alguno de los valores es un array, lo manejamos de forma especial
+        if (Array.isArray(aValue) || Array.isArray(bValue)) {
+          return 0;
+        }
+
+        if (typeof aValue === "string" || typeof aValue === "number") {
+          if (typeof bValue === "string" || typeof bValue === "number") {
+            return compareValues(aValue, bValue, sortConfig.direction);
+          }
+        }
         return 0;
       });
     }
     return sortedItems;
   }, [filteredDolls, sortConfig]);
-
-  const getSortIcon = (key: keyof Doll) => {
-    if (sortConfig.key !== key) {
-      return "";
-    }
-    return sortConfig.direction === "asc" ? "↑" : "↓";
-  };
 
   return (
     <div className="h-[calc(100vh-300px)]">
@@ -185,61 +190,61 @@ const DollsList: React.FC<DollsListProps> = ({
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => requestSort("nombre")}
                 >
-                  Nombre {getSortIcon("nombre")}
+                  Nombre {getSortIcon("nombre", sortConfig)}
                 </th>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => requestSort("marca_nombre")}
                 >
-                  Marca {getSortIcon("marca_nombre")}
+                  Marca {getSortIcon("marca_nombre", sortConfig)}
                 </th>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => requestSort("fabricante_nombre")}
                 >
-                  Fabricante {getSortIcon("fabricante_nombre")}
+                  Fabricante {getSortIcon("fabricante_nombre", sortConfig)}
                 </th>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => requestSort("modelo")}
                 >
-                  Modelo {getSortIcon("modelo")}
+                  Modelo {getSortIcon("modelo", sortConfig)}
                 </th>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => requestSort("personaje")}
                 >
-                  Personaje {getSortIcon("personaje")}
+                  Personaje {getSortIcon("personaje", sortConfig)}
                 </th>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => requestSort("anyo")}
                 >
-                  Año {getSortIcon("anyo")}
+                  Año {getSortIcon("anyo", sortConfig)}
                 </th>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => requestSort("estado")}
                 >
-                  Estado {getSortIcon("estado")}
+                  Estado {getSortIcon("estado", sortConfig)}
                 </th>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => requestSort("precio_compra")}
                 >
-                  Precio compra {getSortIcon("precio_compra")}
+                  Precio compra {getSortIcon("precio_compra", sortConfig)}
                 </th>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => requestSort("precio_venta")}
                 >
-                  Precio venta {getSortIcon("precio_venta")}
+                  Precio venta {getSortIcon("precio_venta", sortConfig)}
                 </th>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => requestSort("comentarios")}
                 >
-                  Comentarios {getSortIcon("comentarios")}
+                  Comentarios {getSortIcon("comentarios", sortConfig)}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Acciones
