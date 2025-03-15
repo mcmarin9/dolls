@@ -23,6 +23,14 @@ const DollsList: React.FC<DollsListProps> = ({
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedManufacturer, setSelectedManufacturer] = useState("");
   const [dollToDelete, setDollToDelete] = useState<Doll | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
+
+  const ESTADOS = {
+    guardada: "Guardada",
+    "a la venta": "A la venta",
+    vendida: "Vendida",
+    fuera: "Fuera",
+  };
 
   const filteredDolls = useMemo(
     () =>
@@ -35,9 +43,12 @@ const DollsList: React.FC<DollsListProps> = ({
         const matchesManufacturer =
           !selectedManufacturer ||
           doll.fabricante_nombre === selectedManufacturer;
-        return matchesName && matchesBrand && matchesManufacturer;
+        const matchesStatus = !selectedStatus || doll.estado === selectedStatus;
+        return (
+          matchesName && matchesBrand && matchesManufacturer && matchesStatus
+        );
       }),
-    [dolls, searchTerm, selectedBrand, selectedManufacturer]
+    [dolls, searchTerm, selectedBrand, selectedManufacturer, selectedStatus]
   );
 
   const manufacturers = useMemo(() => {
@@ -169,6 +180,18 @@ const DollsList: React.FC<DollsListProps> = ({
           {manufacturers.map((manufacturer) => (
             <option key={manufacturer} value={manufacturer}>
               {manufacturer}
+            </option>
+          ))}
+        </select>
+        <select
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value)}
+          className="w-50 p-2 border rounded-lg"
+        >
+          <option value="">Todos los estados</option>
+          {Object.entries(ESTADOS).map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
             </option>
           ))}
         </select>

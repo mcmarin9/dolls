@@ -3,6 +3,9 @@ import { Lote } from "../../../types/Lote";
 import LoteDetail from "../LoteDetail/LoteDetail";
 import { getTypeStyle } from "../../../utils/styleUtils";
 
+const TIPO_LOTES = ["Todos", "Compra", "Venta"] as const;
+type TipoLote = (typeof TIPO_LOTES)[number];
+
 interface LoteListProps {
   lotes: Lote[];
   onDelete: (id: number) => void;
@@ -19,6 +22,7 @@ const LoteList: React.FC<LoteListProps> = ({
   const [selectedLote, setSelectedLote] = useState<Lote | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [loteToDelete, setLoteToDelete] = useState<Lote | null>(null);
+  const [tipoFiltro, setTipoFiltro] = useState<TipoLote>("Todos");
 
   const formatPrice = (price: number | undefined | null): string => {
     if (price === undefined || price === null) return "0.00";
@@ -45,9 +49,18 @@ const LoteList: React.FC<LoteListProps> = ({
   };
 
   const sortedLotes = useMemo(() => {
-    const sortedItems = [...lotes];
+    let filteredItems = [...lotes];
+
+    // Aplicar filtro por tipo
+    if (tipoFiltro !== "Todos") {
+      filteredItems = filteredItems.filter(
+        (lote) => lote.tipo.toLowerCase() === tipoFiltro.toLowerCase()
+      );
+    }
+
+    // Mantener la lógica de ordenamiento existente
     if (sortConfig.key !== null) {
-      sortedItems.sort((a, b) => {
+      filteredItems.sort((a, b) => {
         const aValue = a[sortConfig.key!];
         const bValue = b[sortConfig.key!];
 
@@ -67,8 +80,8 @@ const LoteList: React.FC<LoteListProps> = ({
         return 0;
       });
     }
-    return sortedItems;
-  }, [lotes, sortConfig]);
+    return filteredItems;
+  }, [lotes, sortConfig, tipoFiltro]);
 
   const getSortIcon = (key: keyof Lote) => {
     if (sortConfig.key !== key) {
@@ -92,8 +105,32 @@ const LoteList: React.FC<LoteListProps> = ({
     setLoteToDelete(null);
   };
 
+  const FilterSection = () => (
+    <div className="mb-4 p-4 bg-white rounded-lg shadow">
+      <div className="flex items-center space-x-4">
+        <span className="text-gray-700">Filtrar por tipo:</span>
+        <div className="flex space-x-2">
+          {TIPO_LOTES.map((tipo) => (
+            <button
+              key={tipo}
+              onClick={() => setTipoFiltro(tipo)}
+              className={`px-4 py-2 rounded-md transition-colors ${
+                tipoFiltro === tipo
+                  ? "bg-purple-600 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              {tipo}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="flex flex-col h-full">
+      <FilterSection />
       <div className="flex-1 min-h-0 rounded-lg border border-gray-200">
         <div className="h-full overflow-auto">
           <table className="min-w-full divide-y divide-gray-200">

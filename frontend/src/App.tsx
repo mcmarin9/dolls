@@ -164,13 +164,15 @@ const App: React.FC = () => {
 
   const handleMarcaAdded = async (marca: {
     nombre: string;
-    fabricante?: string;
+    fabricanteIds: number[];
   }) => {
     try {
-      const newMarca = { ...marca, id: Date.now() };
-      await createMarca(newMarca);
+      await createMarca({
+        nombre: marca.nombre,
+        fabricanteIds: marca.fabricanteIds
+      });
       await fetchDolls();
-      await fetchBrands(); // Add this line
+      await fetchBrands();
       closeMarcaModal();
     } catch (error) {
       console.error("Error adding marca:", error);

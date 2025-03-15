@@ -34,20 +34,9 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
   }
 
   // Cálculos generales
-  const totalLotes = lotes.length;
-  const savedDolls = dolls.filter((doll) => doll.estado === "guardada");
-  const forSaleDolls = dolls.filter((doll) => doll.estado === "a la venta");
-  const outDolls = dolls.filter((doll) => doll.estado === "fuera");
-
-  // Cálculos financieros
   const totalDolls = dolls.length;
   const soldDolls = dolls.filter((doll) => doll.estado === "vendida");
-  
   const unsoldDolls = dolls.filter((doll) => doll.estado !== "vendida");
-  const soldPercentage = (soldDolls.length / totalDolls) * 100;
-  const savedPercentage = (savedDolls.length / totalDolls) * 100;
-  const forSalePercentage = (forSaleDolls.length / totalDolls) * 100;
-  const outPercentage = (outDolls.length / totalDolls) * 100;
 
   // Inversión total (suma de todos los precios de compra)
   const totalInvestment = dolls.reduce((sum, doll) => {
@@ -61,28 +50,48 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
     return sum + price;
   }, 0);
 
-  // Beneficio total (ventas - inversión en muñecas vendidas)
+  // Inversión en muñecas vendidas
   const soldDollsInvestment = soldDolls.reduce((sum, doll) => {
     const price = Number(doll.precio_compra) || 0;
     return sum + price;
   }, 0);
-  
-  const totalProfit = totalSales - soldDollsInvestment;
+
+  // Beneficio sobre muñecas vendidas
+  const profitFromSold = totalSales - soldDollsInvestment;
+
+  // Beneficio total (ventas - inversión total)
+  const totalProfit = totalSales - totalInvestment;
 
   // Margen de beneficio (beneficio / ventas * 100)
   const profitMargin = totalSales > 0 
-  ? ((totalProfit / totalSales) * 100).toFixed(1) 
-  : "0.0";
+    ? ((profitFromSold / totalSales) * 100).toFixed(1) 
+    : "0.0";
 
+  // ROI (Retorno de la Inversión)
+  const roi = totalInvestment > 0 
+    ? ((totalProfit / totalInvestment) * 100).toFixed(1) 
+    : "0.0";
+
+  // Coste de inventario (muñecas no vendidas)
+  const inventoryCost = unsoldDolls.reduce((sum, doll) => {
+    const price = Number(doll.precio_compra) || 0;
+    return sum + price;
+  }, 0);
+
+  // Beneficio potencial (si todas las muñecas no vendidas se vendieran a su precio actual)
+  const potentialProfit = unsoldDolls.reduce((sum, doll) => {
+    const profit = Number(doll.precio_venta) - Number(doll.precio_compra);
+    return sum + (profit > 0 ? profit : 0);
+  }, 0);
 
   // Precios medios
   const avgPurchasePrice = soldDolls.length > 0 
-  ? soldDollsInvestment / soldDolls.length 
-  : 0;
+    ? soldDollsInvestment / soldDolls.length 
+    : 0;
 
-const avgSalePrice = soldDolls.length > 0 
-  ? totalSales / soldDolls.length 
-  : 0;
+  const avgSalePrice = soldDolls.length > 0 
+    ? totalSales / soldDolls.length 
+    : 0;
 
   // Distribución por estado
   const dollsByState = dolls.reduce((acc, doll) => {
@@ -98,6 +107,7 @@ const avgSalePrice = soldDolls.length > 0
     return acc;
   }, {} as Record<string, number>);
 
+  // Top muñecas con mayor beneficio
   const topProfitDolls = dolls
     .filter(
       (doll) =>
@@ -125,22 +135,13 @@ const avgSalePrice = soldDolls.length > 0
           <StatRow label="Total Muñecas:" value={totalDolls} />
           <StatRow
             label="Muñecas Vendidas:"
-            value={`${soldDolls.length} (${soldPercentage.toFixed(1)}%)`}
-          />
-          <StatRow label="Muñecas en Stock:" value={unsoldDolls.length} />
-          <StatRow
-            label="Muñecas Guardadas:"
-            value={`${savedDolls.length} (${savedPercentage.toFixed(1)}%)`}
+            value={`${soldDolls.length} (${((soldDolls.length / totalDolls) * 100).toFixed(1)}%)`}
           />
           <StatRow
-            label="Muñecas a la Venta:"
-            value={`${forSaleDolls.length} (${forSalePercentage.toFixed(1)}%)`}
+            label="Muñecas no Vendidas:"
+            value={`${unsoldDolls.length} (${((unsoldDolls.length / totalDolls) * 100).toFixed(1)}%)`}
           />
-          <StatRow
-            label="Muñecas Fuera:"
-            value={`${outDolls.length} (${outPercentage.toFixed(1)}%)`}
-          />
-          <StatRow label="Total Lotes:" value={totalLotes} />
+          <StatRow label="Total Lotes:" value={lotes.length} />
         </div>
       </div>
 
@@ -158,16 +159,22 @@ const avgSalePrice = soldDolls.length > 0
             label="Ventas Totales:"
             value={`${totalSales.toFixed(2)}€`}
           />
-          <div className="flex justify-between">
-            <span>Beneficio:</span>
-            <span
-              className={`font-bold ${
-                totalProfit >= 0 ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              {totalProfit.toFixed(2)}€ ({profitMargin}%)
-            </span>
-          </div>
+          <StatRow
+            label="Beneficio (Vendidas):"
+            value={`${profitFromSold.toFixed(2)}€ (${profitMargin}%)`}
+          />
+          <StatRow
+            label="Beneficio Total:"
+            value={`${totalProfit.toFixed(2)}€ (ROI: ${roi}%)`}
+          />
+          <StatRow
+            label="Coste de Inventario:"
+            value={`${inventoryCost.toFixed(2)}€`}
+          />
+          <StatRow
+            label="Beneficio Potencial:"
+            value={`${potentialProfit.toFixed(2)}€`}
+          />
           <StatRow
             label="Precio Medio Compra:"
             value={`${avgPurchasePrice.toFixed(2)}€`}

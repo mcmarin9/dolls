@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Fabricante } from '../../../types/Fabricante';
+import { createMarca, getFabricantes } from '../../../services/api';
 
 interface AddMarcaModalProps {
   isOpen: boolean;
@@ -13,30 +14,37 @@ const AddMarcaModal: React.FC<AddMarcaModalProps> = ({ isOpen, closeModal, onMar
   const [selectedFabricantes, setSelectedFabricantes] = useState<number[]>([]);
 
   useEffect(() => {
-    // Aquí cargaríamos la lista de fabricantes disponibles
     const fetchFabricantes = async () => {
       try {
-        const response = await fetch('/api/fabricantes');
-        const data = await response.json();
+        const data = await getFabricantes();
         setFabricantes(data);
       } catch (error) {
         console.error('Error al cargar fabricantes:', error);
       }
     };
-
+  
     if (isOpen) {
       fetchFabricantes();
     }
   }, [isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onMarcaAdded({ 
-      nombre, 
-      fabricanteIds: selectedFabricantes 
-    });
-    setNombre('');
-    setSelectedFabricantes([]);
+    try {
+      await createMarca({ 
+        nombre, 
+        fabricanteIds: selectedFabricantes 
+      });
+      onMarcaAdded({ 
+        nombre, 
+        fabricanteIds: selectedFabricantes 
+      });
+      setNombre('');
+      setSelectedFabricantes([]);
+      closeModal();
+    } catch (error) {
+      console.error('Error al crear marca:', error);
+    }
   };
 
   const handleFabricanteChange = (fabricanteId: number) => {
