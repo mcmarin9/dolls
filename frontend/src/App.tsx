@@ -20,6 +20,7 @@ import {
   createMarca,
   updateDoll,
   updateLote,
+  getMarcas,
 } from "./services/api";
 import { Doll } from "./types/Doll";
 import { Lote } from "./types/Lote";
@@ -84,14 +85,13 @@ const App: React.FC = () => {
 
   const fetchBrands = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/marcas");
-      const data = await response.json();
+      const data = await getMarcas();
       setBrands(data);
     } catch (error) {
       console.error("Error fetching brands:", error);
     }
   };
-
+  
   // Initial data loading
   useEffect(() => {
     fetchDolls();

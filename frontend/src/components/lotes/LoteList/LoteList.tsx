@@ -2,6 +2,12 @@ import React, { useState, useMemo } from "react";
 import { Lote } from "../../../types/Lote";
 import LoteDetail from "../LoteDetail/LoteDetail";
 import { getTypeStyle } from "../../../utils/styleUtils";
+import { searchItems } from "../../../utils/searchUtils";
+import {
+  getSortIcon,
+  getNextSortDirection,
+  compareValues,
+} from "../../../utils/sortUtils";
 
 const TIPO_LOTES = ["Todos", "Compra", "Venta"] as const;
 type TipoLote = (typeof TIPO_LOTES)[number];
@@ -19,6 +25,7 @@ const LoteList: React.FC<LoteListProps> = ({
   onView,
   onEdit,
 }) => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedLote, setSelectedLote] = useState<Lote | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [loteToDelete, setLoteToDelete] = useState<Lote | null>(null);
@@ -35,18 +42,21 @@ const LoteList: React.FC<LoteListProps> = ({
     onView(lote);
   };
 
+  const filteredLotes = useMemo(() => {
+    const searchResults = searchItems(lotes, {
+      searchTerm,
+      searchFields: ["nombre"],
+    });
+
+    return searchResults.filter(
+      (lote) => selectedType === "todos" || lote.tipo === selectedType
+    );
+  }, [lotes, searchTerm, selectedType]);
+
   const [sortConfig, setSortConfig] = useState<{
     key: keyof Lote | null;
     direction: "asc" | "desc";
   }>({ key: null, direction: "asc" });
-
-  const requestSort = (key: keyof Lote) => {
-    let direction: "asc" | "desc" = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
-    }
-    setSortConfig({ key, direction });
-  };
 
   const sortedLotes = useMemo(() => {
     let filteredItems = [...lotes];
@@ -71,23 +81,33 @@ const LoteList: React.FC<LoteListProps> = ({
           return sortConfig.direction === "asc" ? aNum - bNum : bNum - aNum;
         }
 
-        // Para el resto de campos, mantener la ordenación por string
-        const aString = String(aValue || "").toLowerCase();
-        const bString = String(bValue || "").toLowerCase();
+        // Caso especial para cantidad de muñecas
+        if (sortConfig.key === "cantidad_munecas") {
+          return compareValues(
+            a.dolls?.length || 0,
+            b.dolls?.length || 0,
+            sortConfig.direction
+          );
+        }
 
-        if (aString < bString) return sortConfig.direction === "asc" ? -1 : 1;
-        if (aString > bString) return sortConfig.direction === "asc" ? 1 : -1;
-        return 0;
+        // Para el resto de propiedades
+        const key = sortConfig.key as keyof Lote; // Aseguramos que key es keyof Lote
+        const aValue = a[key];
+        const bValue = b[key];
+
+        if (Array.isArray(aValue) || Array.isArray(bValue)) {
+          return 0; // or handle array comparison if needed
+        }
+
+        return compareValues(aValue, bValue, sortConfig.direction);
       });
     }
     return filteredItems;
   }, [lotes, sortConfig, tipoFiltro]);
 
-  const getSortIcon = (key: keyof Lote) => {
-    if (sortConfig.key !== key) {
-      return "";
-    }
-    return sortConfig.direction === "asc" ? "↑" : "↓";
+  const requestSort = (key: keyof Lote) => {
+    const direction = getNextSortDirection(key, sortConfig);
+    setSortConfig({ key, direction });
   };
 
   const handleDeleteClick = (lote: Lote) => {
@@ -140,25 +160,33 @@ const LoteList: React.FC<LoteListProps> = ({
                   className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100"
                   onClick={() => requestSort("nombre")}
                 >
-                  Nombre {getSortIcon("nombre")}
+                  Nombre {getSortIcon("nombre", sortConfig)}
                 </th>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => requestSort("tipo")}
                 >
-                  Tipo {getSortIcon("tipo")}
+                  Tipo {getSortIcon("tipo", sortConfig)}
                 </th>
                 <th
                   className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100"
                   onClick={() => requestSort("precio_total")}
                 >
-                  Precio Total {getSortIcon("precio_total")}
+                  Precio Total {getSortIcon("precio_total", sortConfig)}
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                  Precio Unitario
+                <th
+                  className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100"
+                  onClick={() => requestSort("precio_unitario")}
+                >
+                  {" "}
+                  Precio Unitario {getSortIcon("precio_unitario", sortConfig)}
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                  Cantidad Muñecas
+                <th
+                  className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100"
+                  onClick={() => requestSort("cantidad_munecas")}
+                >
+                  {" "}
+                  Cantidad Muñecas {getSortIcon("cantidad_munecas", sortConfig)}
                 </th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                   Acciones

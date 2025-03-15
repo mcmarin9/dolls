@@ -20,10 +20,16 @@ const StatRow: React.FC<{
   label: string;
   value: string | number;
   isSmall?: boolean;
-}> = ({ label, value, isSmall = false }) => (
-  <div className={`flex justify-between ${isSmall ? "text-sm" : ""}`}>
-    <span>{label}</span>
-    <span className="font-bold">{value}</span>
+  description?: string;
+}> = ({ label, value, isSmall = false, description }) => (
+  <div>
+    <div className={`flex justify-between ${isSmall ? "text-sm" : ""}`}>
+      <span>{label}</span>
+      <span className="font-bold">{value}</span>
+    </div>
+    {description && (
+      <div className="text-xs text-gray-500 mt-1">{description}</div>
+    )}
   </div>
 );
 
@@ -36,6 +42,7 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
   // Cálculos generales
   const totalDolls = dolls.length;
   const soldDolls = dolls.filter((doll) => doll.estado === "vendida");
+
   const unsoldDolls = dolls.filter((doll) => doll.estado !== "vendida");
 
   // Inversión total (suma de todos los precios de compra)
@@ -154,10 +161,17 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
           <StatRow
             label="Inversión Total:"
             value={`${totalInvestment.toFixed(2)}€`}
+            description="Suma del precio de compra de todas las muñecas"
+          />
+          <StatRow
+            label="Inversión en Vendidas:"
+            value={`${soldDollsInvestment.toFixed(2)}€`}
+            description="Suma del precio de compra solo de las muñecas vendidas"
           />
           <StatRow
             label="Ventas Totales:"
             value={`${totalSales.toFixed(2)}€`}
+            description="Suma del precio de venta de todas las muñecas vendidas"
           />
           <StatRow
             label="Beneficio (Vendidas):"
@@ -178,10 +192,12 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
           <StatRow
             label="Precio Medio Compra:"
             value={`${avgPurchasePrice.toFixed(2)}€`}
+            description="Precio medio de compra de las muñecas vendidas"
           />
           <StatRow
             label="Precio Medio Venta:"
             value={`${avgSalePrice.toFixed(2)}€`}
+            description="Precio medio de venta de las muñecas vendidas"
           />
         </div>
       </div>
