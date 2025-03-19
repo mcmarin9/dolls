@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 16-03-2025 a las 00:51:58
+-- Tiempo de generación: 19-03-2025 a las 23:36:41
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -101,7 +101,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (51, 'Poppy', 5, 2, 'Serie 1', 'Poppy Rowan', 2020, 'guardada', 3.00, NULL, 'La manca', NULL, '2025-02-20 19:24:26'),
 (52, 'Teresa Burbujas', 1, 1, 'Burbujas / Bubble Fairy', 'Teresa', 1998, 'guardada', 1.00, NULL, NULL, NULL, '2025-02-20 19:26:09'),
 (53, 'Barbie \"Patinadora\"', 1, 1, 'Tahiti', 'Barbie', 1992, 'guardada', 1.00, NULL, 'Traje del Aliexpress.', NULL, '2025-02-20 19:30:08'),
-(54, 'Super Negra con Vestido', 1, 1, 'Fashionista', '#90', 2018, 'a la venta', 1.00, NULL, NULL, '/uploads/a1ef1f5b69fe4f658e94af5117389b3a.jpg', '2025-02-20 19:56:55'),
+(54, 'Super Negra con Vestido', 1, 1, 'Fashionista', '#90', 2018, 'vendida', 1.00, 24.00, NULL, '/uploads/a1ef1f5b69fe4f658e94af5117389b3a.jpg', '2025-02-20 19:56:55'),
 (55, 'Jade', 2, 2, 'Primera Edición', 'Jade', 2001, 'a la venta', 5.00, NULL, NULL, NULL, '2025-02-22 10:28:35'),
 (56, 'Chelsea Articulada', 7, 1, 'Vespa', 'Chelsea', 2003, 'vendida', 5.00, 9.00, NULL, '/uploads/c11097d3e57349cdb25c764c2e0e7e04.jpg', '2025-02-22 10:31:00'),
 (57, 'Barbie Ojos Lilas', 1, 1, 'Sweet Treats', 'Barbie', 1999, 'a la venta', 1.00, NULL, NULL, '/uploads/12546cf6985649c2a250bb5647ced418.jpg', '2025-02-22 10:32:18'),
@@ -155,8 +155,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (106, 'Sylvanian Erizos', 14, 1, 'Erizos', 'Sylvanian Families', 2025, 'a la venta', 1.00, NULL, NULL, '/uploads/18ca89026b5a497abd8736bdedbc0dad.jpg', '2025-03-02 14:38:31'),
 (107, 'Hannah Montana Segunda', 14, 1, 'Ropa azul', 'Hannah Montana', 2008, 'a la venta', 1.00, NULL, 'Peor pelo y sin cinturon	', NULL, '2025-03-09 09:50:46'),
 (108, 'Bratz papel', 2, 2, 'Funk Out! Boyz', 'Dylan', 2003, 'a la venta', 2.00, NULL, NULL, '/uploads/de74db7cfa7d4eef89ed9961361a1094.jpg', '2025-03-09 09:56:47'),
-(109, 'Rapunzel Mattel', 8, 1, 'Braiding Friends Hair Braider', '
-', 2010, 'a la venta', 2.00, NULL, NULL, '/uploads/70b24b8a851d4c19a4fcd773599e4793.jpg', '2025-03-09 10:02:15'),
+(109, 'Rapunzel Mattel', 8, 1, 'Braiding Friends Hair Braider', '\r\n', 2010, 'a la venta', 2.00, NULL, NULL, '/uploads/70b24b8a851d4c19a4fcd773599e4793.jpg', '2025-03-09 10:02:15'),
 (110, 'Heath', 6, 1, 'Básico', 'Heath Burns', 2012, 'a la venta', 1.00, NULL, 'Puede ser: Classroom: 2-pack (2012) o Ghoul Fair (2015)', '/uploads/0b2189b686484e82a9de13bf138974d7.jpg', '2025-03-09 10:05:03'),
 (111, 'Jade Verde', 5, 2, 'Serie 1', 'Jade Hunter', 2020, 'guardada', 3.00, NULL, NULL, NULL, '2025-03-09 10:06:21'),
 (112, 'Cloe super pelo', 2, 2, 'Featherageous', 'Cloe ', 2012, 'guardada', 2.00, NULL, NULL, '/uploads/0220e076a7af48a6832256b9c819cf1c.jpg', '2025-03-09 10:08:32'),
@@ -205,7 +204,14 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (155, 'Ken Grande', 1, 1, 'Fashionista', '#131', 2019, 'a la venta', 1.00, NULL, NULL, '/uploads/b1577f71f0e3493c94a6e39e9d3a0ae4.jpg', '2025-03-15 23:31:38'),
 (156, 'Barbie Trencitas 2', 1, 1, 'Fashionista', '#123', 2025, 'a la venta', 1.00, NULL, NULL, '/uploads/dc8fdce012fa4b53af6bc536728ee460.jpg', '2025-03-15 23:32:48'),
 (157, 'Junior Azul', 17, 2, 'Serie 1', 'Skyler Bradshaw', 2022, 'a la venta', 2.50, NULL, NULL, NULL, '2025-03-15 23:37:44'),
-(158, 'Barbie Respiración', 1, 1, 'Breathe with Me ', 'Barbie', 2020, 'a la venta', 2.50, NULL, NULL, NULL, '2025-03-15 23:38:46');
+(158, 'Barbie Respiración', 1, 1, 'Breathe with Me ', 'Barbie', 2020, 'a la venta', 2.50, NULL, NULL, NULL, '2025-03-15 23:38:46'),
+(159, 'Yasmin Gigante', 2, 2, 'The Movie Funky Fashion Makeover', 'Yasmin', 2025, 'a la venta', 3.00, NULL, NULL, NULL, '2025-03-19 22:00:48'),
+(160, 'Yasmin Hip Hop', 2, 2, 'Play Sportz 8', 'Yasmin', 2008, 'a la venta', 3.00, NULL, NULL, NULL, '2025-03-19 22:20:24'),
+(161, 'Hula Hair', 1, 1, 'Hula Hair', 'Barbie', 1996, 'guardada', 2.50, NULL, NULL, NULL, '2025-03-19 22:22:29'),
+(162, 'Pelirroja pendientes misteriosos', 1, 1, 'Riviera Pelirroja', 'Barbie', 1999, 'guardada', 2.50, NULL, 'Los pendientes no coinciden con la pelirroja, pero sí con la rubia. Y la cara es de la pelirroja igual.', NULL, '2025-03-19 22:24:57'),
+(163, 'Nolee Sonrisota', 7, 1, 'Getting Ready My Room', 'Nolee', 2004, 'a la venta', 2.00, NULL, NULL, NULL, '2025-03-19 22:27:19'),
+(164, 'Prima de Teresa la Guapa', 1, 1, 'Fashion Fever', 'Dreww', 2004, 'guardada', 2.00, NULL, NULL, NULL, '2025-03-19 22:32:06'),
+(165, 'Lote 8 Piezas de Ropa', 7, 1, 'Mix', 'Mix', 2025, 'guardada', 2.00, NULL, 'My Scene y Barbie', NULL, '2025-03-19 22:33:29');
 
 -- --------------------------------------------------------
 
@@ -276,7 +282,10 @@ INSERT INTO `lotes` (`id`, `nombre`, `tipo`, `precio_total`, `created_at`) VALUE
 (23, 'Kens', 'venta', 10.00, '2025-03-09 10:24:57'),
 (24, 'Kylei y ropa', 'compra', 6.00, '2025-03-09 10:31:36'),
 (25, 'Figuritas y Coco', 'compra', 2.00, '2025-03-09 12:39:51'),
-(26, 'Junior y Respiración', 'compra', 5.00, '2025-03-15 23:39:01');
+(26, 'Junior y Respiración', 'compra', 5.00, '2025-03-15 23:39:01'),
+(27, 'Yasmines ', 'compra', 6.00, '2025-03-19 22:20:55'),
+(28, 'Barbie Hula y Pelirroja', 'compra', 5.00, '2025-03-19 22:25:34'),
+(29, 'MyScene, Barbie y Ropa', 'compra', 6.00, '2025-03-19 22:33:55');
 
 -- --------------------------------------------------------
 
@@ -359,7 +368,14 @@ INSERT INTO `lote_doll` (`id`, `lote_id`, `doll_id`) VALUES
 (64, 25, 135),
 (63, 25, 136),
 (68, 26, 157),
-(67, 26, 158);
+(67, 26, 158),
+(70, 27, 159),
+(69, 27, 160),
+(72, 28, 161),
+(71, 28, 162),
+(75, 29, 163),
+(74, 29, 164),
+(73, 29, 165);
 
 -- --------------------------------------------------------
 
@@ -491,7 +507,7 @@ ALTER TABLE `marca_fabricante`
 -- AUTO_INCREMENT de la tabla `dolls`
 --
 ALTER TABLE `dolls`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=159;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=166;
 
 --
 -- AUTO_INCREMENT de la tabla `fabricantes`
@@ -503,13 +519,13 @@ ALTER TABLE `fabricantes`
 -- AUTO_INCREMENT de la tabla `lotes`
 --
 ALTER TABLE `lotes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT de la tabla `lote_doll`
 --
 ALTER TABLE `lote_doll`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT de la tabla `marca`
