@@ -22,6 +22,7 @@ const DollsList: React.FC<DollsListProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedManufacturer, setSelectedManufacturer] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [dollToDelete, setDollToDelete] = useState<Doll | null>(null);
 
   const filteredDolls = useMemo(
@@ -35,9 +36,12 @@ const DollsList: React.FC<DollsListProps> = ({
         const matchesManufacturer =
           !selectedManufacturer ||
           doll.fabricante_nombre === selectedManufacturer;
-        return matchesName && matchesBrand && matchesManufacturer;
+        const matchesStatus = !selectedStatus || doll.estado === selectedStatus;
+        return (
+          matchesName && matchesBrand && matchesManufacturer && matchesStatus
+        );
       }),
-    [dolls, searchTerm, selectedBrand, selectedManufacturer]
+    [dolls, searchTerm, selectedBrand, selectedManufacturer, selectedStatus]
   );
 
   const manufacturers = useMemo(() => {
@@ -171,6 +175,17 @@ const DollsList: React.FC<DollsListProps> = ({
               {manufacturer}
             </option>
           ))}
+        </select>
+        <select
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value)}
+          className="w-50 p-2 border rounded-lg"
+        >
+          <option value="">Todos los estados</option>
+          <option value="guardada">Guardada</option>
+          <option value="a la venta">A la venta</option>
+          <option value="vendida">Vendida</option>
+          <option value="fuera">Fuera</option>
         </select>
       </div>
       <div className="relative h-full rounded-lg border border-gray-200">

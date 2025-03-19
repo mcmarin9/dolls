@@ -155,7 +155,8 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (106, 'Sylvanian Erizos', 14, 1, 'Erizos', 'Sylvanian Families', 2025, 'a la venta', 1.00, NULL, NULL, '/uploads/18ca89026b5a497abd8736bdedbc0dad.jpg', '2025-03-02 14:38:31'),
 (107, 'Hannah Montana Segunda', 14, 1, 'Ropa azul', 'Hannah Montana', 2008, 'a la venta', 1.00, NULL, 'Peor pelo y sin cinturon	', NULL, '2025-03-09 09:50:46'),
 (108, 'Bratz papel', 2, 2, 'Funk Out! Boyz', 'Dylan', 2003, 'a la venta', 2.00, NULL, NULL, '/uploads/de74db7cfa7d4eef89ed9961361a1094.jpg', '2025-03-09 09:56:47'),
-(109, 'Rapunzel Mattel', 8, 1, 'Braiding Friends Hair Braider', 'Rapunzel', 2010, 'a la venta', 2.00, NULL, NULL, '/uploads/70b24b8a851d4c19a4fcd773599e4793.jpg', '2025-03-09 10:02:15'),
+(109, 'Rapunzel Mattel', 8, 1, 'Braiding Friends Hair Braider', '
+', 2010, 'a la venta', 2.00, NULL, NULL, '/uploads/70b24b8a851d4c19a4fcd773599e4793.jpg', '2025-03-09 10:02:15'),
 (110, 'Heath', 6, 1, 'Básico', 'Heath Burns', 2012, 'a la venta', 1.00, NULL, 'Puede ser: Classroom: 2-pack (2012) o Ghoul Fair (2015)', '/uploads/0b2189b686484e82a9de13bf138974d7.jpg', '2025-03-09 10:05:03'),
 (111, 'Jade Verde', 5, 2, 'Serie 1', 'Jade Hunter', 2020, 'guardada', 3.00, NULL, NULL, NULL, '2025-03-09 10:06:21'),
 (112, 'Cloe super pelo', 2, 2, 'Featherageous', 'Cloe ', 2012, 'guardada', 2.00, NULL, NULL, '/uploads/0220e076a7af48a6832256b9c819cf1c.jpg', '2025-03-09 10:08:32'),
@@ -174,7 +175,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (125, 'Teresa Rio', 1, 1, 'Rio de Janeiro', 'Teresa', 2003, 'vendida', 1.00, NULL, 'Vestido de Fashionista #22.', '/uploads/fa8b5459a0e84ed59ddd0336bbc12247.jpg', '2025-03-09 10:56:31'),
 (126, 'Elsa', 8, 1, 'Básica', 'Elsa', 2017, 'guardada', 1.00, NULL, '2017-2019', '/uploads/1d49a22001a14bc7b7b5038a2f1a3fcf.jpg', '2025-03-09 11:06:58'),
 (127, 'Blancanieves figurita', 8, 1, 'Pijama', 'Blancanieves', 2025, 'guardada', 1.00, NULL, 'Estilo Q Posket fake.', NULL, '2025-03-09 11:24:09'),
-(128, 'Rapunzel Fea Pelo Super', 8, 1, 'Disney Parks / Euro Disney', 'Rapunzel', 2011, 'a la venta', 2.00, NULL, NULL, '/uploads/75357f5a153f4ef6b63c9dde3572bd15.jpg', '2025-03-09 11:38:04'),
+(128, 'Rapunzel Fea Pelo Super', 8, 1, 'Disney Parks / Euro Disney', 'Rapunzel', 2011, 'vendida', 2.00, 28.00, NULL, '/uploads/75357f5a153f4ef6b63c9dde3572bd15.jpg', '2025-03-09 11:38:04'),
 (129, 'Cenicienta', 8, 1, 'Clásico', 'Cenicienta', 2012, 'guardada', 2.00, NULL, NULL, NULL, '2025-03-09 11:42:22'),
 (130, 'Yasmin Primera Edición', 2, 2, 'Primera Edición', 'Yasmin', 2001, 'a la venta', 2.00, NULL, 'Comprada por el abrigo.', '/uploads/b0430c54d71b4765b784c7fb63c1c98f.jpg', '2025-03-09 11:43:52'),
 (131, 'Barbie Presentadora Americana', 1, 1, 'Fashionistas', 'Nikki', 2014, 'a la venta', 1.00, NULL, 'A veces sale sin número o la #6.', '/uploads/e0079da28cb34b6fbaf296c5f6e812e0.jpg', '2025-03-09 12:11:06'),

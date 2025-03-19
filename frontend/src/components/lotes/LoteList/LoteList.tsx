@@ -19,6 +19,7 @@ const LoteList: React.FC<LoteListProps> = ({
   const [selectedLote, setSelectedLote] = useState<Lote | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [loteToDelete, setLoteToDelete] = useState<Lote | null>(null);
+  const [selectedType, setSelectedType] = useState("");
 
   const formatPrice = (price: number | undefined | null): string => {
     if (price === undefined || price === null) return "0.00";
@@ -44,31 +45,41 @@ const LoteList: React.FC<LoteListProps> = ({
     setSortConfig({ key, direction });
   };
 
-  const sortedLotes = useMemo(() => {
-    const sortedItems = [...lotes];
+  const filteredAndSortedLotes = useMemo(() => {
+    // Primer paso: filtrar por tipo
+    let filteredItems = [...lotes];
+    if (selectedType) {
+      filteredItems = filteredItems.filter(lote => 
+        lote.tipo.toLowerCase() === selectedType.toLowerCase()
+      );
+    }
+
+    // Segundo paso: ordenar los items filtrados
     if (sortConfig.key !== null) {
-      sortedItems.sort((a, b) => {
+      filteredItems.sort((a, b) => {
         const aValue = a[sortConfig.key!];
         const bValue = b[sortConfig.key!];
-
+  
         // Manejar específicamente los campos numéricos
         if (sortConfig.key === "precio_total") {
           const aNum = Number(aValue) || 0;
           const bNum = Number(bValue) || 0;
           return sortConfig.direction === "asc" ? aNum - bNum : bNum - aNum;
         }
-
+  
         // Para el resto de campos, mantener la ordenación por string
         const aString = String(aValue || "").toLowerCase();
         const bString = String(bValue || "").toLowerCase();
-
+  
         if (aString < bString) return sortConfig.direction === "asc" ? -1 : 1;
         if (aString > bString) return sortConfig.direction === "asc" ? 1 : -1;
         return 0;
       });
     }
-    return sortedItems;
-  }, [lotes, sortConfig]);
+  
+    return filteredItems;
+  }, [lotes, sortConfig, selectedType]);
+
 
   const getSortIcon = (key: keyof Lote) => {
     if (sortConfig.key !== key) {
@@ -94,6 +105,17 @@ const LoteList: React.FC<LoteListProps> = ({
 
   return (
     <div className="flex flex-col h-full">
+          <div className="mb-4">
+      <select
+        value={selectedType}
+        onChange={(e) => setSelectedType(e.target.value)}
+        className="w-40 p-2 border rounded-lg text-sm"
+      >
+        <option value="">Todos los tipos</option>
+        <option value="compra">Compra</option>
+        <option value="venta">Venta</option>
+      </select>
+    </div>
       <div className="flex-1 min-h-0 rounded-lg border border-gray-200">
         <div className="h-full overflow-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -129,10 +151,11 @@ const LoteList: React.FC<LoteListProps> = ({
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {sortedLotes.map((lote) => {
-                const totalPrice = lote.precio_total || 0;
-                const quantity = lote.dolls?.length || 0;
-                const unitPrice = quantity > 0 ? totalPrice / quantity : 0;
+            {filteredAndSortedLotes.map((lote) => {
+            const totalPrice = lote.precio_total || 0;
+            const quantity = lote.dolls?.length || 0;
+            const unitPrice = quantity > 0 ? totalPrice / quantity : 0;
+
 
                 return (
                   <tr key={lote.id}>
