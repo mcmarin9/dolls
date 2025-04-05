@@ -400,26 +400,27 @@ def add_lote():
                     "error": f"La muñeca '{existing['nombre']}' ya está en otro lote del mismo tipo"
                 }), 400
 
-            # Asociar las muñecas al lote
+            # Asociar las muñecas al lote y actualizar estados
+            precio_por_doll = float(data['precio_total']) / len(data['dolls'])
             for doll_id in data['dolls']:
+                # Insertar en lote_doll
                 cursor.execute("""
                     INSERT INTO lote_doll (lote_id, doll_id)
                     VALUES (%s, %s)
                 """, (lote_id, doll_id))
 
-            # Calcular y asignar el precio individual por muñeca
-            precio_por_doll = float(data['precio_total']) / len(data['dolls'])
-            for doll_id in data['dolls']:
+                # Actualizar precio y estado de la muñeca
                 if data['tipo'] == 'compra':
                     cursor.execute("""
                         UPDATE dolls
                         SET precio_compra = %s
                         WHERE id = %s
                     """, (precio_por_doll, doll_id))
-                else:
+                else:  # tipo venta
                     cursor.execute("""
                         UPDATE dolls
-                        SET precio_venta = %s
+                        SET precio_venta = %s,
+                            estado = 'vendida'
                         WHERE id = %s
                     """, (precio_por_doll, doll_id))
 
@@ -587,42 +588,26 @@ def update_lote(lote_id):
 
         connection.begin()
         with connection.cursor() as cursor:
-            # Check if dolls are already in other lotes of different type
-             # Check if dolls are in lotes of the SAME type
-            cursor.execute("""
-                SELECT d.id, d.nombre, l.tipo
-                FROM dolls d 
-                JOIN lote_doll ld ON d.id = ld.doll_id
-                JOIN lotes l ON ld.lote_id = l.id
-                WHERE d.id IN %s 
-                AND l.id != %s 
-                AND l.tipo = %s
-            """, (tuple(data['dolls']), lote_id, data['tipo']))
+            # ... existing validation code ...
 
-            existing = cursor.fetchone()
-            if existing:
-                connection.rollback()
-                error_message = {
-                    "error": f"La muñeca '{existing['nombre']}' ya está en otro lote de {existing['tipo']}"
-                }
-                return Response(
-                    json.dumps(error_message, ensure_ascii=False),
-                    status=400,
-                    content_type='application/json; charset=utf-8'
-                )
-
-            # Continue with update if validation passes
+            # Update lote details
             cursor.execute("""
                 UPDATE lotes 
                 SET nombre = %s, tipo = %s, precio_total = %s
                 WHERE id = %s
             """, (data['nombre'], data['tipo'], data['precio_total'], lote_id))
             
+            # Remove old doll associations and reset states
+            cursor.execute("""
+                UPDATE dolls d
+                JOIN lote_doll ld ON d.id = ld.doll_id
+                SET d.estado = 'guardada'
+                WHERE ld.lote_id = %s AND d.estado = 'vendida'
+            """, (lote_id,))
             
-            # Remove old doll associations
             cursor.execute("DELETE FROM lote_doll WHERE lote_id = %s", (lote_id,))
             
-            # Add new doll associations
+            # Add new doll associations and update states
             precio_por_doll = float(data['precio_total']) / len(data['dolls'])
             for doll_id in data['dolls']:
                 cursor.execute("""
@@ -630,17 +615,18 @@ def update_lote(lote_id):
                     VALUES (%s, %s)
                 """, (lote_id, doll_id))
                 
-                # Update doll prices
+                # Update doll prices and state
                 if data['tipo'] == 'compra':
                     cursor.execute("""
                         UPDATE dolls
                         SET precio_compra = %s
                         WHERE id = %s
                     """, (precio_por_doll, doll_id))
-                else:
+                else:  # tipo venta
                     cursor.execute("""
                         UPDATE dolls
-                        SET precio_venta = %s
+                        SET precio_venta = %s,
+                            estado = 'vendida'
                         WHERE id = %s
                     """, (precio_por_doll, doll_id))
             

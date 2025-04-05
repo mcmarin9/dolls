@@ -29,9 +29,10 @@ const EditDoll: React.FC<EditDollProps> = ({
   const [enLoteCompraState, setEnLoteCompraState] = useState(false);
   const [enLoteVentaState, setEnLoteVentaState] = useState(false);
   const [pricingMethod, setPricingMethod] = useState<PricingMethod>({
-    compra: "lote", // Default to lote
-    venta: "lote", // Default to lote
+    compra: null,
+    venta: null, 
   });
+  const [ventaMessage, setVentaMessage] = useState<string>("");
 
   useEffect(() => {
     setFormData(doll);
@@ -52,12 +53,12 @@ const EditDoll: React.FC<EditDollProps> = ({
           ? "lote"
           : doll.precio_compra !== null && doll.precio_compra !== undefined
           ? "individual"
-          : "lote",
+          : null,
         venta: esLoteVenta
           ? "lote"
           : doll.precio_venta !== null && doll.precio_venta !== undefined
           ? "individual"
-          : "lote",
+          : null,
       });
     };
 
@@ -67,15 +68,37 @@ const EditDoll: React.FC<EditDollProps> = ({
   }, [doll, doll.id, doll.precio_compra, doll.precio_venta]);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "anyo" || name === "marca_id" ? parseInt(value) : value,
-    }));
+  
+    // Si es el precio de venta y es individual
+    if (name === "precio_venta" && pricingMethod.venta === "individual") {
+      const precioVenta = value === "" ? undefined : parseFloat(value);
+      if (precioVenta && precioVenta > 0) {
+        setFormData((prev) => ({
+          ...prev,
+          precio_venta: precioVenta,
+          estado: "vendida",
+        }));
+        setVentaMessage(
+          "El estado se ha actualizado automáticamente a 'Vendida'"
+        );
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          precio_venta: undefined // Usar undefined en lugar de null
+        }));
+        setVentaMessage("");
+      }
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: name === "anyo" || name === "marca_id" || name === "precio_compra" || name === "precio_venta"
+          ? value === "" ? undefined : parseFloat(value) // Usar undefined en lugar de null
+          : value
+      }));
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,7 +136,7 @@ const EditDoll: React.FC<EditDollProps> = ({
     submitData.append("personaje", formData.personaje.trim());
     submitData.append("anyo", formData.anyo.toString());
     submitData.append("estado", formData.estado || doll.estado || "guardada");
-    
+
     const comentarios = formData.comentarios?.trim() ?? "";
     submitData.append("comentarios", comentarios);
 
@@ -368,17 +391,24 @@ const EditDoll: React.FC<EditDollProps> = ({
                     </label>
                   </div>
                   {pricingMethod.venta === "individual" && (
-                    <input
-                      type="number"
-                      name="precio_venta"
-                      value={formData.precio_venta || ""}
-                      onChange={handleChange}
-                      step="0.01"
-                      min="0"
-                      disabled={enLoteVentaState}
-                      className="w-full border rounded p-2"
-                      placeholder="Introduce el precio de venta"
-                    />
+                    <div>
+                      <input
+                        type="number"
+                        name="precio_venta"
+                        value={formData.precio_venta || ""}
+                        onChange={handleChange}
+                        step="0.01"
+                        min="0"
+                        disabled={enLoteVentaState}
+                        className="w-full border rounded p-2"
+                        placeholder="Introduce el precio de venta"
+                      />
+                      {ventaMessage && (
+                        <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-700">
+                          ⚠️ {ventaMessage}
+                        </div>
+                      )}
+                    </div>
                   )}
                   {pricingMethod.venta === "lote" && (
                     <div>
