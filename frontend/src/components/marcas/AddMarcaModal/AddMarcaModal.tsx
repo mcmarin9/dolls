@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Fabricante } from '../../../types/Fabricante';
-import { createMarca, getFabricantes } from '../../../services/api';
+import { getFabricantes } from '../../../services/api';
 
 interface AddMarcaModalProps {
   isOpen: boolean;
@@ -31,19 +31,15 @@ const AddMarcaModal: React.FC<AddMarcaModalProps> = ({ isOpen, closeModal, onMar
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createMarca({ 
-        nombre, 
-        fabricanteIds: selectedFabricantes 
-      });
-      onMarcaAdded({ 
+      await onMarcaAdded({ 
         nombre, 
         fabricanteIds: selectedFabricantes 
       });
       setNombre('');
       setSelectedFabricantes([]);
-      closeModal();
     } catch (error) {
       console.error('Error al crear marca:', error);
+      // Aquí podrías mostrar un mensaje de error al usuario
     }
   };
 

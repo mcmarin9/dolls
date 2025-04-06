@@ -167,16 +167,16 @@ const App: React.FC = () => {
     fabricanteIds: number[];
   }) => {
     try {
-      await createMarca({
+      const newMarca = await createMarca({
         nombre: marca.nombre,
         fabricanteIds: marca.fabricanteIds
       });
-      await fetchDolls();
-      await fetchBrands();
+      await fetchBrands(); // Solo necesitamos actualizar las marcas
       closeMarcaModal();
+      return newMarca; // Retornamos la nueva marca creada
     } catch (error) {
       console.error("Error adding marca:", error);
-      alert("Failed to add marca");
+      throw error; // Propagamos el error para manejarlo en el componente AddMarcaModal
     }
   };
 
