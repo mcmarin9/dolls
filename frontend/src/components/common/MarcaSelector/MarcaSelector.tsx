@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { Autocomplete, TextField } from "@mui/material";
 import { Marca } from "../../../types/Marca";
-import { getMarcas } from "../../../services/api";
+import { getMarcas, getDolls } from "../../../services/api";
 
 interface MarcaSelectorProps {
   selectedMarcaId?: number;
@@ -10,6 +11,10 @@ interface MarcaSelectorProps {
   className?: string;
 }
 
+interface MarcaWithCount extends Marca {
+  dollCount: number;
+}
+
 const MarcaSelector: React.FC<MarcaSelectorProps> = ({
   selectedMarcaId,
   selectedFabricanteId,
@@ -17,15 +22,25 @@ const MarcaSelector: React.FC<MarcaSelectorProps> = ({
   onFabricanteChange,
   className = "",
 }) => {
-  const [marcas, setMarcas] = useState<Marca[]>([]);
+  const [marcas, setMarcas] = useState<MarcaWithCount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [marcasData] = await Promise.all([getMarcas()]);
-        setMarcas(marcasData);
+        const [marcasData, dollsData] = await Promise.all([getMarcas(), getDolls()]);
+        
+        // Contar muñecas por marca
+        const marcasWithCount = marcasData.map(marca => ({
+          ...marca,
+          dollCount: dollsData.filter(doll => doll.marca_id === marca.id).length
+        }));
+
+        // Ordenar por número de muñecas descendente
+        const sortedMarcas = marcasWithCount.sort((a, b) => b.dollCount - a.dollCount);
+        
+        setMarcas(sortedMarcas);
       } catch (err) {
         setError("Error al cargar los datos");
         console.error("Error fetching data:", err);
@@ -37,11 +52,10 @@ const MarcaSelector: React.FC<MarcaSelectorProps> = ({
     fetchData();
   }, []);
 
-  const handleMarcaChange = (marcaId: number) => {
-    onMarcaChange(marcaId);
-
-    const marca = marcas.find((m) => m.id === marcaId);
+  const handleMarcaChange = (_: React.SyntheticEvent, marca: MarcaWithCount | null) => {
     if (!marca) return;
+    
+    onMarcaChange(marca.id);
 
     if (marca.fabricantes && marca.fabricantes.length === 1) {
       onFabricanteChange(marca.fabricantes[0].id);
@@ -63,29 +77,30 @@ const MarcaSelector: React.FC<MarcaSelectorProps> = ({
   return (
     <div className={`marca-selector ${className}`}>
       <div className="marca-select-container mb-2">
-        <select
-          value={selectedMarcaId || ""}
-          onChange={(e) => handleMarcaChange(Number(e.target.value))}
-          className="w-full border rounded p-2"
-        >
-          <option value="">Selecciona una marca</option>
-          {marcas.map((marca) => (
-            <option key={marca.id} value={marca.id}>
-              {marca.nombre}
-            </option>
-          ))}
-        </select>
+        <Autocomplete
+          options={marcas}
+          getOptionLabel={(marca) => marca.nombre}
+          value={currentMarca || null}
+          onChange={handleMarcaChange}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Selecciona una marca"
+              variant="outlined"
+              size="small"
+            />
+          )}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
+        />
       </div>
 
       {selectedMarcaId && currentMarca && (
         <div className="fabricante-select-container">
           {currentMarca.fabricantes && currentMarca.fabricantes.length === 1 ? (
-            // Si solo hay un fabricante, mostrar su nombre
             <div className="w-full p-2 border rounded bg-gray-50">
               {currentMarca.fabricantes[0].nombre}
             </div>
           ) : (
-            // Si hay múltiples fabricantes, mostrar selector
             <select
               value={selectedFabricanteId || ""}
               onChange={(e) => onFabricanteChange(Number(e.target.value))}

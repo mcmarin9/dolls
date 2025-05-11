@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-04-2025 a las 22:36:05
+-- Tiempo de generación: 11-05-2025 a las 12:33:46
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -96,7 +96,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (48, 'Bratz Tuerto', 2, 2, 'On the Mic', 'Eitan', 2011, 'vendida', 1.00, 5.00, NULL, '/uploads/7d6551fe284341e2bfba8d1e06ee4e4a.jpg', '2025-02-20 19:18:43'),
 (49, 'Yasmin Rock Angelz', 2, 2, 'Rock Angelz', 'Yasmin', 2005, 'guardada', 1.00, NULL, NULL, NULL, '2025-02-20 19:20:05'),
 (50, 'Barbie Guapa de rosa', 1, 1, 'Fashion Fever Hair Hightlights', 'Barbie', 2006, 'guardada', 1.00, NULL, NULL, '/uploads/59eade3a5c444241bc36c0f0f8811ce6.jpg', '2025-02-20 19:23:09'),
-(51, 'Poppy', 5, 2, 'Serie 1', 'Poppy Rowan', 2020, 'guardada', 3.00, NULL, 'La manca', '/uploads/56a452978b5b4863a5176fcc95445321.jpg', '2025-02-20 19:24:26'),
+(51, 'Poppy', 5, 2, 'Serie 1', 'Poppy Rowan', 2020, 'guardada', 3.00, NULL, 'Ya no es la manca', '/uploads/56a452978b5b4863a5176fcc95445321.jpg', '2025-02-20 19:24:26'),
 (52, 'Teresa Burbujas', 1, 1, 'Burbujas / Bubble Fairy', 'Teresa', 1998, 'guardada', 1.00, NULL, NULL, '/uploads/b2099156c7b24bf8921122c397177fa1.jpg', '2025-02-20 19:26:09'),
 (53, 'Barbie \"Patinadora\"', 1, 1, 'Tahiti', 'Barbie', 1992, 'guardada', 1.00, NULL, 'Traje del Aliexpress.', '/uploads/991f3299e6964f9cb94197f83bbfd5dd.jpg', '2025-02-20 19:30:08'),
 (54, 'Super Negra con Vestido', 1, 1, 'Fashionista', '#90', 2018, 'vendida', 1.00, 24.00, NULL, '/uploads/a1ef1f5b69fe4f658e94af5117389b3a.jpg', '2025-02-20 19:56:55'),
@@ -163,11 +163,11 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (116, 'Ken novio', 1, 1, ' Princess Groom', 'Ken', 2010, 'vendida', 1.00, 5.00, 'Medio cuerpo amarillo', '/uploads/ebf2cb439cf84ab99909c9608f38ab74.jpg', '2025-03-09 10:24:13'),
 (117, 'Barbie Trencitas', 1, 1, 'Fashionista', '#123', 2019, 'guardada', 1.00, NULL, NULL, '/uploads/8cbbfedc0d594b6c87aa17f1ca9b7983.jpg', '2025-03-09 10:27:17'),
 (118, 'Lote de ropa', 14, 1, 'Mix', 'Mix', 2025, 'guardada', 3.00, NULL, 'LOL OMG y Rainbow (buscar)', NULL, '2025-03-09 10:31:10'),
-(119, 'Bratz Kylie', 2, 2, 'Vestido de noche', 'Kylie Jenner', 2025, 'a la venta', 3.00, NULL, NULL, '/uploads/42cf2c7596634253a0ba6c5232b64785.jpg', '2025-03-09 10:31:21'),
+(119, 'Bratz Kylie', 2, 2, 'Vestido de noche', 'Kylie Jenner', 2023, 'a la venta', 3.00, NULL, 'Donó brazo a la Kylie guapa.', '/uploads/f7dd58ceba384524a8c96207896a8f40.jpg', '2025-03-09 10:31:21'),
 (120, 'Babie Shoes', 1, 1, 'Shoes Galore', 'Barbie', 2001, 'vendida', 1.00, NULL, 'Ropa original pero no suya.', '/uploads/fdc4fc14a7564e80b76a399c99d9d70d.jpg', '2025-03-09 10:42:45'),
 (121, 'Neonlicius 2', 3, 2, 'Serie 1	', 'Neonlicius', 2019, 'guardada', 3.00, NULL, 'No tengo claro cual es cual, con ropa.', NULL, '2025-03-09 10:44:15'),
 (122, 'LOL Pelo Naranja', 3, 2, 'Dance Dance Dance', 'Major Lady', 2021, 'guardada', 1.00, NULL, NULL, NULL, '2025-03-09 10:46:06'),
-(123, 'Poppy Manca', 5, 2, 'Serie 1', 'Poppy Rowan', 2020, 'guardada', 2.00, NULL, 'Ya no está manca porque hubo transplante.', '/uploads/edaaf587521d4f659db377774956ac27.jpg', '2025-03-09 10:47:26'),
+(123, 'Poppy Manca', 5, 2, 'Serie 1', 'Poppy Rowan', 2020, 'guardada', 2.00, NULL, 'Le faltan las 2 manos.', '/uploads/edaaf587521d4f659db377774956ac27.jpg', '2025-03-09 10:47:26'),
 (124, 'Armario Barbie', 1, 1, 'Fashionistas Ultimate Closet', 'Sin personaje', 2019, 'vendida', 4.00, 10.00, 'Venía con el vestido gris de puntos y el rosa de flores y rallas negras. Vendido sin la ropa.', '/uploads/fc287c6bc9e8407e8c1dc91aaf7b7c52.jpg', '2025-03-09 10:55:08'),
 (125, 'Teresa Rio', 1, 1, 'Rio de Janeiro', 'Teresa', 2003, 'vendida', 1.00, NULL, 'Vestido de Fashionista #22.', '/uploads/fa8b5459a0e84ed59ddd0336bbc12247.jpg', '2025-03-09 10:56:31'),
 (126, 'Elsa', 8, 1, 'Básica', 'Elsa', 2017, 'guardada', 1.00, NULL, '2017-2019', '/uploads/1d49a22001a14bc7b7b5038a2f1a3fcf.jpg', '2025-03-09 11:06:58'),
@@ -219,8 +219,8 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (172, 'Alien', 28, 2, 'Signature', 'Alie Lectric', 2012, 'guardada', 1.00, NULL, NULL, NULL, '2025-04-06 10:56:56'),
 (173, 'Yasmin Morros Rojos', 2, 2, 'Play Sportz 1', 'Yasmin', 2005, 'guardada', 2.50, NULL, 'Futbolista', NULL, '2025-04-13 09:34:46'),
 (174, 'Phoebe Cumpleaños', 2, 2, 'Birthday Bash / Party', 'Phoebe', 2005, 'guardada', 2.50, NULL, 'Solo le faltan los zapatos', NULL, '2025-04-13 09:36:29'),
-(175, 'Fairtopia Simple', 1, 1, 'Fairytopia', 'Elina', 2005, 'a la venta', 2.50, NULL, NULL, NULL, '2025-04-13 09:37:35'),
-(176, 'Barbie 12 Princesas', 1, 1, '12 Princesas Bailarinas', 'Genevieve', 2006, 'a la venta', 2.50, NULL, NULL, NULL, '2025-04-13 09:39:23'),
+(175, 'Elina', 1, 1, 'Fairytopia', 'Elina', 2005, 'a la venta', 2.50, NULL, NULL, '/uploads/8516d0976afa400c8c30a96424fe357a.jpg', '2025-04-13 09:37:35'),
+(176, 'Barbie 12 Princesas', 1, 1, '12 Princesas Bailarinas', 'Genevieve', 2006, 'a la venta', 2.50, NULL, NULL, '/uploads/8c2247b419bf4485bfcf4789aadd494a.jpg', '2025-04-13 09:39:23'),
 (177, 'Phoebe Pelo Largo', 2, 2, 'Campfire', 'Phoebe', 2005, 'guardada', 1.25, NULL, NULL, NULL, '2025-04-20 19:12:23'),
 (178, 'Sasha Ojos Marrones', 2, 2, 'Strut It', 'Sasha', 2003, 'guardada', 1.25, NULL, NULL, NULL, '2025-04-20 19:15:44'),
 (179, 'Cloe Pijama', 2, 2, 'Slumber Party', 'Cloe', 2003, 'guardada', 1.25, NULL, 'Primera edición', NULL, '2025-04-20 19:18:33'),
@@ -228,7 +228,14 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (181, 'Meygana', 30, 2, 'Primera Edición', 'Meygana Broomstix', 2012, 'guardada', 3.00, NULL, NULL, NULL, '2025-04-20 20:22:16'),
 (182, 'Woody y Jessie', 8, 1, 'Figuritas', 'Woody y Jessie', 2025, 'guardada', 1.00, NULL, NULL, NULL, '2025-04-20 20:22:44'),
 (183, 'Lola Pelonaranja', 4, 2, 'Babysitting Party', 'Ivy Winks', 2022, 'guardada', 1.00, NULL, NULL, NULL, '2025-04-20 20:24:51'),
-(184, 'Westley Pestañas', 7, 1, 'Masquerade Madness', 'Westley / Madison	', 2004, 'a la venta', 2.00, NULL, NULL, NULL, '2025-04-20 20:26:33');
+(184, 'Westley Pestañas', 7, 1, 'Masquerade Madness', 'Westley / Madison', 2004, 'a la venta', 2.00, NULL, NULL, '/uploads/f26af7d737d44350b4d65fad5a4822ef.jpg', '2025-04-20 20:26:33'),
+(185, 'Vaiana Grande', 8, 6, 'My Friend Dolls', 'Vaiana', 2021, 'guardada', 2.00, NULL, NULL, NULL, '2025-05-02 15:36:58'),
+(186, 'Briar Beauty', 9, 1, 'Core Royals & Rebels Dolls', 'Briar Beauty', 2013, 'a la venta', 1.00, NULL, NULL, '/uploads/3a1bc0953d50474896df729965b1b3a4.jpg', '2025-05-02 15:38:25'),
+(187, 'Jade Manos tiesas', 5, 2, 'Rainbow World Slime & Pet', 'Jade Hunter', 2024, 'guardada', 3.00, NULL, NULL, NULL, '2025-05-04 10:12:26'),
+(188, 'Shadow Rosa Neon', 31, 2, 'Neon Shadow', 'Mara Pinkett', 2022, 'guardada', 2.00, NULL, 'Manca', NULL, '2025-05-04 10:13:40'),
+(189, 'Kylie Guapa', 2, 2, 'Vestido de día', 'Kylie Jenner	', 2023, 'guardada', 1.00, NULL, NULL, NULL, '2025-05-04 10:23:28'),
+(190, 'Eric Boda', 8, 1, 'Boda', 'Eric', 1991, 'a la venta', 1.00, NULL, 'Marca Tyco, año aproximado', NULL, '2025-05-11 09:16:33'),
+(191, 'Figura Cenicienta', 8, 1, 'Purpurina', 'Cenicienta', 2025, 'guardada', 1.00, NULL, NULL, NULL, '2025-05-11 09:17:12');
 
 -- --------------------------------------------------------
 
@@ -453,7 +460,8 @@ INSERT INTO `marca` (`id`, `nombre`, `created_at`) VALUES
 (16, 'LOL Fierce', '2025-03-15 15:56:27'),
 (17, 'Junior High', '2025-03-15 23:36:28'),
 (28, 'Novi Star', '2025-04-06 10:54:38'),
-(30, 'Bratzillaz', '2025-04-20 20:21:08');
+(30, 'Bratzillaz', '2025-04-20 20:21:08'),
+(31, 'Shadow High', '2025-05-04 10:13:07');
 
 -- --------------------------------------------------------
 
@@ -495,7 +503,8 @@ INSERT INTO `marca_fabricante` (`marca_id`, `fabricante_id`) VALUES
 (16, 2),
 (17, 2),
 (28, 2),
-(30, 2);
+(30, 2),
+(31, 2);
 
 --
 -- Índices para tablas volcadas
@@ -552,7 +561,7 @@ ALTER TABLE `marca_fabricante`
 -- AUTO_INCREMENT de la tabla `dolls`
 --
 ALTER TABLE `dolls`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=185;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=192;
 
 --
 -- AUTO_INCREMENT de la tabla `fabricantes`
@@ -576,7 +585,7 @@ ALTER TABLE `lote_doll`
 -- AUTO_INCREMENT de la tabla `marca`
 --
 ALTER TABLE `marca`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- Restricciones para tablas volcadas
