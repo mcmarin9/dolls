@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-12-2025 a las 18:46:53
+-- Tiempo de generación: 12-12-2025 a las 20:53:35
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -53,7 +53,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (3, 'Mal Básica', 10, 3, 'Signature', 'Mal', 2015, 'vendida', 2.00, 7.00, '', '/uploads/3cd337050af045879af9e9a37ce70b26.jpg', '2025-02-16 18:07:48'),
 (4, 'Super Girl', 11, 1, 'Básica', 'Super Girl', 2015, 'a la venta', 2.00, NULL, NULL, '/uploads/56d0576172a646a2b21febe7c140a106.jpg', '2025-02-16 18:08:56'),
 (5, 'Westley Patines', 7, 1, 'Roller Girls Remote Control', 'Westley / Madison', 2007, 'a la venta', 4.00, NULL, NULL, '/uploads/8eacd60c7b264a3bb1584b410dc8b16c.jpg', '2025-02-16 18:13:11'),
-(6, 'Jade', 2, 2, 'Primera Edición', 'Jade', 2001, 'vendida', 4.00, NULL, 'vendida con cloe basica', '/uploads/5f4d6868117643759dcd872623dbbeed.jpg', '2025-02-16 18:14:55'),
+(6, 'Jade', 2, 2, 'Primera Edición', 'Jade', 2001, 'vendida', 4.00, 4.50, 'vendida con cloe basica', '/uploads/5f4d6868117643759dcd872623dbbeed.jpg', '2025-02-16 18:14:55'),
 (7, 'Elena de Avalor', 8, 4, 'Básica', 'Elena de Avalor', 2016, 'a la venta', 2.00, NULL, NULL, '/uploads/bf277e0701164ffd9e95ef2e499e8757.jpg', '2025-02-16 18:17:49'),
 (8, 'Barbie Super Negra', 1, 1, 'Fashionista', '#90', 2018, 'guardada', 2.00, NULL, NULL, NULL, '2025-02-16 18:18:23'),
 (9, 'Spirit Queen', 3, 2, 'Movie Magic', 'Spirit Queen', 2021, 'vendida', 1.67, 6.00, NULL, '/uploads/8245630e736a4185957c621fd94b02b8.jpg', '2025-02-16 18:36:50'),
@@ -70,7 +70,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (21, 'Midge anillo', 1, 1, 'Happy Family', 'Midge', 2003, 'vendida', 1.67, 8.00, NULL, '/uploads/51d028104a8744a5b124d04a96365139.jpg', '2025-02-16 19:42:11'),
 (22, 'Teresa la guapa', 1, 1, 'Fashion Fever', 'Teresa', 2004, 'vendida', 1.67, 13.00, NULL, '/uploads/0a7df5c0a76f48ebb96dee3865f5e384.jpg', '2025-02-16 19:43:24'),
 (23, 'Sasha Básica', 2, 2, 'Primera Edición', 'Sasha', 2001, 'guardada', 1.25, NULL, NULL, NULL, '2025-02-17 18:39:25'),
-(24, 'Jade Básica', 2, 2, 'Primera Edición', 'Jade', 2001, 'vendida', 1.25, 4.50, 'Pelo más marrón que negro', NULL, '2025-02-17 18:40:33'),
+(24, 'Jade Básica', 2, 2, 'Primera Edición', 'Jade', 2001, 'guardada', 1.25, NULL, 'Pelo más marrón que negro', NULL, '2025-02-17 18:40:33'),
 (25, 'Yasmin Ojos azules', 2, 2, 'Strut It', 'Yasmin', 2003, 'guardada', 1.25, NULL, NULL, '/uploads/871790761bd34ba489bcc0898776cfd6.jpg', '2025-02-17 18:42:52'),
 (26, 'Cloe Mechas rosas', 2, 2, 'Snow Kissed', 'Cloe', 2015, 'vendida', 1.25, 6.60, NULL, '/uploads/36797f6118e045dc916739e19466c22e.jpg', '2025-02-17 18:44:51'),
 (27, 'Barbie fea', 1, 1, 'Rollerblade', 'Barbie', 1995, 'vendida', 1.00, 7.00, NULL, '/uploads/c42ba53083214296ae6fd62eb675e2a4.jpg', '2025-02-17 19:00:25'),
@@ -100,7 +100,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (52, 'Teresa Burbujas', 1, 1, 'Burbujas / Bubble Fairy', 'Teresa', 1998, 'guardada', 1.00, NULL, NULL, '/uploads/b2099156c7b24bf8921122c397177fa1.jpg', '2025-02-20 19:26:09'),
 (53, 'Barbie \"Patinadora\"', 1, 1, 'Tahiti', 'Barbie', 1992, 'guardada', 1.00, NULL, 'Traje del Aliexpress.', '/uploads/991f3299e6964f9cb94197f83bbfd5dd.jpg', '2025-02-20 19:30:08'),
 (54, 'Super Negra con Vestido', 1, 1, 'Fashionista', '#90', 2018, 'vendida', 1.00, 24.00, NULL, '/uploads/a1ef1f5b69fe4f658e94af5117389b3a.jpg', '2025-02-20 19:56:55'),
-(55, 'Jade', 2, 2, 'Primera Edición', 'Jade', 2001, 'vendida', 5.00, 7.00, NULL, '/uploads/8142963793ce490397dbb9904096515c.jpg', '2025-02-22 10:28:35'),
+(55, 'Jade', 2, 2, 'Primera Edición', 'Jade', 2001, 'guardada', 5.00, 4.50, NULL, '/uploads/8142963793ce490397dbb9904096515c.jpg', '2025-02-22 10:28:35'),
 (56, 'Chelsea Articulada', 7, 1, 'Vespa', 'Chelsea', 2003, 'vendida', 5.00, 9.00, NULL, '/uploads/c11097d3e57349cdb25c764c2e0e7e04.jpg', '2025-02-22 10:31:00'),
 (57, 'Barbie Ojos Lilas', 1, 1, 'Sweet Treats', 'Barbie', 1999, 'a la venta', 1.00, NULL, NULL, '/uploads/12546cf6985649c2a250bb5647ced418.jpg', '2025-02-22 10:32:18'),
 (58, 'Barbie Ojos Verdes', 1, 1, 'Krissy Bedtime Baby', 'Barbie', 2000, 'vendida', 1.00, 8.00, NULL, '/uploads/67d31451d17b48e08238049f2eebfffb.jpg', '2025-02-22 10:33:29'),
@@ -164,12 +164,12 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (117, 'Barbie Trencitas', 1, 1, 'Fashionista', '#123', 2019, 'guardada', 1.00, NULL, NULL, '/uploads/8cbbfedc0d594b6c87aa17f1ca9b7983.jpg', '2025-03-09 10:27:17'),
 (118, 'Lote de ropa', 14, 1, 'Mix', 'Mix', 2025, 'guardada', 3.00, NULL, 'LOL OMG y Rainbow (buscar)', NULL, '2025-03-09 10:31:10'),
 (119, 'Bratz Kylie', 2, 2, 'Vestido de noche', 'Kylie Jenner', 2023, 'a la venta', 3.00, NULL, 'Donó brazo a la Kylie guapa.', '/uploads/f7dd58ceba384524a8c96207896a8f40.jpg', '2025-03-09 10:31:21'),
-(120, 'Babie Shoes', 1, 1, 'Shoes Galore', 'Barbie', 2001, 'vendida', 1.00, NULL, 'Ropa original pero no suya.', '/uploads/fdc4fc14a7564e80b76a399c99d9d70d.jpg', '2025-03-09 10:42:45'),
+(120, 'Babie Shoes', 1, 1, 'Shoes Galore', 'Barbie', 2001, 'vendida', 1.00, 5.00, 'Ropa original pero no suya.', '/uploads/fdc4fc14a7564e80b76a399c99d9d70d.jpg', '2025-03-09 10:42:45'),
 (121, 'Neonlicius 2', 3, 2, 'Serie 1', 'Neonlicius', 2019, 'guardada', 3.00, NULL, 'No tengo claro si era de las básicas.', '/uploads/4f3317764c3941db961992fb69e33fd8.jpg', '2025-03-09 10:44:15'),
 (122, 'LOL Pelo Naranja', 3, 2, 'Dance Dance Dance', 'Major Lady', 2021, 'guardada', 1.00, NULL, 'No es su ropa original.', '/uploads/8ffdd1d207054a2890a71325f5c9e594.jpg', '2025-03-09 10:46:06'),
 (123, 'Poppy Manca', 5, 2, 'Serie 1', 'Poppy Rowan', 2020, 'a la venta', 2.00, NULL, 'Le faltan las 2 manos y una mariposa está rota.', '/uploads/7aaa5146d6104cabb18c4bc9853b8529.jpg', '2025-03-09 10:47:26'),
 (124, 'Armario Barbie', 1, 1, 'Fashionistas Ultimate Closet', 'Sin personaje', 2019, 'vendida', 4.00, 10.00, 'Venía con el vestido gris de puntos y el rosa de flores y rallas negras. Vendido sin la ropa.', '/uploads/fc287c6bc9e8407e8c1dc91aaf7b7c52.jpg', '2025-03-09 10:55:08'),
-(125, 'Teresa Rio', 1, 1, 'Rio de Janeiro', 'Teresa', 2003, 'vendida', 1.00, NULL, 'Vestido de Fashionista #22.', '/uploads/fa8b5459a0e84ed59ddd0336bbc12247.jpg', '2025-03-09 10:56:31'),
+(125, 'Teresa Rio', 1, 1, 'Rio de Janeiro', 'Teresa', 2003, 'vendida', 1.00, 5.00, 'Vestido de Fashionista #22.', '/uploads/fa8b5459a0e84ed59ddd0336bbc12247.jpg', '2025-03-09 10:56:31'),
 (126, 'Elsa', 8, 1, 'Básica', 'Elsa', 2017, 'guardada', 1.00, NULL, '2017-2019', '/uploads/1d49a22001a14bc7b7b5038a2f1a3fcf.jpg', '2025-03-09 11:06:58'),
 (127, 'Blancanieves figurita', 8, 1, 'Pijama', 'Blancanieves', 2025, 'guardada', 1.00, NULL, 'Estilo Q Posket fake.', NULL, '2025-03-09 11:24:09'),
 (128, 'Rapunzel Fea Pelo Super', 8, 1, 'Disney Parks / Euro Disney', 'Rapunzel', 2011, 'vendida', 2.00, 28.00, NULL, '/uploads/75357f5a153f4ef6b63c9dde3572bd15.jpg', '2025-03-09 11:38:04'),
@@ -401,7 +401,8 @@ INSERT INTO `lotes` (`id`, `nombre`, `tipo`, `precio_total`, `created_at`) VALUE
 (46, 'Barbies Antiguas', 'compra', 3.00, '2025-11-30 11:46:20'),
 (47, 'Bratz y Baby', 'compra', 4.00, '2025-11-30 11:58:43'),
 (48, '4 Rainbows', 'venta', 25.00, '2025-12-06 12:57:34'),
-(49, '2 Barbie 2 Troglodita', 'venta', 17.00, '2025-12-12 17:45:17');
+(49, '2 Barbie 2 Troglodita', 'venta', 17.00, '2025-12-12 17:45:17'),
+(50, 'Teresa y Barbie', 'venta', 10.00, '2025-12-12 19:44:26');
 
 -- --------------------------------------------------------
 
@@ -426,6 +427,7 @@ INSERT INTO `lote_doll` (`id`, `lote_id`, `doll_id`) VALUES
 (13, 4, 4),
 (1, 1, 5),
 (2, 1, 6),
+(144, 21, 6),
 (3, 2, 7),
 (4, 2, 8),
 (9, 3, 9),
@@ -444,7 +446,6 @@ INSERT INTO `lote_doll` (`id`, `lote_id`, `doll_id`) VALUES
 (23, 8, 22),
 (24, 9, 23),
 (25, 9, 24),
-(54, 21, 24),
 (26, 9, 25),
 (27, 9, 26),
 (28, 10, 27),
@@ -483,7 +484,7 @@ INSERT INTO `lote_doll` (`id`, `lote_id`, `doll_id`) VALUES
 (89, 32, 96),
 (88, 32, 97),
 (51, 20, 98),
-(53, 21, 99),
+(143, 21, 99),
 (58, 22, 102),
 (57, 22, 103),
 (104, 37, 103),
@@ -493,6 +494,8 @@ INSERT INTO `lote_doll` (`id`, `lote_id`, `doll_id`) VALUES
 (59, 23, 116),
 (62, 24, 118),
 (61, 24, 119),
+(140, 50, 120),
+(139, 50, 125),
 (117, 43, 132),
 (66, 25, 133),
 (65, 25, 134),
@@ -702,13 +705,13 @@ ALTER TABLE `fabricantes`
 -- AUTO_INCREMENT de la tabla `lotes`
 --
 ALTER TABLE `lotes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT de la tabla `lote_doll`
 --
 ALTER TABLE `lote_doll`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=139;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=145;
 
 --
 -- AUTO_INCREMENT de la tabla `marca`
