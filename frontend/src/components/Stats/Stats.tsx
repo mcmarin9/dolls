@@ -59,17 +59,9 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
   // Beneficio sobre muñecas vendidas
   const profitFromSold = totalSales - soldDollsInvestment;
 
-  // Beneficio total (ventas - inversión total)
-  const totalProfit = totalSales - totalInvestment;
-
-  // Margen de beneficio (beneficio / ventas * 100)
-  const profitMargin = totalSales > 0 
-    ? ((profitFromSold / totalSales) * 100).toFixed(1) 
-    : "0.0";
-
-  // ROI (Retorno de la Inversión)
-  const roi = totalInvestment > 0 
-    ? ((totalProfit / totalInvestment) * 100).toFixed(1) 
+  // Margen de beneficio (beneficio / coste de vendidas * 100)
+  const profitMargin = soldDollsInvestment > 0 
+    ? ((profitFromSold / soldDollsInvestment) * 100).toFixed(1) 
     : "0.0";
 
   // Coste de inventario (muñecas no vendidas)
@@ -86,6 +78,10 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
   const avgSalePrice = soldDolls.length > 0 
     ? totalSales / soldDolls.length 
     : 0;
+
+  // Estadísticas de lotes
+  const lotesCompra = lotes.filter(l => l.tipo.toLowerCase() === 'compra').length;
+  const lotesVenta = lotes.filter(l => l.tipo.toLowerCase() === 'venta').length;
 
   // Distribución por estado
   const dollsByState = dolls.reduce((acc, doll) => {
@@ -136,6 +132,8 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
             value={`${unsoldDolls.length} (${((unsoldDolls.length / totalDolls) * 100).toFixed(1)}%)`}
           />
           <StatRow label="Total Lotes:" value={lotes.length} />
+          <StatRow label="Lotes de Compra:" value={lotesCompra} isSmall />
+          <StatRow label="Lotes de Venta:" value={lotesVenta} isSmall />
         </div>
       </div>
 
@@ -155,11 +153,15 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
           />
           <StatRow
             label="Beneficio (Vendidas):"
-            value={`${profitFromSold.toFixed(2)}€ (${profitMargin}%)`}
+            value={`${profitFromSold.toFixed(2)}€`}
           />
           <StatRow
-            label="Beneficio Total:"
-            value={`${totalProfit.toFixed(2)}€ (ROI: ${roi}%)`}
+            label="Margen Beneficio:"
+            value={`${profitMargin}%`}
+          />
+          <StatRow
+            label="ROI:"
+            value={`${profitMargin}%`}
           />
           <StatRow
             label="Coste de Inventario:"
@@ -168,10 +170,12 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
           <StatRow
             label="Precio Medio Compra:"
             value={`${avgPurchasePrice.toFixed(2)}€`}
+            isSmall
           />
           <StatRow
             label="Precio Medio Venta:"
             value={`${avgSalePrice.toFixed(2)}€`}
+            isSmall
           />
         </div>
       </div>
@@ -218,21 +222,25 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
           Top Ventas
         </h3>
         <div className="space-y-4">
-          {topProfitDolls.map((doll) => (
-            <div key={doll.id} className="border-b border-yellow-200 pb-3">
-              <div className="flex justify-between mb-1">
-                <span className="font-medium">{doll.nombre}</span>
-                <span className="text-green-600 font-bold">
-                  +{doll.profit.toFixed(2)}€
-                </span>
+          {topProfitDolls.length > 0 ? (
+            topProfitDolls.map((doll) => (
+              <div key={doll.id} className="border-b border-yellow-200 pb-3">
+                <div className="flex justify-between mb-1">
+                  <span className="font-medium">{doll.nombre}</span>
+                  <span className="text-green-600 font-bold">
+                    +{doll.profit.toFixed(2)}€
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Compra: {doll.precio_compra}€</span>
+                  <span>Venta: {doll.precio_venta}€</span>
+                  <span>ROI: {doll.profitPercentage.toFixed(1)}%</span>
+                </div>
               </div>
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>Compra: {doll.precio_compra}€</span>
-                <span>Venta: {doll.precio_venta}€</span>
-                <span>ROI: {doll.profitPercentage.toFixed(1)}%</span>
-              </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="text-gray-600">No hay muñecas vendidas aún</p>
+          )}
         </div>
       </div>
     </div>
