@@ -22,8 +22,18 @@ const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
     setIsDollModalOpen(true);
   };
 
-  const totalPrice = lote.precio_total || 0;
+  // Asegurar que totalPrice sea un número
+  const totalPrice = Number(lote.precio_total) || 0;
   const quantity = dolls.length;
+  
+  const totalCost = dolls.reduce((sum, doll) => {
+    return sum + (Number(doll.precio_compra) || 0);
+  }, 0);
+
+  const profit = lote.tipo.toLowerCase() === 'venta' ? totalPrice - totalCost : null;
+  const profitMargin = lote.tipo.toLowerCase() === 'venta' && totalCost > 0 
+    ? ((profit! / totalCost) * 100).toFixed(2) 
+    : null;
 
   useEffect(() => {
     if (isOpen && lote.id && !lote.dolls) {
@@ -66,9 +76,24 @@ const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
               {lote.tipo.charAt(0).toUpperCase() + lote.tipo.slice(1)}
             </span>
           </p>
+          {lote.tipo.toLowerCase() === 'venta' && (
+            <p className="text-gray-600">
+              <span className="font-semibold">Coste Total:</span> {totalCost.toFixed(2)}€
+            </p>
+          )}
           <p className="text-gray-600">
-            <span className="font-semibold">Precio Total:</span> {totalPrice}€
+            <span className="font-semibold">{lote.tipo.toLowerCase() === 'venta' ? 'Precio de Venta Total:' : 'Precio Total:'}</span> {totalPrice.toFixed(2)}€
           </p>
+          {lote.tipo.toLowerCase() === 'venta' && profit !== null && (
+            <>
+              <p className={`text-gray-600 ${profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className="font-semibold">Ganancia:</span> {profit.toFixed(2)}€
+              </p>
+              <p className={`text-gray-600 ${profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className="font-semibold">Margen de Ganancia:</span> {profitMargin}%
+              </p>
+            </>
+          )}
           <p className="text-gray-600">
             <span className="font-semibold">Cantidad de Muñecas:</span>{" "}
             {quantity}
@@ -124,24 +149,18 @@ const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
         </div>
 
         {selectedDoll && isDollModalOpen && (
-          <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
-              <div className="p-6">
-                <DollDetail 
-                  doll={selectedDoll} 
-                  isOpen={isDollModalOpen}
-                  onClose={() => {
-                    setIsDollModalOpen(false);
-                    setSelectedDoll(null);
-                  }}
-                  onLoteClick={() => {
-                    setIsDollModalOpen(false);
-                    setSelectedDoll(null);
-                  }}
-                />
-              </div>
-            </div>
-          </div>
+          <DollDetail 
+            doll={selectedDoll} 
+            isOpen={isDollModalOpen}
+            onClose={() => {
+              setIsDollModalOpen(false);
+              setSelectedDoll(null);
+            }}
+            onLoteClick={() => {
+              setIsDollModalOpen(false);
+              setSelectedDoll(null);
+            }}
+          />
         )}
       </div>
     </div>

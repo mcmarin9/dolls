@@ -25,6 +25,8 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
   const [availableDolls, setAvailableDolls] = useState<Doll[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
 
   useEffect(() => {
     if (isOpen) {
@@ -57,12 +59,20 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
     }));
   };
 
-  const handleDollSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedDollIds = Array.from(e.target.selectedOptions, (option) =>
-      parseInt(option.value, 10)
-    );
-    setFormData((prev) => ({ ...prev, dolls: selectedDollIds }));
+  const handleDollSelection = (dollId: number) => {
+    setFormData((prev) => {
+      const updatedDolls = prev.dolls.includes(dollId)
+        ? prev.dolls.filter((id) => id !== dollId)
+        : [...prev.dolls, dollId];
+      return { ...prev, dolls: updatedDolls };
+    });
   };
+
+  const filteredDolls = availableDolls.filter((doll) =>
+    `${doll.nombre} ${doll.marca_nombre}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -170,19 +180,33 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
           </div>
           <div className="mb-4">
             <label className="block mb-1">Muñecas Disponibles:</label>
-            <select
-              multiple
-              name="dolls"
-              value={(formData.dolls || []).map(String)}
-              onChange={handleDollSelection}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md h-40"
-            >
-              {availableDolls.map((doll) => (
-                <option key={doll.id} value={doll.id}>
-                  {doll.nombre} - {doll.marca_nombre}
-                </option>
-              ))}
-            </select>
+            <input
+              type="text"
+              placeholder="Buscar muñeca por nombre o marca..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md mb-2"
+            />
+            <div className="border border-gray-300 rounded-md p-2 max-h-40 overflow-y-auto">
+              {filteredDolls.length > 0 ? (
+                filteredDolls.map((doll) => (
+                  <label key={doll.id} className="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.dolls.includes(doll.id!)}
+                      onChange={() => handleDollSelection(doll.id!)}
+                      className="mr-2"
+                    />
+                    <span className="text-sm">{doll.nombre} - {doll.marca_nombre}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500 p-2">No se encontraron muñecas</p>
+              )}
+            </div>
+            <p className="text-sm text-gray-600 mt-2">
+              {formData.dolls.length} muñeca{formData.dolls.length !== 1 ? 's' : ''} seleccionada{formData.dolls.length !== 1 ? 's' : ''}
+            </p>
           </div>
           <div className="flex justify-end">
             <button
@@ -204,6 +228,8 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
         </form>
       </div>
     </div>
+
+    
   );
 };
 
