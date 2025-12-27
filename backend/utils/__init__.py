@@ -7,6 +7,7 @@ from .validators import (
     MarcaValidator,
     FabricanteValidator
 )
+from .logger import setup_logging, get_logger
 
 __all__ = [
     'save_image',
@@ -17,5 +18,7 @@ __all__ = [
     'DollValidator',
     'LoteValidator',
     'MarcaValidator',
-    'FabricanteValidator'
+    'FabricanteValidator',
+    'setup_logging',
+    'get_logger'
 ]

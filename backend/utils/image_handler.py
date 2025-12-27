@@ -1,11 +1,11 @@
 import io
 import os
 import uuid
-import logging
 from PIL import Image
 from config import UPLOAD_FOLDER, ALLOWED_EXTENSIONS, IMAGE_MAX_SIZE, IMAGE_QUALITY
+from .logger import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def allowed_file(filename):

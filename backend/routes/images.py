@@ -1,11 +1,12 @@
 from flask import Blueprint, send_from_directory, request, jsonify
 import os
 from config import UPLOAD_FOLDER
-from utils import delete_image
+from utils import delete_image, get_logger
 from database import Database
 
 images_bp = Blueprint('images', __name__)
 db = Database()
+logger = get_logger(__name__)
 
 
 @images_bp.route('/uploads/<filename>', methods=['GET'])

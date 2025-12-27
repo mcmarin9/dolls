@@ -1,11 +1,10 @@
 from flask import Blueprint, request, jsonify
-import logging
 from database import Database
-from utils import save_image, delete_image, DollValidator, ValidationError
+from utils import save_image, delete_image, DollValidator, ValidationError, get_logger
 
 dolls_bp = Blueprint('dolls', __name__)
 db = Database()
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 @dolls_bp.route('/api/dolls', methods=['GET'])
@@ -48,8 +47,8 @@ def get_dolls():
         return jsonify(dolls), 200
         
     except Exception as e:
-        logger.error(f"Error en get_dolls: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error en get_dolls: {str(e)}", exc_info=True)
+        return jsonify({"error": "Error al obtener muñecas"}), 500
 
 
 @dolls_bp.route('/api/dolls', methods=['POST'])
@@ -106,10 +105,11 @@ def add_doll():
         return jsonify({"id": doll_id, "message": "Muñeca creada exitosamente"}), 201
 
     except ValidationError as e:
+        logger.warning(f"Validación fallida al crear muñeca: {e}")
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        logger.error(f"Error agregando muñeca: {e}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error agregando muñeca: {e}", exc_info=True)
+        return jsonify({"error": "Error al crear muñeca"}), 500
 
 
 @dolls_bp.route('/api/dolls/<int:doll_id>/lotes', methods=['GET'])
@@ -127,8 +127,8 @@ def get_doll_lotes(doll_id):
         return jsonify(lotes), 200
         
     except Exception as e:
-        logger.error(f"Error obteniendo lotes para muñeca {doll_id}: {e}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error obteniendo lotes para muñeca {doll_id}: {e}", exc_info=True)
+        return jsonify({"error": "Error al obtener lotes"}), 500
 
 
 @dolls_bp.route('/api/dolls/<int:doll_id>', methods=['PUT'])
@@ -195,8 +195,8 @@ def update_doll(doll_id):
         return jsonify(updated_doll), 200
         
     except Exception as e:
-        logger.error(f"Error actualizando muñeca: {e}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error actualizando muñeca {doll_id}: {e}", exc_info=True)
+        return jsonify({"error": "Error al actualizar muñeca"}), 500
 
 
 @dolls_bp.route('/api/dolls/<int:doll_id>', methods=['DELETE'])
@@ -221,5 +221,5 @@ def delete_doll(doll_id):
         return jsonify({"message": "Muñeca borrada exitosamente"}), 200
         
     except Exception as e:
-        logger.error(f"Error borrando muñeca: {e}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error borrando muñeca {doll_id}: {e}", exc_info=True)
+        return jsonify({"error": "Error al borrar muñeca"}), 500

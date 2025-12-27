@@ -1,11 +1,10 @@
 from flask import Blueprint, request, jsonify
-import logging
 from database import Database
-from utils import MarcaValidator, FabricanteValidator, ValidationError
+from utils import MarcaValidator, FabricanteValidator, ValidationError, get_logger
 
 marcas_bp = Blueprint('marcas', __name__)
 db = Database()
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 @marcas_bp.route('/api/marcas', methods=['GET'])
@@ -43,8 +42,8 @@ def get_marcas():
         return jsonify(marcas), 200
         
     except Exception as e:
-        logger.error(f"Error obteniendo marcas: {e}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error obteniendo marcas: {e}", exc_info=True)
+        return jsonify({"error": "Error al obtener marcas"}), 500
 
 
 @marcas_bp.route('/api/marcas', methods=['POST'])
@@ -84,10 +83,11 @@ def add_marca():
         }), 201
         
     except ValidationError as e:
+        logger.warning(f"Validación fallida al crear marca: {e}")
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        logger.error(f"Error creando marca: {e}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error creando marca: {e}", exc_info=True)
+        return jsonify({"error": "Error al crear marca"}), 500
 
 
 @marcas_bp.route('/api/marcas/<int:marca_id>', methods=['PUT'])
@@ -124,8 +124,8 @@ def update_marca(marca_id):
         return jsonify({"message": "Marca actualizada exitosamente"}), 200
         
     except Exception as e:
-        logger.error(f"Error actualizando marca: {e}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error actualizando marca {marca_id}: {e}", exc_info=True)
+        return jsonify({"error": "Error al actualizar marca"}), 500
 
 
 @marcas_bp.route('/api/fabricantes', methods=['GET'])
@@ -137,8 +137,8 @@ def get_fabricantes():
         return jsonify(fabricantes), 200
         
     except Exception as e:
-        logger.error(f"Error obteniendo fabricantes: {e}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error obteniendo fabricantes: {e}", exc_info=True)
+        return jsonify({"error": "Error al obtener fabricantes"}), 500
 
 
 @marcas_bp.route('/api/fabricantes', methods=['POST'])
@@ -166,7 +166,8 @@ def add_fabricante():
         }), 201
         
     except ValidationError as e:
+        logger.warning(f"Validación fallida al crear fabricante: {e}")
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        logger.error(f"Error creando fabricante: {e}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error creando fabricante: {e}", exc_info=True)
+        return jsonify({"error": "Error al crear fabricante"}), 500

@@ -1,11 +1,10 @@
 from flask import Blueprint, request, jsonify
-import logging
 from database import Database
-from utils import LoteValidator, ValidationError
+from utils import LoteValidator, ValidationError, get_logger
 
 lotes_bp = Blueprint('lotes', __name__)
 db = Database()
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 @lotes_bp.route('/api/lotes', methods=['GET'])
@@ -46,8 +45,8 @@ def get_lotes():
         return jsonify(lotes), 200
         
     except Exception as e:
-        logger.error(f"Error obteniendo lotes: {e}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error obteniendo lotes: {e}", exc_info=True)
+        return jsonify({"error": "Error al obtener lotes"}), 500
 
 
 @lotes_bp.route('/api/lotes', methods=['POST'])
@@ -69,22 +68,21 @@ def add_lote():
             return jsonify({"error": "Un lote debe contener al menos 2 muñecas"}), 400
 
         # Validar que las muñecas no estén en otros lotes del mismo tipo
-        check_query = """
-            SELECT d.nombre 
-            FROM dolls d 
-            JOIN lote_doll ld ON d.id = ld.doll_id
-            JOIN lotes l ON ld.lote_id = l.id
-            WHERE d.id IN %s AND l.tipo = %s
-            LIMIT 1
-        """
-        
-        placeholders = ','.join(['%s'] * len(data['dolls']))
-        check_query_filled = check_query.replace('%s', placeholders, 1)
-        existing = db.execute_query(
-            check_query_filled, 
-            tuple(data['dolls']) + (data['tipo'],),
-            fetch_one=True
-        )
+        if data['dolls']:
+            placeholders = ','.join(['%s'] * len(data['dolls']))
+            check_query = f"""
+                SELECT d.nombre 
+                FROM dolls d 
+                JOIN lote_doll ld ON d.id = ld.doll_id
+                JOIN lotes l ON ld.lote_id = l.id
+                WHERE d.id IN ({placeholders}) AND l.tipo = %s
+                LIMIT 1
+            """
+            
+            params = tuple(data['dolls']) + (data['tipo'],)
+            existing = db.execute_query(check_query, params, fetch_one=True)
+        else:
+            existing = None
 
         if existing:
             return jsonify({
@@ -137,10 +135,11 @@ def add_lote():
         return jsonify({"id": lote_id, "message": "Lote creado con éxito"}), 201
 
     except ValidationError as e:
+        logger.warning(f"Validación fallida al crear lote: {e}")
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        logger.error(f"Error creando lote: {e}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error creando lote: {e}", exc_info=True)
+        return jsonify({"error": "Error al crear lote"}), 500
 
 
 @lotes_bp.route('/api/lotes/<int:lote_id>/dolls', methods=['GET'])
@@ -159,8 +158,8 @@ def get_lote_dolls(lote_id):
         return jsonify(dolls), 200
         
     except Exception as e:
-        logger.error(f"Error obteniendo muñecas del lote {lote_id}: {e}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error obteniendo muñecas del lote {lote_id}: {e}", exc_info=True)
+        return jsonify({"error": "Error al obtener muñecas del lote"}), 500
 
 
 @lotes_bp.route('/api/lotes/<int:lote_id>', methods=['PUT'])
@@ -237,8 +236,8 @@ def update_lote(lote_id):
         return jsonify({"message": "Lote actualizado exitosamente"}), 200
         
     except Exception as e:
-        logger.error(f"Error actualizando lote: {e}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error actualizando lote {lote_id}: {e}", exc_info=True)
+        return jsonify({"error": "Error al actualizar lote"}), 500
 
 
 @lotes_bp.route('/api/lotes/<int:lote_id>', methods=['DELETE'])
@@ -268,5 +267,5 @@ def delete_lote(lote_id):
         return jsonify({"message": "Lote borrado exitosamente"}), 200
         
     except Exception as e:
-        logger.error(f"Error borrando lote: {e}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error borrando lote {lote_id}: {e}", exc_info=True)
+        return jsonify({"error": "Error al borrar lote"}), 500

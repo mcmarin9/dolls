@@ -1,9 +1,9 @@
 import pymysql
 from pymysql.err import OperationalError
-import logging
 from config import DB_CONFIG
+from utils.logger import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class Database:
@@ -41,17 +41,22 @@ class Database:
         try:
             connection = Database.get_connection()
             with connection.cursor() as cursor:
+                logger.debug(f"Ejecutando query: {query[:100]}...")
                 cursor.execute(query, params)
                 
                 if fetch_one:
-                    return cursor.fetchone()
+                    result = cursor.fetchone()
+                    logger.debug(f"Query devolvió 1 resultado")
+                    return result
                 elif fetch_all:
-                    return cursor.fetchall()
+                    results = cursor.fetchall()
+                    logger.debug(f"Query devolvió {len(results) if results else 0} resultados")
+                    return results
                 else:
                     return None
                     
         except Exception as e:
-            logger.error(f"Error ejecutando query: {e}")
+            logger.error(f"Error ejecutando query: {e}", exc_info=True)
             raise
         finally:
             if connection:
@@ -64,13 +69,16 @@ class Database:
         try:
             connection = Database.get_connection()
             with connection.cursor() as cursor:
+                logger.debug(f"Ejecutando INSERT: {query[:100]}...")
                 cursor.execute(query, params)
                 connection.commit()
-                return cursor.lastrowid
+                last_id = cursor.lastrowid
+                logger.debug(f"INSERT exitoso, lastrowid: {last_id}")
+                return last_id
         except Exception as e:
             if connection:
                 connection.rollback()
-            logger.error(f"Error en INSERT: {e}")
+            logger.error(f"Error en INSERT: {e}", exc_info=True)
             raise
         finally:
             if connection:
@@ -83,13 +91,16 @@ class Database:
         try:
             connection = Database.get_connection()
             with connection.cursor() as cursor:
+                logger.debug(f"Ejecutando UPDATE/DELETE: {query[:100]}...")
                 cursor.execute(query, params)
                 connection.commit()
-                return cursor.rowcount
+                rows_affected = cursor.rowcount
+                logger.debug(f"UPDATE/DELETE exitoso, {rows_affected} filas afectadas")
+                return rows_affected
         except Exception as e:
             if connection:
                 connection.rollback()
-            logger.error(f"Error en UPDATE: {e}")
+            logger.error(f"Error en UPDATE: {e}", exc_info=True)
             raise
         finally:
             if connection:
@@ -107,10 +118,12 @@ class Database:
         try:
             connection = Database.get_connection()
             connection.begin()
+            logger.debug(f"Iniciando transacción con {len(queries_list)} queries")
             
             with connection.cursor() as cursor:
                 results = []
-                for query, params in queries_list:
+                for idx, (query, params) in enumerate(queries_list):
+                    logger.debug(f"Ejecutando query {idx+1}/{len(queries_list)} de transacción")
                     cursor.execute(query, params)
                     results.append({
                         'lastrowid': cursor.lastrowid,
@@ -118,12 +131,13 @@ class Database:
                     })
                 
                 connection.commit()
+                logger.debug(f"Transacción completada exitosamente")
                 return results
                 
         except Exception as e:
             if connection:
                 connection.rollback()
-            logger.error(f"Error en transacción: {e}")
+                logger.error(f"Error en transacción, rollback ejecutado: {e}", exc_info=True)
             raise
         finally:
             if connection:
