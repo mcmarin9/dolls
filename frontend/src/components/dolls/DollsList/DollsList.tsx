@@ -2,23 +2,10 @@ import React, { useState, useMemo } from "react";
 import { deleteImage } from "../../../services/api";
 import { Doll } from "../../../types/Doll";
 import { getStatusStyle } from "../../../utils/styleUtils";
-import { Marca } from "../../../types/Marca";
+import { useApp } from "../../../context";
 
-interface DollsListProps {
-  dolls: Doll[];
-  brands: Marca[];
-  onDelete: (id: number) => void;
-  onView: (doll: Doll) => void;
-  onEdit: (doll: Doll) => void;
-}
-
-const DollsList: React.FC<DollsListProps> = ({
-  dolls,
-  brands,
-  onView,
-  onDelete,
-  onEdit,
-}) => {
+const DollsList: React.FC = () => {
+  const { dolls, brands, removeDoll, openDollDetail, openEditDoll } = useApp();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedManufacturer, setSelectedManufacturer] = useState("");
@@ -73,7 +60,7 @@ const DollsList: React.FC<DollsListProps> = ({
         }
       }
       if (doll.id) {
-        onDelete(doll.id);
+        await removeDoll(doll.id);
       }
     } catch (error) {
       console.error("Error deleting doll:", error);
@@ -326,13 +313,13 @@ const DollsList: React.FC<DollsListProps> = ({
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                     <button
-                      onClick={() => onView(doll)}
+                      onClick={() => openDollDetail(doll)}
                       className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2"
                     >
                       Ver
                     </button>
                     <button
-                      onClick={() => onEdit(doll)}
+                      onClick={() => openEditDoll(doll)}
                       className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 mr-2"
                     >
                       Editar

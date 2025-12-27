@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Fabricante } from '../../../types/Fabricante';
 import { getFabricantes } from '../../../services/api';
+import { useApp } from '../../../context';
 
 interface AddMarcaModalProps {
   isOpen: boolean;
   closeModal: () => void;
-  onMarcaAdded: (marca: { nombre: string; fabricanteIds: number[] }) => void;
 }
 
-const AddMarcaModal: React.FC<AddMarcaModalProps> = ({ isOpen, closeModal, onMarcaAdded }) => {
+const AddMarcaModal: React.FC<AddMarcaModalProps> = ({ isOpen, closeModal }) => {
+  const { addMarca } = useApp();
   const [nombre, setNombre] = useState('');
   const [fabricantes, setFabricantes] = useState<Fabricante[]>([]);
   const [selectedFabricantes, setSelectedFabricantes] = useState<number[]>([]);
@@ -31,7 +32,7 @@ const AddMarcaModal: React.FC<AddMarcaModalProps> = ({ isOpen, closeModal, onMar
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await onMarcaAdded({ 
+      await addMarca({ 
         nombre, 
         fabricanteIds: selectedFabricantes 
       });
@@ -39,7 +40,7 @@ const AddMarcaModal: React.FC<AddMarcaModalProps> = ({ isOpen, closeModal, onMar
       setSelectedFabricantes([]);
     } catch (error) {
       console.error('Error al crear marca:', error);
-      // Aquí podrías mostrar un mensaje de error al usuario
+      alert('Error al crear la marca');
     }
   };
 

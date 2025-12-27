@@ -1,50 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Lote } from "../../../types/Lote";
-import { Doll } from "../../../types/Doll";
-import { getDolls } from "../../../services/api";
+import { useApp } from "../../../context";
 
 interface EditLoteProps {
   isOpen: boolean;
   closeModal: () => void;
   lote: Lote;
-  onEdit: (
-    id: number,
-    loteData: Pick<Lote, "nombre" | "tipo"> & {
-      precio_total: number;
-      dolls: number[];
-    }
-  ) => Promise<void>;
 }
 
 const EditLote: React.FC<EditLoteProps> = ({
   isOpen,
   closeModal,
   lote,
-  onEdit,
 }) => {
+  const { dolls, editLote } = useApp();
   const [formData, setFormData] = useState<Lote>(lote);
-  const [dolls, setDolls] = useState<Doll[]>([]);
   const [selectedDolls, setSelectedDolls] = useState<number[]>(
     lote.dolls?.map((d) => d.id!) || []
   );
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchDolls = async () => {
-      try {
-        const dollsData = await getDolls();
-        setDolls(dollsData);
-      } catch {
-        console.error("Error fetching dolls:", error);
-        setError("Error al cargar las muñecas");
-      }
-    };
-
-    if (isOpen) {
-      fetchDolls();
-    }
-  }, [error, isOpen]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -106,7 +81,7 @@ const EditLote: React.FC<EditLoteProps> = ({
         dolls: selectedDolls,
       };
 
-      await onEdit(lote.id, updateData);
+      await editLote(lote.id, updateData);
       closeModal();
     } catch (error) {
       console.error("Error updating lote:", error);

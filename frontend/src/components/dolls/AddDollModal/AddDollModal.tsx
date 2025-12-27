@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Doll } from "../../../types/Doll";
 import MarcaSelector from "../../common/MarcaSelector/MarcaSelector";
+import { useApp } from "../../../context";
 
 interface AddDollModalProps {
   isOpen: boolean;
   closeModal: () => void;
-  onDollAdded: (doll: FormData) => void;
 }
 
 interface PricingMethod {
@@ -16,8 +16,8 @@ interface PricingMethod {
 const AddDollModal: React.FC<AddDollModalProps> = ({
   isOpen,
   closeModal,
-  onDollAdded,
 }) => {
+  const { addDoll } = useApp();
   const [formData, setFormData] = useState<Partial<Doll>>({
     nombre: "",
     marca_id: 0,
@@ -129,8 +129,7 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
     }
 
     try {
-      await onDollAdded(submitData);
-      closeModal();
+      await addDoll(submitData);
       // Reset form
       setFormData({
         nombre: "",

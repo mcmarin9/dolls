@@ -5,12 +5,12 @@ import {
   checkEnLoteCompra,
   checkEnLoteVenta,
 } from "../../../utils/checkIfLote";
+import { useApp } from "../../../context";
 
 interface EditDollProps {
   isOpen: boolean;
   closeModal: () => void;
   doll: Doll;
-  onEdit: (id: number, formData: FormData) => Promise<void>;
 }
 
 interface PricingMethod {
@@ -22,8 +22,8 @@ const EditDoll: React.FC<EditDollProps> = ({
   isOpen,
   closeModal,
   doll,
-  onEdit,
 }) => {
+  const { editDoll } = useApp();
   const [formData, setFormData] = useState<Doll>(doll);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [enLoteCompraState, setEnLoteCompraState] = useState(false);
@@ -159,7 +159,7 @@ const EditDoll: React.FC<EditDollProps> = ({
     }
 
     try {
-      await onEdit(doll.id, submitData);
+      await editDoll(doll.id, submitData);
       closeModal();
     } catch (error) {
       console.error("Error updating doll:", error);

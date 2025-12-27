@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 import { Lote } from "../../../types/Lote";
 import { Doll } from "../../../types/Doll";
 import axios from "axios";
+import { useApp } from "../../../context";
 
 interface AddLoteModalProps {
   isOpen: boolean;
   closeModal: () => void;
-  onLoteAdded: (newLote: Lote) => void;
 }
 
 const initialFormData = {
   nombre: "",
-  tipo: "Seleccionar tipo", // Set default value
+  tipo: "Seleccionar tipo",
   precio_total: 0,
   dolls: [] as number[],
 };
@@ -19,8 +19,8 @@ const initialFormData = {
 const AddLoteModal: React.FC<AddLoteModalProps> = ({
   isOpen,
   closeModal,
-  onLoteAdded,
 }) => {
+  const { dolls, closeLoteModal } = useApp();
   const [formData, setFormData] = useState(initialFormData);
   const [availableDolls, setAvailableDolls] = useState<Doll[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,24 +30,11 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      fetchAvailableDolls();
+      setAvailableDolls(dolls);
       setFormData(initialFormData);
       setError("");
     }
-  }, [isOpen]);
-
-  const fetchAvailableDolls = async () => {
-    try {
-      const response = await axios.get<Doll[]>(
-        "http://localhost:5000/api/dolls"
-      );
-      // Remove filter and set all dolls
-      setAvailableDolls(response.data);
-    } catch (error) {
-      console.error("Error fetching dolls:", error);
-      setError("Error loading available dolls");
-    }
-  };
+  }, [isOpen, dolls]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -105,8 +92,7 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
         return;
       }
 
-      closeModal();
-      if (onLoteAdded) onLoteAdded(responseData);
+      closeLoteModal();
     } catch (error) {
       console.error("Submission error:", error);
       setError("Error creating lote");

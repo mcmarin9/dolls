@@ -1,21 +1,10 @@
 import React, { useState, useMemo } from "react";
 import { Lote } from "../../../types/Lote";
-import LoteDetail from "../LoteDetail/LoteDetail";
 import { getTypeStyle } from "../../../utils/styleUtils";
+import { useApp } from "../../../context";
 
-interface LoteListProps {
-  lotes: Lote[];
-  onDelete: (id: number) => void;
-  onView: (lote: Lote) => void;
-  onEdit: (lote: Lote) => void;
-}
-
-const LoteList: React.FC<LoteListProps> = ({
-  lotes,
-  onDelete,
-  onView,
-  onEdit,
-}) => {
+const LoteList: React.FC = () => {
+  const { lotes, removeLote, openLoteDetail, openEditLote } = useApp();
   const [selectedLote, setSelectedLote] = useState<Lote | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [loteToDelete, setLoteToDelete] = useState<Lote | null>(null);
@@ -29,7 +18,7 @@ const LoteList: React.FC<LoteListProps> = ({
   const handleView = (lote: Lote) => {
     setSelectedLote(lote);
     setIsDetailOpen(true);
-    onView(lote);
+    openLoteDetail(lote);
   };
 
   const [sortConfig, setSortConfig] = useState<{
@@ -92,9 +81,13 @@ const LoteList: React.FC<LoteListProps> = ({
     setLoteToDelete(lote);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (loteToDelete?.id) {
-      onDelete(loteToDelete.id);
+      try {
+        await removeLote(loteToDelete.id);
+      } catch (error) {
+        console.error("Error deleting lote:", error);
+      }
       setLoteToDelete(null);
     }
   };
@@ -188,7 +181,7 @@ const LoteList: React.FC<LoteListProps> = ({
                         Ver Detalles
                       </button>
                       <button
-                        onClick={() => onEdit(lote)}
+                        onClick={() => openEditLote(lote)}
                         className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
                       >
                         Editar
