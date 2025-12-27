@@ -23,6 +23,7 @@ const DollsList: React.FC<DollsListProps> = ({
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedManufacturer, setSelectedManufacturer] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [showOnlyNoPhoto, setShowOnlyNoPhoto] = useState(false);
   const [dollToDelete, setDollToDelete] = useState<Doll | null>(null);
 
   const filteredDolls = useMemo(
@@ -37,11 +38,12 @@ const DollsList: React.FC<DollsListProps> = ({
           !selectedManufacturer ||
           doll.fabricante_nombre === selectedManufacturer;
         const matchesStatus = !selectedStatus || doll.estado === selectedStatus;
+        const matchesPhotoFilter = !showOnlyNoPhoto || !doll.imagen;
         return (
-          matchesName && matchesBrand && matchesManufacturer && matchesStatus
+          matchesName && matchesBrand && matchesManufacturer && matchesStatus && matchesPhotoFilter
         );
       }),
-    [dolls, searchTerm, selectedBrand, selectedManufacturer, selectedStatus]
+    [dolls, searchTerm, selectedBrand, selectedManufacturer, selectedStatus, showOnlyNoPhoto]
   );
 
   const manufacturers = useMemo(() => {
@@ -187,6 +189,15 @@ const DollsList: React.FC<DollsListProps> = ({
           <option value="vendida">Vendida</option>
           <option value="fuera">Fuera</option>
         </select>
+        <div className="inline-flex items-center ml-2">
+          <input
+            type="checkbox"
+            checked={showOnlyNoPhoto}
+            onChange={(e) => setShowOnlyNoPhoto(e.target.checked)}
+            className="w-4 h-4 rounded"
+          />
+          <span className="ml-2 text-sm">Solo sin foto</span>
+          </div>
       </div>
       <div className="relative h-full rounded-lg border border-gray-200">
         <div className="overflow-auto h-full">
