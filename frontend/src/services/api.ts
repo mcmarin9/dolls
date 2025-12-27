@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Doll } from "../types/Doll";
 import { Lote } from "../types/Lote";
 import { Fabricante } from "../types/Fabricante";
@@ -5,63 +6,46 @@ import { Marca } from "../types/Marca";
 
 const API_URL = "http://localhost:5000/api";
 
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
 // Dolls Endpoints
 export const getDolls = async (): Promise<Doll[]> => {
-  const response = await fetch(`${API_URL}/dolls`);
-  if (!response.ok) throw new Error("Failed to fetch dolls");
-  return response.json();
+  const response = await api.get("/dolls");
+  return response.data;
 };
 
 export const getDoll = async (id: number): Promise<Doll> => {
-  const response = await fetch(`${API_URL}/dolls/${id}`);
-  if (!response.ok) throw new Error("Failed to fetch doll");
-  return response.json();
+  const response = await api.get(`/dolls/${id}`);
+  return response.data;
 };
 
 export const createDoll = async (formData: FormData): Promise<Doll> => {
-  const response = await fetch(`${API_URL}/dolls`, {
-    method: "POST",
-    body: formData,
+  const response = await api.post("/dolls", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
   });
-
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.error || "Failed to create doll");
-  }
-  return data;
+  return response.data;
 };
 
 export const updateDoll = async (id: number, formData: FormData): Promise<Doll> => {
-  try {
-    const response = await fetch(`${API_URL}/dolls/${id}`, {
-      method: "PUT",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update doll');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Update doll error:', error);
-    throw error;
-  }
+  const response = await api.put(`/dolls/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
 };
 
 export const deleteDoll = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_URL}/dolls/${id}`, {
-    method: "DELETE",
-  });
-  if (!response.ok) throw new Error("Failed to delete doll");
+  await api.delete(`/dolls/${id}`);
 };
 
 // Lotes Endpoints
 export const getLotes = async (): Promise<Lote[]> => {
-  const response = await fetch(`${API_URL}/lotes`);
-  if (!response.ok) throw new Error("Failed to fetch lotes");
-  const data = await response.json();
+  const response = await api.get("/lotes");
+  const data = response.data;
   return data.map((lote: Lote) => ({
     ...lote,
     dolls: lote.dolls || []
@@ -69,29 +53,17 @@ export const getLotes = async (): Promise<Lote[]> => {
 };
 
 export const getLote = async (id: number): Promise<Lote> => {
-  const response = await fetch(`${API_URL}/lotes/${id}`);
-  if (!response.ok) throw new Error("Failed to fetch lote");
-  return response.json();
+  const response = await api.get(`/lotes/${id}`);
+  return response.data;
 };
 
 export const createLote = async (lote: Lote): Promise<Lote> => {
-  const response = await fetch(`${API_URL}/lotes`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(lote),
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to create lote");
-  }
-  return response.json();
+  const response = await api.post("/lotes", lote);
+  return response.data;
 };
 
 export const deleteLote = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_URL}/lotes/${id}`, {
-    method: "DELETE",
-  });
-  if (!response.ok) throw new Error("Failed to delete lote");
+  await api.delete(`/lotes/${id}`);
 };
 
 export const updateLote = async (
@@ -102,84 +74,49 @@ export const updateLote = async (
     precio_total: number;
     dolls: number[];
   }
-) => {
-  const response = await fetch(`http://localhost:5000/api/lotes/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error);
-  }
-
-  return await response.json();
+): Promise<Lote> => {
+  const response = await api.put(`/lotes/${id}`, data);
+  return response.data;
 };
 
 // Lote-Doll Association Endpoints
 export const getLoteDolls = async (loteId: number): Promise<Doll[]> => {
-  const response = await fetch(`${API_URL}/lotes/${loteId}/dolls`);
-  if (!response.ok) throw new Error("Failed to fetch dolls for lote");
-  return response.json();
+  const response = await api.get(`/lotes/${loteId}/dolls`);
+  return response.data;
 };
 
 export const addDollToLote = async (loteId: number, dollId: number): Promise<void> => {
-  const response = await fetch(`${API_URL}/lote-doll`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ lote_id: loteId, doll_id: dollId }),
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to add doll to lote");
-  }
+  await api.post("/lote-doll", { lote_id: loteId, doll_id: dollId });
 };
 
 export const removeDollFromLote = async (loteId: number, dollId: number): Promise<void> => {
-  const response = await fetch(`${API_URL}/lote-doll`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ lote_id: loteId, doll_id: dollId }),
+  await api.delete("/lote-doll", {
+    data: { lote_id: loteId, doll_id: dollId },
   });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to remove doll from lote");
-  }
 };
 
 // Brands Endpoints
 export const getMarcas = async (): Promise<Marca[]> => {
-  const response = await fetch(`${API_URL}/marcas`);
-  if (!response.ok) throw new Error("Failed to fetch brands");
-  return response.json();
+  const response = await api.get("/marcas");
+  return response.data;
 };
 
 export const getMarca = async (id: number): Promise<Marca> => {
-  const response = await fetch(`${API_URL}/marcas/${id}`);
-  if (!response.ok) throw new Error("Failed to fetch brand");
-  return response.json();
+  const response = await api.get(`/marcas/${id}`);
+  return response.data;
 };
 
 export const getFabricantes = async (): Promise<Fabricante[]> => {
-  const response = await fetch(`${API_URL}/fabricantes`);
-  if (!response.ok) throw new Error("Failed to fetch manufacturers");
-  return response.json();
+  const response = await api.get("/fabricantes");
+  return response.data;
 };
 
 export const createMarca = async (data: { 
   nombre: string; 
   fabricanteIds: number[] 
 }): Promise<Marca> => {
-  const response = await fetch(`${API_URL}/marcas`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!response.ok) throw new Error("Failed to create brand");
-  return response.json();
+  const response = await api.post("/marcas", data);
+  return response.data;
 };
 
 export const updateMarca = async (
@@ -189,40 +126,15 @@ export const updateMarca = async (
     fabricanteIds?: number[] 
   }
 ): Promise<Marca> => {
-  const response = await fetch(`${API_URL}/marcas/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!response.ok) throw new Error("Failed to update brand");
-  return response.json();
+  const response = await api.put(`/marcas/${id}`, data);
+  return response.data;
 };
 
-
 export const deleteMarca = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_URL}/marcas/${id}`, {
-    method: "DELETE",
-  });
-  if (!response.ok) throw new Error("Failed to delete brand");
+  await api.delete(`/marcas/${id}`);
 };
 
 export const deleteImage = async (imagePath: string | null): Promise<void> => {
   if (!imagePath) return;
-
-  try {
-    const response = await fetch(`${API_URL}/delete-image`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ imagePath }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to delete image');
-    }
-  } catch (error) {
-    console.error('Error deleting image:', error);
-    throw error;
-  }
+  await api.post("/delete-image", { imagePath });
 };
