@@ -156,30 +156,57 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-5xl p-6">
-        <h2 className="text-xl font-semibold mb-4">Añadir Nueva Muñeca</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-6">
-            {/* Columna izquierda - Información básica */}
-            <div>
-              <h3 className="font-medium mb-3 text-gray-700">
-                Información Básica
-              </h3>
-              <div className="space-y-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-pink-600 to-purple-700 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+              <span className="text-3xl">🎎</span>
+              Añadir Nueva Muñeca
+            </h2>
+            <button
+              onClick={closeModal}
+              type="button"
+              className="text-white hover:bg-white/20 rounded-full p-2 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Body con scroll */}
+        <div className="p-6 overflow-y-auto max-h-[calc(95vh-140px)]">
+          <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Columna izquierda - Información básica */}
+              <div className="space-y-5">
+                <div className="flex items-center gap-2 pb-2 border-b-2 border-pink-200">
+                  <span className="text-2xl">📋</span>
+                  <h3 className="font-bold text-lg text-slate-800">Información Básica</h3>
+                </div>
+
                 <div>
-                  <label className="block mb-1">Nombre</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    ✏️ Nombre
+                  </label>
                   <input
                     type="text"
                     name="nombre"
                     value={formData.nombre}
                     onChange={handleChange}
                     required
-                    className="w-full border rounded p-2"
+                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    placeholder="Nombre de la muñeca"
                   />
                 </div>
+
                 <div>
-                  <label className="block mb-1">Marca</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    🏷️ Marca y Fabricante
+                  </label>
                   <MarcaSelector
                     selectedMarcaId={formData.marca_id || undefined}
                     selectedFabricanteId={formData.fabricante_id}
@@ -188,70 +215,181 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
                     className="w-full"
                   />
                 </div>
+
                 <div>
-                  <label className="block mb-1">Modelo</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    📦 Modelo
+                  </label>
                   <input
                     type="text"
                     name="modelo"
                     value={formData.modelo}
                     onChange={handleChange}
                     required
-                    className="w-full border rounded p-2"
+                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    placeholder="Modelo de la muñeca"
                   />
                 </div>
                 <div>
-                  <label className="block mb-1">Personaje</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    � Modelo
+                  </label>
+                  <input
+                    type="text"
+                    name="modelo"
+                    value={formData.modelo}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    placeholder="Modelo de la muñeca"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    👤 Personaje
+                  </label>
                   <input
                     type="text"
                     name="personaje"
                     value={formData.personaje}
                     onChange={handleChange}
                     required
-                    className="w-full border rounded p-2"
+                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    placeholder="Nombre del personaje"
                   />
                 </div>
+
                 <div>
-                  <label className="block mb-1">Año</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    📅 Año
+                  </label>
                   <input
                     type="number"
                     name="anyo"
                     value={formData.anyo || ""}
                     onChange={handleChange}
                     required
-                    className="w-full border rounded p-2"
+                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    placeholder="Año de fabricación"
                   />
                 </div>
                 <div>
-                  <label className="block mb-1">Estado</label>
-                  <select
-                    name="estado"
-                    value={formData.estado}
-                    onChange={handleChange}
-                    required
-                    className="w-full border rounded p-2"
-                  >
-                    <option value="guardada">Guardada</option>
-                    <option value="vendida">Vendida</option>
-                    <option value="a la venta">A la venta</option>
-                    <option value="fuera">Fuera</option>
-                  </select>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    📊 Estado
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <label
+                      className={`flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                        formData.estado === "guardada"
+                          ? "border-blue-500 bg-blue-50 shadow-md"
+                          : "border-slate-200 hover:border-blue-300 hover:bg-blue-50/50"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="estado"
+                        value="guardada"
+                        checked={formData.estado === "guardada"}
+                        onChange={handleChange}
+                        className="sr-only"
+                      />
+                      <span className="text-xl">📦</span>
+                      <span className={`font-semibold text-sm ${
+                        formData.estado === "guardada" ? "text-blue-700" : "text-slate-600"
+                      }`}>
+                        Guardada
+                      </span>
+                    </label>
+                    <label
+                      className={`flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                        formData.estado === "a la venta"
+                          ? "border-amber-500 bg-amber-50 shadow-md"
+                          : "border-slate-200 hover:border-amber-300 hover:bg-amber-50/50"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="estado"
+                        value="a la venta"
+                        checked={formData.estado === "a la venta"}
+                        onChange={handleChange}
+                        className="sr-only"
+                      />
+                      <span className="text-xl">🏷️</span>
+                      <span className={`font-semibold text-sm ${
+                        formData.estado === "a la venta" ? "text-amber-700" : "text-slate-600"
+                      }`}>
+                        A la venta
+                      </span>
+                    </label>
+                    <label
+                      className={`flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                        formData.estado === "vendida"
+                          ? "border-emerald-500 bg-emerald-50 shadow-md"
+                          : "border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="estado"
+                        value="vendida"
+                        checked={formData.estado === "vendida"}
+                        onChange={handleChange}
+                        className="sr-only"
+                      />
+                      <span className="text-xl">✅</span>
+                      <span className={`font-semibold text-sm ${
+                        formData.estado === "vendida" ? "text-emerald-700" : "text-slate-600"
+                      }`}>
+                        Vendida
+                      </span>
+                    </label>
+                    <label
+                      className={`flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                        formData.estado === "fuera"
+                          ? "border-slate-500 bg-slate-50 shadow-md"
+                          : "border-slate-200 hover:border-slate-300 hover:bg-slate-50/50"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="estado"
+                        value="fuera"
+                        checked={formData.estado === "fuera"}
+                        onChange={handleChange}
+                        className="sr-only"
+                      />
+                      <span className="text-xl">📤</span>
+                      <span className={`font-semibold text-sm ${
+                        formData.estado === "fuera" ? "text-slate-700" : "text-slate-600"
+                      }`}>
+                        Fuera
+                      </span>
+                    </label>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Columna derecha - Precios y detalles adicionales */}
-            <div>
-              <h3 className="font-medium mb-3 text-gray-700">
-                Precios y Detalles
-              </h3>
-              <div className="space-y-4">
+              {/* Columna derecha - Precios y detalles */}
+              <div className="space-y-5">
+                <div className="flex items-center gap-2 pb-2 border-b-2 border-purple-200">
+                  <span className="text-2xl">💰</span>
+                  <h3 className="font-bold text-lg text-slate-800">Precios y Detalles</h3>
+                </div>
+
                 {/* Precio de Compra */}
-                <div className="p-3 bg-gray-50 rounded">
-                  <label className="block mb-2 font-medium">
-                    Tipo de Compra
+                <div className="bg-gradient-to-br from-orange-50 to-white border-2 border-orange-200 rounded-xl p-4">
+                  <label className="block text-sm font-bold text-orange-800 mb-3 flex items-center gap-2">
+                    <span className="text-xl">🛒</span>
+                    Precio de Compra
                   </label>
-                  <div className="flex items-center space-x-4 mb-2">
-                    <label className="flex items-center">
+                  <div className="flex gap-3 mb-3">
+                    <label className={`flex-1 flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                      pricingMethod.compra === "individual"
+                        ? "border-orange-500 bg-orange-100 shadow-md"
+                        : "border-orange-200 hover:border-orange-400 hover:bg-orange-50"
+                    }`}>
                       <input
                         type="radio"
                         name="precio_compra_method"
@@ -263,11 +401,19 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
                             compra: "individual",
                           }))
                         }
-                        className="mr-2"
+                        className="sr-only"
                       />
-                      <span>Individual</span>
+                      <span className={`font-semibold text-sm ${
+                        pricingMethod.compra === "individual" ? "text-orange-700" : "text-slate-600"
+                      }`}>
+                        Individual
+                      </span>
                     </label>
-                    <label className="flex items-center">
+                    <label className={`flex-1 flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                      pricingMethod.compra === "lote"
+                        ? "border-orange-500 bg-orange-100 shadow-md"
+                        : "border-orange-200 hover:border-orange-400 hover:bg-orange-50"
+                    }`}>
                       <input
                         type="radio"
                         name="precio_compra_method"
@@ -279,38 +425,52 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
                             compra: "lote",
                           }))
                         }
-                        className="mr-2"
+                        className="sr-only"
                       />
-                      <span>Por Lote</span>
+                      <span className={`font-semibold text-sm ${
+                        pricingMethod.compra === "lote" ? "text-orange-700" : "text-slate-600"
+                      }`}>
+                        Por Lote
+                      </span>
                     </label>
                   </div>
                   {pricingMethod.compra === "individual" && (
-                    <input
-                      type="number"
-                      name="precio_compra"
-                      value={formData.precio_compra || ""}
-                      onChange={handleChange}
-                      step="0.01"
-                      min="0"
-                      className="w-full border rounded p-2"
-                      placeholder="Introduce el precio de compra"
-                    />
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">€</span>
+                      <input
+                        type="number"
+                        name="precio_compra"
+                        value={formData.precio_compra || ""}
+                        onChange={handleChange}
+                        step="0.01"
+                        min="0"
+                        className="w-full pl-10 pr-4 py-2.5 border border-orange-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="0.00"
+                      />
+                    </div>
                   )}
                   {pricingMethod.compra === "lote" && (
-                    <p className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
-                      ℹ️ No olvides añadir la muñeca a un lote de compra para
-                      establecer su precio.
-                    </p>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
+                      <span className="text-blue-600 text-lg">ℹ️</span>
+                      <p className="text-sm text-blue-700">
+                        Añade la muñeca a un <strong>lote de compra</strong> para establecer su precio.
+                      </p>
+                    </div>
                   )}
                 </div>
 
                 {/* Precio de Venta */}
-                <div className="p-3 bg-gray-50 rounded">
-                  <label className="block mb-2 font-medium">
-                    Tipo de Venta
+                <div className="bg-gradient-to-br from-emerald-50 to-white border-2 border-emerald-200 rounded-xl p-4">
+                  <label className="block text-sm font-bold text-emerald-800 mb-3 flex items-center gap-2">
+                    <span className="text-xl">💵</span>
+                    Precio de Venta
                   </label>
-                  <div className="flex items-center space-x-4 mb-2">
-                    <label className="flex items-center">
+                  <div className="flex gap-3 mb-3">
+                    <label className={`flex-1 flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                      pricingMethod.venta === "individual"
+                        ? "border-emerald-500 bg-emerald-100 shadow-md"
+                        : "border-emerald-200 hover:border-emerald-400 hover:bg-emerald-50"
+                    }`}>
                       <input
                         type="radio"
                         name="precio_venta_method"
@@ -322,11 +482,19 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
                             venta: "individual",
                           }))
                         }
-                        className="mr-2"
+                        className="sr-only"
                       />
-                      <span>Individual</span>
+                      <span className={`font-semibold text-sm ${
+                        pricingMethod.venta === "individual" ? "text-emerald-700" : "text-slate-600"
+                      }`}>
+                        Individual
+                      </span>
                     </label>
-                    <label className="flex items-center">
+                    <label className={`flex-1 flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                      pricingMethod.venta === "lote"
+                        ? "border-emerald-500 bg-emerald-100 shadow-md"
+                        : "border-emerald-200 hover:border-emerald-400 hover:bg-emerald-50"
+                    }`}>
                       <input
                         type="radio"
                         name="precio_venta_method"
@@ -338,71 +506,96 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
                             venta: "lote",
                           }))
                         }
-                        className="mr-2"
+                        className="sr-only"
                       />
-                      <span>Por Lote</span>
+                      <span className={`font-semibold text-sm ${
+                        pricingMethod.venta === "lote" ? "text-emerald-700" : "text-slate-600"
+                      }`}>
+                        Por Lote
+                      </span>
                     </label>
                   </div>
                   {pricingMethod.venta === "individual" && (
-                    <input
-                      type="number"
-                      name="precio_venta"
-                      value={formData.precio_venta || ""}
-                      onChange={handleChange}
-                      step="0.01"
-                      min="0"
-                      className="w-full border rounded p-2"
-                      placeholder="Introduce el precio de venta"
-                    />
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">€</span>
+                      <input
+                        type="number"
+                        name="precio_venta"
+                        value={formData.precio_venta || ""}
+                        onChange={handleChange}
+                        step="0.01"
+                        min="0"
+                        className="w-full pl-10 pr-4 py-2.5 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        placeholder="0.00"
+                      />
+                    </div>
                   )}
                   {pricingMethod.venta === "lote" && (
-                    <p className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
-                      ℹ️ No olvides añadir la muñeca a un lote de venta para
-                      establecer su precio.
-                    </p>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
+                      <span className="text-blue-600 text-lg">ℹ️</span>
+                      <p className="text-sm text-blue-700">
+                        Añade la muñeca a un <strong>lote de venta</strong> para establecer su precio.
+                      </p>
+                    </div>
                   )}
                 </div>
 
-                {/* Comentarios e Imagen */}
+                {/* Comentarios */}
                 <div>
-                  <label className="block mb-1">Comentarios</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    💬 Comentarios
+                  </label>
                   <textarea
                     name="comentarios"
                     value={formData.comentarios || ""}
                     onChange={handleChange}
-                    className="w-full border rounded p-2 h-24"
+                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none"
+                    rows={3}
+                    placeholder="Notas adicionales sobre la muñeca..."
                   />
                 </div>
+
+                {/* Imagen */}
                 <div>
-                  <label className="block mb-1">Imagen</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="w-full px-3 py-2 border rounded"
-                  />
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    📸 Imagen
+                  </label>
+                  <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 hover:border-pink-400 transition-colors">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100 cursor-pointer"
+                    />
+                    {imageFile && (
+                      <p className="mt-2 text-sm text-emerald-600 flex items-center gap-2">
+                        <span>✓</span>
+                        <span>Archivo: {imageFile.name}</span>
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Botones de acción */}
-          <div className="flex justify-end gap-2 mt-6 pt-4 border-t">
-            <button
-              type="button"
-              onClick={closeModal}
-              className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Añadir
-            </button>
-          </div>
-        </form>
+            {/* Footer */}
+            <div className="bg-slate-50 px-6 py-4 border-t border-slate-200 flex justify-end gap-3 -mx-6 -mb-6 mt-6">
+              <button
+                type="button"
+                onClick={closeModal}
+                className="px-5 py-2.5 bg-white border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="px-5 py-2.5 bg-gradient-to-r from-pink-600 to-purple-700 text-white rounded-lg font-semibold hover:from-pink-700 hover:to-purple-800 transition-colors"
+              >
+                Añadir Muñeca
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

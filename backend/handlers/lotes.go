@@ -324,3 +324,63 @@ func DeleteLote(w http.ResponseWriter, r *http.Request) {
 		Message: "Lote eliminado exitosamente",
 	})
 }
+
+// GetDollLotes returns all lotes for a specific doll
+func GetDollLotes(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	dollId, err := strconv.Atoi(vars["dollId"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "ID de muñeca inválido")
+		return
+	}
+
+	query := `
+		SELECT 
+			l.id, l.nombre, l.tipo, l.precio_total, l.created_at
+		FROM lotes l
+		INNER JOIN lote_doll ld ON l.id = ld.lote_id
+		WHERE ld.doll_id = ?
+		ORDER BY l.created_at DESC
+	`
+
+	rows, err := database.ExecuteQuery(query, dollId)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Error al obtener lotes")
+		return
+	}
+	defer rows.Close()
+
+	type LoteResponse struct {
+		ID          int       `json:"id"`
+		Nombre      string    `json:"nombre"`
+		Tipo        string    `json:"tipo"`
+		PrecioTotal *float64  `json:"precio_total"`
+		CreatedAt   time.Time `json:"created_at"`
+	}
+
+	var lotes []LoteResponse
+	for rows.Next() {
+		var lote LoteResponse
+		var precioTotalDB sql.NullFloat64
+		err := rows.Scan(&lote.ID, &lote.Nombre, &lote.Tipo, &precioTotalDB, &lote.CreatedAt)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, "Error al procesar lotes")
+			return
+		}
+
+		if precioTotalDB.Valid {
+			precioTotal := precioTotalDB.Float64
+			lote.PrecioTotal = &precioTotal
+		} else {
+			lote.PrecioTotal = nil
+		}
+
+		lotes = append(lotes, lote)
+	}
+
+	if lotes == nil {
+		lotes = []LoteResponse{}
+	}
+
+	respondWithJSON(w, http.StatusOK, lotes)
+}

@@ -44,6 +44,7 @@ func main() {
 	// Dolls routes
 	router.HandleFunc("/api/dolls", handlers.GetDolls).Methods("GET")
 	router.HandleFunc("/api/dolls/{id:[0-9]+}", handlers.GetDoll).Methods("GET")
+	router.HandleFunc("/api/dolls/{dollId:[0-9]+}/lotes", handlers.GetDollLotes).Methods("GET")
 	router.HandleFunc("/api/dolls", handlers.AddDoll).Methods("POST")
 	router.HandleFunc("/api/dolls/{id:[0-9]+}", handlers.UpdateDoll).Methods("PUT")
 	router.HandleFunc("/api/dolls/{id:[0-9]+}", handlers.DeleteDoll).Methods("DELETE")
@@ -111,13 +112,13 @@ func main() {
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
-		
+
 		// Log request
 		log.Printf("➡️  %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
-		
+
 		// Call next handler
 		next.ServeHTTP(w, r)
-		
+
 		// Log response time
 		duration := time.Since(start)
 		log.Printf("⬅️  %s %s completed in %v", r.Method, r.URL.Path, duration)

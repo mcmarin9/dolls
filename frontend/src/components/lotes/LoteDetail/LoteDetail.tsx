@@ -54,100 +54,202 @@ const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
     }
   }, [isOpen, lote]);
 
+  const handleClose = () => {
+    // Cerrar todo de una vez
+    setIsDollModalOpen(false);
+    setSelectedDoll(null);
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40">
-      <div className="bg-white rounded-lg max-w-2xl w-full p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">
-            Detalles del Lote: {lote.nombre}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            ✕
-          </button>
+      <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+        {/* Header */}
+        <div className={`px-6 py-4 bg-gradient-to-r ${
+          lote.tipo.toLowerCase() === 'compra' 
+            ? 'from-orange-600 to-orange-700' 
+            : 'from-emerald-600 to-emerald-700'
+        }`}>
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+              <span className="text-3xl">{lote.tipo.toLowerCase() === 'compra' ? '🛒' : '💰'}</span>
+              {lote.nombre}
+            </h2>
+            <button
+              onClick={handleClose}
+              className="text-white hover:bg-white/20 rounded-full p-2 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
-        <div className="mb-4">
-          <p className="text-gray-600">
-            <span className="font-semibold">Tipo:</span>{" "}
-            <span className={`px-2 py-1 rounded-full ${getTypeStyle(lote.tipo.toLowerCase() as "compra" | "venta")}`}>
-              {lote.tipo.charAt(0).toUpperCase() + lote.tipo.slice(1)}
-            </span>
-          </p>
-          {lote.tipo.toLowerCase() === 'venta' && (
-            <p className="text-gray-600">
-              <span className="font-semibold">Coste Total:</span> {totalCost.toFixed(2)}€
-            </p>
-          )}
-          <p className="text-gray-600">
-            <span className="font-semibold">{lote.tipo.toLowerCase() === 'venta' ? 'Precio de Venta Total:' : 'Precio Total:'}</span> {totalPrice.toFixed(2)}€
-          </p>
-          {lote.tipo.toLowerCase() === 'venta' && profit !== null && (
-            <>
-              <p className={`text-gray-600 ${profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                <span className="font-semibold">Ganancia:</span> {profit.toFixed(2)}€
-              </p>
-              <p className={`text-gray-600 ${profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                <span className="font-semibold">Margen de Ganancia:</span> {profitMargin}%
-              </p>
-            </>
-          )}
-          <p className="text-gray-600">
-            <span className="font-semibold">Cantidad de Muñecas:</span>{" "}
-            {quantity}
-          </p>
-          <p className="text-gray-600">
-            <span className="font-semibold">Precio Unitario:</span>{" "}
-            {quantity > 0 ? (totalPrice / quantity).toFixed(2) : "0.00"}€
-          </p>
-        </div>
-
-        <div className="border-t pt-4">
-          <h3 className="text-lg font-semibold mb-3">Muñecas en este Lote</h3>
-          {loading ? (
-            <p>Cargando muñecas...</p>
-          ) : error ? (
-            <p className="text-red-500">{error}</p>
-          ) : (
+        {/* Body con scroll */}
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
+          <div className="space-y-6">
+            {/* Información del Lote */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {dolls.map((doll) => (
-                <div
-                  key={doll.id}
-                  onClick={() => handleDollClick(doll)}
-                  className="cursor-pointer hover:bg-gray-50 p-3 rounded-lg"
-                >
-                  <div className="flex items-center space-x-3">
-                    {doll.imagen ? (
-                      <img
-                        src={`http://localhost:5000${doll.imagen}`}
-                        alt={doll.nombre}
-                        className="w-16 h-16 object-cover rounded"
-                      />
-                    ) : (
-                      <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
-                        <span className="text-gray-400 text-xs">
-                          No imagen
-                        </span>
-                      </div>
-                    )}
+              {/* Tipo */}
+              <div className={`bg-gradient-to-br rounded-xl p-4 border-2 ${
+                lote.tipo.toLowerCase() === 'compra'
+                  ? 'from-orange-50 to-white border-orange-200'
+                  : 'from-emerald-50 to-white border-emerald-200'
+              }`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl">{lote.tipo.toLowerCase() === 'compra' ? '🛒' : '💰'}</span>
+                  <span className="text-sm font-bold text-slate-700">Tipo de Lote</span>
+                </div>
+                <p className={`text-2xl font-bold ${
+                  lote.tipo.toLowerCase() === 'compra' ? 'text-orange-700' : 'text-emerald-700'
+                }`}>
+                  {lote.tipo.charAt(0).toUpperCase() + lote.tipo.slice(1)}
+                </p>
+              </div>
+
+              {/* Cantidad */}
+              <div className="bg-gradient-to-br from-blue-50 to-white border-2 border-blue-200 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl">🎎</span>
+                  <span className="text-sm font-bold text-slate-700">Muñecas en Lote</span>
+                </div>
+                <p className="text-2xl font-bold text-blue-700">{quantity}</p>
+              </div>
+
+              {/* Precio por unidad */}
+              <div className="bg-gradient-to-br from-purple-50 to-white border-2 border-purple-200 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl">🏷️</span>
+                  <span className="text-sm font-bold text-slate-700">Precio Unitario</span>
+                </div>
+                <p className="text-2xl font-bold text-purple-700">
+                  {quantity > 0 ? (totalPrice / quantity).toFixed(2) : "0.00"}€
+                </p>
+              </div>
+
+              {/* Precio Total */}
+              <div className={`bg-gradient-to-br rounded-xl p-4 border-2 ${
+                lote.tipo.toLowerCase() === 'compra'
+                  ? 'from-orange-50 to-white border-orange-200'
+                  : 'from-emerald-50 to-white border-emerald-200'
+              }`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl">💵</span>
+                  <span className="text-sm font-bold text-slate-700">
+                    {lote.tipo.toLowerCase() === 'venta' ? 'Precio de Venta' : 'Precio Total'}
+                  </span>
+                </div>
+                <p className={`text-2xl font-bold ${
+                  lote.tipo.toLowerCase() === 'compra' ? 'text-orange-700' : 'text-emerald-700'
+                }`}>
+                  {totalPrice.toFixed(2)}€
+                </p>
+              </div>
+
+              {/* Solo para lotes de venta: Coste y Ganancia */}
+              {lote.tipo.toLowerCase() === 'venta' && (
+                <>
+                  <div className="bg-gradient-to-br from-red-50 to-white border-2 border-red-200 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-2xl">📊</span>
+                      <span className="text-sm font-bold text-slate-700">Coste Total</span>
+                    </div>
+                    <p className="text-2xl font-bold text-red-700">{totalCost.toFixed(2)}€</p>
+                  </div>
+
+                  <div className={`bg-gradient-to-br rounded-xl p-4 border-2 ${
+                    profit && profit >= 0
+                      ? 'from-green-50 to-white border-green-200'
+                      : 'from-red-50 to-white border-red-200'
+                  }`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-2xl">{profit && profit >= 0 ? '📈' : '📉'}</span>
+                      <span className="text-sm font-bold text-slate-700">Ganancia</span>
+                    </div>
                     <div>
-                      <h4 className="font-semibold">{doll.nombre}</h4>
-                      <p className="text-sm text-gray-600">
-                        {doll.marca_nombre} - {doll.modelo}
+                      <p className={`text-2xl font-bold ${
+                        profit && profit >= 0 ? 'text-green-700' : 'text-red-700'
+                      }`}>
+                        {profit !== null ? profit.toFixed(2) : '0.00'}€
                       </p>
-                      <span className={`px-2 py-1 text-xs rounded-full ${getStatusStyle(doll.estado || '')}`}>
-                        {doll.estado}
-                      </span>
+                      {profitMargin && (
+                        <p className={`text-sm font-semibold ${
+                          profit && profit >= 0 ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                          ({profitMargin}%)
+                        </p>
+                      )}
                     </div>
                   </div>
-                </div>
-              ))}
+                </>
+              )}
             </div>
-          )}
+
+            {/* Lista de Muñecas */}
+            <div>
+              <div className="flex items-center gap-2 pb-3 border-b-2 border-blue-200 mb-4">
+                <span className="text-2xl">🎎</span>
+                <h3 className="font-bold text-lg text-slate-800">Muñecas en este Lote</h3>
+              </div>
+
+              {loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="flex flex-col items-center gap-3">
+                    <svg className="animate-spin h-10 w-10 text-blue-600" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    <p className="text-slate-600">Cargando muñecas...</p>
+                  </div>
+                </div>
+              ) : error ? (
+                <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-2">
+                  <span className="text-xl">⚠️</span>
+                  <span>{error}</span>
+                </div>
+              ) : dolls.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {dolls.map((doll) => (
+                    <div
+                      key={doll.id}
+                      onClick={() => handleDollClick(doll)}
+                      className="flex items-center gap-3 p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-blue-400 hover:shadow-md transition-all cursor-pointer"
+                    >
+                      {doll.imagen ? (
+                        <img
+                          src={`http://localhost:5000${doll.imagen}`}
+                          alt={doll.nombre}
+                          className="w-20 h-20 object-cover rounded-lg border-2 border-slate-200"
+                        />
+                      ) : (
+                        <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex items-center justify-center border-2 border-slate-200">
+                          <span className="text-3xl">📷</span>
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-slate-900 truncate">{doll.nombre}</h4>
+                        <p className="text-sm text-slate-600 truncate">
+                          {doll.marca_nombre} - {doll.modelo}
+                        </p>
+                        <span className={`inline-block mt-1 px-2 py-1 text-xs font-semibold rounded-full ${getStatusStyle(doll.estado || '')}`}>
+                          {doll.estado}
+                        </span>
+                      </div>
+                      <span className="text-blue-400 text-xl">→</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 text-slate-400">
+                  <p className="text-5xl mb-3">🎎</p>
+                  <p className="text-lg font-semibold">No hay muñecas en este lote</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {selectedDoll && isDollModalOpen && (

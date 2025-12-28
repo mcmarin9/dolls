@@ -40,12 +40,14 @@ const AppContent: React.FC = () => {
     closeEditLote,
     openMarcaModal,
     closeMarcaModal,
+    openLoteDetail,
   } = useApp();
 
   const handleLoteClickFromDoll = (loteId: number) => {
     const lote = lotes.find((l) => l.id === loteId);
     if (lote) {
       closeDollDetail();
+      openLoteDetail(lote);
     }
   };
 
@@ -96,19 +98,12 @@ const AppContent: React.FC = () => {
       />
       
       {isDetailModalOpen && selectedDoll && (
-        <Modal
+        <DollDetail
+          doll={selectedDoll}
           isOpen={isDetailModalOpen}
           onClose={closeDollDetail}
-          title="Detalle de Muñeca"
-          size="lg"
-        >
-          <DollDetail
-            doll={selectedDoll}
-            isOpen={isDetailModalOpen}
-            onClose={closeDollDetail}
-            onLoteClick={handleLoteClickFromDoll}
-          />
-        </Modal>
+          onLoteClick={handleLoteClickFromDoll}
+        />
       )}
   
       {selectedLote && (
