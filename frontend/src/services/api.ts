@@ -111,6 +111,11 @@ export const getFabricantes = async (): Promise<Fabricante[]> => {
   return response.data;
 };
 
+export const createFabricante = async (nombre: string): Promise<Fabricante> => {
+  const response = await api.post("/fabricantes", { nombre });
+  return response.data;
+};
+
 export const createMarca = async (data: { 
   nombre: string; 
   fabricanteIds: number[] 

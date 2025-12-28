@@ -208,6 +208,54 @@ func GetFabricantes(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, fabricantes)
 }
 
+// AddFabricante creates a new fabricante
+func AddFabricante(w http.ResponseWriter, r *http.Request) {
+	type FabricanteInput struct {
+		Nombre string `json:"nombre"`
+	}
+
+	var input FabricanteInput
+	if err := parseJSONBody(r, &input); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Datos inválidos")
+		return
+	}
+
+	// Validate input
+	if err := utils.ValidateMarcaInput(input.Nombre); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	// Check if fabricante already exists
+	var count int
+	err := database.ExecuteQueryRow("SELECT COUNT(*) FROM fabricantes WHERE nombre = ?", input.Nombre).Scan(&count)
+	if err == nil && count > 0 {
+		respondWithError(w, http.StatusBadRequest, "Este fabricante ya existe")
+		return
+	}
+
+	// Insert fabricante
+	insertQuery := "INSERT INTO fabricantes (nombre) VALUES (?)"
+	result, err := database.ExecuteUpdate(insertQuery, input.Nombre)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Error al crear fabricante")
+		return
+	}
+
+	fabricanteID, _ := result.LastInsertId()
+
+	// Fetch the created fabricante
+	var fabricante models.Fabricante
+	err = database.ExecuteQueryRow("SELECT id, nombre, created_at FROM fabricantes WHERE id = ?", fabricanteID).
+		Scan(&fabricante.ID, &fabricante.Nombre, &fabricante.CreatedAt)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Error al recuperar fabricante creado")
+		return
+	}
+
+	respondWithJSON(w, http.StatusCreated, fabricante)
+}
+
 // GetMarcasByFabricante returns all marcas for a specific fabricante
 func GetMarcasByFabricante(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

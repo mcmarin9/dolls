@@ -64,6 +64,7 @@ func main() {
 
 	// Fabricantes routes
 	router.HandleFunc("/api/fabricantes", handlers.GetFabricantes).Methods("GET")
+	router.HandleFunc("/api/fabricantes", handlers.AddFabricante).Methods("POST")
 	router.HandleFunc("/api/fabricantes/{fabricante_id:[0-9]+}/marcas", handlers.GetMarcasByFabricante).Methods("GET")
 
 	// Image routes

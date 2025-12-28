@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Fabricante } from '../../../types/Fabricante';
-import { getFabricantes } from '../../../services/api';
+import { getFabricantes, createFabricante } from '../../../services/api';
 import { useApp } from '../../../context';
 
 interface AddMarcaModalProps {
@@ -13,6 +13,10 @@ const AddMarcaModal: React.FC<AddMarcaModalProps> = ({ isOpen, closeModal }) => 
   const [nombre, setNombre] = useState('');
   const [fabricantes, setFabricantes] = useState<Fabricante[]>([]);
   const [selectedFabricantes, setSelectedFabricantes] = useState<number[]>([]);
+  const [showNewFabricanteForm, setShowNewFabricanteForm] = useState(false);
+  const [newFabricanteName, setNewFabricanteName] = useState('');
+  const [isCreatingFabricante, setIsCreatingFabricante] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchFabricantes = async () => {
@@ -28,6 +32,29 @@ const AddMarcaModal: React.FC<AddMarcaModalProps> = ({ isOpen, closeModal }) => 
       fetchFabricantes();
     }
   }, [isOpen]);
+
+  const handleAddNewFabricante = async () => {
+    if (!newFabricanteName.trim()) {
+      setError('El nombre del fabricante no puede estar vacío');
+      return;
+    }
+
+    setIsCreatingFabricante(true);
+    setError('');
+    
+    try {
+      const newFabricante = await createFabricante(newFabricanteName.trim());
+      setFabricantes([...fabricantes, newFabricante]);
+      setSelectedFabricantes([...selectedFabricantes, newFabricante.id]);
+      setNewFabricanteName('');
+      setShowNewFabricanteForm(false);
+    } catch (error) {
+      console.error('Error al crear fabricante:', error);
+      setError('Error al crear el fabricante');
+    } finally {
+      setIsCreatingFabricante(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,43 +128,100 @@ const AddMarcaModal: React.FC<AddMarcaModalProps> = ({ isOpen, closeModal }) => 
                 <span>🏭</span>
                 Fabricantes Asociados
               </label>
-              <div className="border-2 border-slate-200 rounded-lg p-4 bg-slate-50 space-y-2">
+              <div className="border-2 border-slate-200 rounded-lg p-4 bg-slate-50 space-y-3">
                 {fabricantes.length > 0 ? (
-                  fabricantes.map((fabricante) => (
-                    <label 
-                      key={fabricante.id} 
-                      className={`flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                        selectedFabricantes.includes(fabricante.id)
-                          ? "border-slate-500 bg-slate-100 shadow-sm"
-                          : "border-slate-200 hover:border-slate-300 hover:bg-white"
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selectedFabricantes.includes(fabricante.id)}
-                        onChange={() => handleFabricanteChange(fabricante.id)}
-                        className="sr-only"
-                      />
-                      <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
-                        selectedFabricantes.includes(fabricante.id)
-                          ? "border-slate-600 bg-slate-600"
-                          : "border-slate-400 bg-white"
-                      }`}>
-                        {selectedFabricantes.includes(fabricante.id) && (
-                          <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </div>
-                      <span className={`font-semibold text-sm ${
-                        selectedFabricantes.includes(fabricante.id) ? "text-slate-700" : "text-slate-600"
-                      }`}>
-                        {fabricante.nombre}
-                      </span>
-                    </label>
-                  ))
+                  <div className="space-y-2">
+                    {fabricantes.map((fabricante) => (
+                      <label 
+                        key={fabricante.id} 
+                        className={`flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                          selectedFabricantes.includes(fabricante.id)
+                            ? "border-slate-500 bg-slate-100 shadow-sm"
+                            : "border-slate-200 hover:border-slate-300 hover:bg-white"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedFabricantes.includes(fabricante.id)}
+                          onChange={() => handleFabricanteChange(fabricante.id)}
+                          className="sr-only"
+                        />
+                        <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
+                          selectedFabricantes.includes(fabricante.id)
+                            ? "border-slate-600 bg-slate-600"
+                            : "border-slate-400 bg-white"
+                        }`}>
+                          {selectedFabricantes.includes(fabricante.id) && (
+                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </div>
+                        <span className={`font-semibold text-sm ${
+                          selectedFabricantes.includes(fabricante.id) ? "text-slate-700" : "text-slate-600"
+                        }`}>
+                          {fabricante.nombre}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                 ) : (
                   <p className="text-sm text-slate-500 text-center py-4">No hay fabricantes disponibles</p>
+                )}
+                
+                {/* Botón para añadir nuevo fabricante */}
+                {!showNewFabricanteForm && (
+                  <button
+                    type="button"
+                    onClick={() => setShowNewFabricanteForm(true)}
+                    className="w-full mt-3 px-4 py-2.5 bg-blue-50 border-2 border-dashed border-blue-300 text-blue-700 rounded-lg font-semibold hover:bg-blue-100 hover:border-blue-400 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <span>➕</span>
+                    Crear Nuevo Fabricante
+                  </button>
+                )}
+
+                {/* Formulario de nuevo fabricante */}
+                {showNewFabricanteForm && (
+                  <div className="mt-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                    <label className="block text-sm font-semibold text-blue-800 mb-2">
+                      Nombre del Nuevo Fabricante
+                    </label>
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        type="text"
+                        value={newFabricanteName}
+                        onChange={(e) => {
+                          setNewFabricanteName(e.target.value);
+                          setError('');
+                        }}
+                        placeholder="Ej: Mattel, Hasbro..."
+                        className="flex-1 px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddNewFabricante}
+                        disabled={isCreatingFabricante || !newFabricanteName.trim()}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-slate-400 transition-colors text-sm"
+                      >
+                        {isCreatingFabricante ? '⏳' : '✓'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowNewFabricanteForm(false);
+                          setNewFabricanteName('');
+                          setError('');
+                        }}
+                        className="px-4 py-2 bg-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-400 transition-colors text-sm"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    {error && (
+                      <p className="text-sm text-red-600 mt-2">⚠️ {error}</p>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
