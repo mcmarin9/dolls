@@ -10,6 +10,7 @@ const LoteList: React.FC = () => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [loteToDelete, setLoteToDelete] = useState<Lote | null>(null);
   const [selectedType, setSelectedType] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const formatPrice = (price: number | undefined | null): string => {
     if (price === undefined || price === null) return "0.00";
@@ -36,8 +37,17 @@ const LoteList: React.FC = () => {
   };
 
   const filteredAndSortedLotes = useMemo(() => {
-    // Primer paso: filtrar por tipo
+    // Primer paso: filtrar por búsqueda y tipo
     let filteredItems = [...lotes];
+    
+    // Filtrar por término de búsqueda
+    if (searchTerm) {
+      filteredItems = filteredItems.filter(lote => 
+        lote.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Filtrar por tipo
     if (selectedType) {
       filteredItems = filteredItems.filter(lote => 
         lote.tipo.toLowerCase() === selectedType.toLowerCase()
@@ -68,7 +78,7 @@ const LoteList: React.FC = () => {
     }
   
     return filteredItems;
-  }, [lotes, sortConfig, selectedType]);
+  }, [lotes, sortConfig, selectedType, searchTerm]);
 
 
   const getSortIcon = (key: keyof Lote) => {
@@ -97,50 +107,140 @@ const LoteList: React.FC = () => {
     setLoteToDelete(null);
   };
 
+  // Calcular estadísticas
+  const stats = useMemo(() => {
+    const filtered = filteredAndSortedLotes;
+    const totalCompra = filtered
+      .filter(l => l.tipo.toLowerCase() === 'compra')
+      .reduce((sum, l) => sum + (l.precio_total || 0), 0);
+    const totalVenta = filtered
+      .filter(l => l.tipo.toLowerCase() === 'venta')
+      .reduce((sum, l) => sum + (l.precio_total || 0), 0);
+    const totalDolls = filtered.reduce((sum, l) => sum + (l.cantidad_munecas || 0), 0);
+    
+    return {
+      totalCompra,
+      totalVenta,
+      totalDolls,
+      count: filtered.length
+    };
+  }, [filteredAndSortedLotes]);
+
   return (
     <div className="flex flex-col h-full">
-          <div className="mb-4">
-      <select
-        value={selectedType}
-        onChange={(e) => setSelectedType(e.target.value)}
-        className="w-40 p-2 border rounded-lg text-sm"
-      >
-        <option value="">Todos los tipos</option>
-        <option value="compra">Compra</option>
-        <option value="venta">Venta</option>
-      </select>
-    </div>
-      <div className="flex-1 min-h-0 rounded-lg border border-gray-200">
-        <div className="h-full overflow-auto">
+      {/* Barra de filtros y búsqueda */}
+      <div className="mb-4 flex flex-col sm:flex-row gap-3">
+        {/* Campo de búsqueda */}
+        <div className="flex-1 relative">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="🔍 Buscar por nombre..."
+            className="w-full p-2 pl-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              title="Limpiar búsqueda"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+        
+        {/* Filtro de tipo */}
+        <select
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value)}
+          className="w-full sm:w-48 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          <option value="">📦 Todos los tipos</option>
+          <option value="compra">🛒 Compra</option>
+          <option value="venta">💰 Venta</option>
+        </select>
+      </div>
+
+      {/* Estadísticas rápidas */}
+      {filteredAndSortedLotes.length > 0 && (
+        <div className="mb-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div className="text-xs text-blue-600 font-medium uppercase">Total Lotes</div>
+            <div className="text-2xl font-bold text-blue-900">{stats.count}</div>
+          </div>
+          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+            <div className="text-xs text-green-600 font-medium uppercase">Compras</div>
+            <div className="text-2xl font-bold text-green-900">{formatPrice(stats.totalCompra)}€</div>
+          </div>
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+            <div className="text-xs text-purple-600 font-medium uppercase">Ventas</div>
+            <div className="text-2xl font-bold text-purple-900">{formatPrice(stats.totalVenta)}€</div>
+          </div>
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+            <div className="text-xs text-orange-600 font-medium uppercase">Total Muñecas</div>
+            <div className="text-2xl font-bold text-orange-900">{stats.totalDolls}</div>
+          </div>
+        </div>
+      )}
+
+      <div className="flex-1 min-h-0 rounded-lg border border-gray-200 shadow-sm">
+        <div className="h-full overflow-auto">{filteredAndSortedLotes.length === 0 ? (
+            /* Estado vacío */
+            <div className="flex flex-col items-center justify-center h-full text-gray-400 p-8">
+              <svg className="w-24 h-24 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+              </svg>
+              <p className="text-xl font-semibold mb-2">No hay lotes</p>
+              <p className="text-sm">
+                {searchTerm || selectedType
+                  ? "No se encontraron lotes con los filtros aplicados"
+                  : "Comienza agregando tu primer lote"}
+              </p>
+            </div>
+          ) : (
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50 sticky top-0">
+            <thead className="bg-gray-50 sticky top-0 z-10">
               <tr>
                 <th
-                  className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100"
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100 transition-colors"
                   onClick={() => requestSort("nombre")}
+                  title="Ordenar por nombre"
                 >
-                  Nombre {getSortIcon("nombre")}
+                  <div className="flex items-center gap-1">
+                    📝 Nombre {getSortIcon("nombre")}
+                  </div>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100 transition-colors"
                   onClick={() => requestSort("tipo")}
+                  title="Ordenar por tipo"
                 >
-                  Tipo {getSortIcon("tipo")}
+                  <div className="flex items-center gap-1">
+                    🏷️ Tipo {getSortIcon("tipo")}
+                  </div>
                 </th>
                 <th
-                  className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100"
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100 transition-colors"
                   onClick={() => requestSort("precio_total")}
+                  title="Ordenar por precio total"
                 >
-                  Precio Total {getSortIcon("precio_total")}
+                  <div className="flex items-center gap-1">
+                    💵 Precio Total {getSortIcon("precio_total")}
+                  </div>
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                  Precio Unitario
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" title="Precio por unidad">
+                  <div className="flex items-center gap-1">
+                    💰 Precio Unitario
+                  </div>
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                  Cantidad Muñecas
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" title="Número de muñecas">
+                  <div className="flex items-center gap-1">
+                    🎎 Cantidad
+                  </div>
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                  Acciones
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                  ⚙️ Acciones
                 </th>
               </tr>
             </thead>
@@ -152,53 +252,61 @@ const LoteList: React.FC = () => {
 
 
                 return (
-                  <tr key={lote.id}>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                      {lote.nombre}
+                  <tr key={lote.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{lote.nombre}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       <span
-                        className={`px-2 py-1 rounded ${getTypeStyle(
+                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getTypeStyle(
                           lote.tipo.toLowerCase() as "compra" | "venta"
                         )}`}
                       >
-                        {lote.tipo}
+                        {lote.tipo.toLowerCase() === 'compra' ? '🛒' : '💰'} {lote.tipo}
                       </span>
                     </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-600">
-                      {formatPrice(totalPrice)}€
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="text-sm font-semibold text-gray-900">{formatPrice(totalPrice)}€</div>
                     </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-600">
-                      {formatPrice(unitPrice)}€
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="text-sm text-gray-600">{formatPrice(unitPrice)}€</div>
                     </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-600">
-                      {quantity}
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        {quantity} {quantity === 1 ? 'muñeca' : 'muñecas'}
+                      </div>
                     </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm space-x-2">
-                      <button
-                        onClick={() => handleView(lote)}
-                        className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                      >
-                        Ver Detalles
-                      </button>
-                      <button
-                        onClick={() => openEditLote(lote)}
-                        className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-                      >
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => handleDeleteClick(lote)}
-                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                      >
-                        Eliminar
-                      </button>
+                    <td className="px-4 py-3 whitespace-nowrap text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => handleView(lote)}
+                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors"
+                          title="Ver detalles del lote"
+                        >
+                          👁️ Ver
+                        </button>
+                        <button
+                          onClick={() => openEditLote(lote)}
+                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-yellow-700 bg-yellow-100 rounded-lg hover:bg-yellow-200 transition-colors"
+                          title="Editar lote"
+                        >
+                          ✏️ Editar
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(lote)}
+                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-700 bg-red-100 rounded-lg hover:bg-red-200 transition-colors"
+                          title="Eliminar lote"
+                        >
+                          🗑️ Eliminar
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
+          )}
         </div>
       </div>
 
@@ -214,30 +322,42 @@ const LoteList: React.FC = () => {
       )}
 
       {loteToDelete && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-          <div className="relative mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3 text-center">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">
-                Confirmar eliminación
+        <div className="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50 p-4">
+          <div className="relative mx-auto p-6 border border-gray-200 w-full max-w-md shadow-2xl rounded-xl bg-white">
+            <div className="text-center">
+              {/* Icono de advertencia */}
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                <svg className="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              
+              <h3 className="text-xl leading-6 font-bold text-gray-900 mb-2">
+                ⚠️ Confirmar eliminación
               </h3>
-              <div className="mt-2 px-7 py-3">
-                <p className="text-sm text-gray-500">
-                  ¿Estás seguro de que deseas eliminar el lote "
-                  {loteToDelete.nombre}"?
+              <div className="mt-3 px-4 py-3">
+                <p className="text-sm text-gray-600 mb-2">
+                  ¿Estás seguro de que deseas eliminar el lote:
+                </p>
+                <p className="text-base font-semibold text-gray-900 mb-2">
+                  "{loteToDelete.nombre}"?
+                </p>
+                <p className="text-xs text-red-600">
+                  Esta acción no se puede deshacer.
                 </p>
               </div>
-              <div className="items-center px-4 py-3">
-                <button
-                  onClick={confirmDelete}
-                  className="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-600 mr-2"
-                >
-                  Eliminar
-                </button>
+              <div className="flex gap-3 justify-center px-4 py-3 mt-4">
                 <button
                   onClick={cancelDelete}
-                  className="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-gray-600"
+                  className="flex-1 px-4 py-2.5 bg-gray-200 text-gray-800 text-sm font-medium rounded-lg hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
                 >
-                  Cancelar
+                  ❌ Cancelar
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="flex-1 px-4 py-2.5 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  🗑️ Eliminar
                 </button>
               </div>
             </div>

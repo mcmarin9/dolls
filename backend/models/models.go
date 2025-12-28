@@ -47,9 +47,10 @@ type DollInput struct {
 
 // Marca represents a brand
 type Marca struct {
-	ID        int       `json:"id"`
-	Nombre    string    `json:"nombre"`
-	CreatedAt time.Time `json:"created_at"`
+	ID          int          `json:"id"`
+	Nombre      string       `json:"nombre"`
+	CreatedAt   time.Time    `json:"created_at"`
+	Fabricantes []Fabricante `json:"fabricantes,omitempty"`
 }
 
 // Fabricante represents a manufacturer

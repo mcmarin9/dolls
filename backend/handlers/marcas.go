@@ -26,6 +26,26 @@ func GetMarcas(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var marca models.Marca
 		if err := rows.Scan(&marca.ID, &marca.Nombre, &marca.CreatedAt); err == nil {
+			// Get associated fabricantes for this marca
+			fabricantesQuery := `
+				SELECT f.id, f.nombre 
+				FROM fabricantes f
+				INNER JOIN marca_fabricante mf ON f.id = mf.fabricante_id
+				WHERE mf.marca_id = ?
+				ORDER BY f.nombre ASC
+			`
+			fabricantesRows, err := database.ExecuteQuery(fabricantesQuery, marca.ID)
+			if err == nil {
+				defer fabricantesRows.Close()
+				var fabricantes []models.Fabricante
+				for fabricantesRows.Next() {
+					var fabricante models.Fabricante
+					if err := fabricantesRows.Scan(&fabricante.ID, &fabricante.Nombre); err == nil {
+						fabricantes = append(fabricantes, fabricante)
+					}
+				}
+				marca.Fabricantes = fabricantes
+			}
 			marcas = append(marcas, marca)
 		}
 	}
