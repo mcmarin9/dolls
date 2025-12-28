@@ -36,14 +36,16 @@ const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
     : null;
 
   useEffect(() => {
-    if (isOpen && lote.id && !lote.dolls) {
+    if (isOpen && lote.id && (!lote.dolls || lote.dolls.length === 0)) {
       setLoading(true);
-      fetch(`http://localhost:5000/api/lotes/${lote.id}/dolls`)
+      fetch(`http://localhost:5000/api/lotes/${lote.id}`)
         .then((res) => {
-          if (!res.ok) throw new Error("Error al cargar las muñecas");
+          if (!res.ok) throw new Error("Error al cargar el lote");
           return res.json();
         })
-        .then((data) => setDolls(data))
+        .then((data) => {
+          setDolls(data.dolls || []);
+        })
         .catch((err) => {
           setError("No se pudieron cargar las muñecas.");
           console.error(err);

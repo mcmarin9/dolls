@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/mcmarin9/dolls/database"
@@ -18,12 +19,11 @@ func GetLotes(w http.ResponseWriter, r *http.Request) {
 	query := `
 		SELECT 
 			l.id, l.nombre, l.tipo, l.precio_total, l.created_at,
-			GROUP_CONCAT(d.id) as doll_ids,
-			GROUP_CONCAT(d.nombre) as doll_nombres
+			COUNT(DISTINCT d.id) as cantidad_munecas
 		FROM lotes l
 		LEFT JOIN lote_doll ld ON l.id = ld.lote_id
 		LEFT JOIN dolls d ON ld.doll_id = d.id
-		GROUP BY l.id
+		GROUP BY l.id, l.nombre, l.tipo, l.precio_total, l.created_at
 		ORDER BY l.created_at DESC
 	`
 
@@ -34,39 +34,49 @@ func GetLotes(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	type LoteWithDolls struct {
-		models.Lote
-		Dolls []map[string]interface{} `json:"dolls"`
+	type LoteResponse struct {
+		ID              int       `json:"id"`
+		Nombre          string    `json:"nombre"`
+		Tipo            string    `json:"tipo"`
+		PrecioTotal     *float64  `json:"precio_total"`
+		CreatedAt       time.Time `json:"created_at"`
+		CantidadMunecas int       `json:"cantidad_munecas"`
+		PrecioUnitario  *float64  `json:"precio_unitario"`
 	}
 
-	var lotes []LoteWithDolls
+	var lotes []LoteResponse
 	for rows.Next() {
-		var lote LoteWithDolls
-		var dollIDs, dollNombres sql.NullString
+		var lote LoteResponse
+		var cantidad int
+		var precioTotalDB sql.NullFloat64
 
 		err := rows.Scan(
-			&lote.ID, &lote.Nombre, &lote.Tipo, &lote.PrecioTotal, &lote.CreatedAt,
-			&dollIDs, &dollNombres,
+			&lote.ID, &lote.Nombre, &lote.Tipo, &precioTotalDB, &lote.CreatedAt,
+			&cantidad,
 		)
 		if err != nil {
 			continue
 		}
 
-		// Process dolls
-		if dollIDs.Valid && dollNombres.Valid {
-			ids := strings.Split(dollIDs.String, ",")
-			nombres := strings.Split(dollNombres.String, ",")
-			for i := range ids {
-				if i < len(nombres) {
-					id, _ := strconv.Atoi(ids[i])
-					lote.Dolls = append(lote.Dolls, map[string]interface{}{
-						"id":     id,
-						"nombre": nombres[i],
-					})
-				}
+		lote.CantidadMunecas = cantidad
+
+		// Convertir sql.NullFloat64 a *float64
+		if precioTotalDB.Valid {
+			precioTotal := precioTotalDB.Float64
+			lote.PrecioTotal = &precioTotal
+
+			// Calcular precio unitario
+			if cantidad > 0 {
+				precioUnitario := precioTotal / float64(cantidad)
+				lote.PrecioUnitario = &precioUnitario
+			} else {
+				precioUnitario := 0.0
+				lote.PrecioUnitario = &precioUnitario
 			}
 		} else {
-			lote.Dolls = []map[string]interface{}{}
+			lote.PrecioTotal = nil
+			precioUnitario := 0.0
+			lote.PrecioUnitario = &precioUnitario
 		}
 
 		lotes = append(lotes, lote)
@@ -87,13 +97,19 @@ func GetLote(w http.ResponseWriter, r *http.Request) {
 	query := "SELECT id, nombre, tipo, precio_total, created_at FROM lotes WHERE id = ?"
 
 	type LoteWithDolls struct {
-		models.Lote
-		Dolls []models.Doll `json:"dolls"`
+		ID          int           `json:"id"`
+		Nombre      string        `json:"nombre"`
+		Tipo        string        `json:"tipo"`
+		PrecioTotal *float64      `json:"precio_total"`
+		CreatedAt   time.Time     `json:"created_at"`
+		Dolls       []models.Doll `json:"dolls"`
 	}
 
 	var lote LoteWithDolls
+	var precioTotalDB sql.NullFloat64
+	lote.Dolls = []models.Doll{} // Initialize empty slice
 	err = database.ExecuteQueryRow(query, id).Scan(
-		&lote.ID, &lote.Nombre, &lote.Tipo, &lote.PrecioTotal, &lote.CreatedAt,
+		&lote.ID, &lote.Nombre, &lote.Tipo, &precioTotalDB, &lote.CreatedAt,
 	)
 	if err == sql.ErrNoRows {
 		respondWithError(w, http.StatusNotFound, "Lote no encontrado")
@@ -104,27 +120,44 @@ func GetLote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Convertir sql.NullFloat64 a *float64
+	if precioTotalDB.Valid {
+		precioTotal := precioTotalDB.Float64
+		lote.PrecioTotal = &precioTotal
+	} else {
+		lote.PrecioTotal = nil
+	}
+
 	// Get dolls for this lote
 	dollQuery := `
-		SELECT d.*
+		SELECT 
+			d.id, d.nombre, d.marca_id, d.fabricante_id, d.modelo, d.personaje, 
+			d.anyo, d.estado, d.precio_compra, d.precio_venta, d.comentarios, d.imagen, d.created_at,
+			m.nombre AS marca_nombre,
+			f.nombre AS fabricante_nombre
 		FROM dolls d
+		LEFT JOIN marca m ON d.marca_id = m.id
+		LEFT JOIN fabricantes f ON d.fabricante_id = f.id
 		INNER JOIN lote_doll ld ON d.id = ld.doll_id
 		WHERE ld.lote_id = ?
 	`
 	dollRows, err := database.ExecuteQuery(dollQuery, id)
-	if err == nil {
-		defer dollRows.Close()
-		for dollRows.Next() {
-			var doll models.Doll
-			err := dollRows.Scan(
-				&doll.ID, &doll.Nombre, &doll.MarcaID, &doll.FabricanteID,
-				&doll.Modelo, &doll.Personaje, &doll.Anyo, &doll.Estado,
-				&doll.PrecioCompra, &doll.PrecioVenta, &doll.Comentarios, &doll.Imagen,
-				&doll.CreatedAt,
-			)
-			if err == nil {
-				lote.Dolls = append(lote.Dolls, doll)
-			}
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Error al obtener dolls del lote")
+		return
+	}
+	defer dollRows.Close()
+	for dollRows.Next() {
+		var doll models.Doll
+		err := dollRows.Scan(
+			&doll.ID, &doll.Nombre, &doll.MarcaID, &doll.FabricanteID,
+			&doll.Modelo, &doll.Personaje, &doll.Anyo, &doll.Estado,
+			&doll.PrecioCompra, &doll.PrecioVenta, &doll.Comentarios, &doll.Imagen,
+			&doll.CreatedAt,
+			&doll.MarcaNombre, &doll.FabricanteNombre,
+		)
+		if err == nil {
+			lote.Dolls = append(lote.Dolls, doll)
 		}
 	}
 

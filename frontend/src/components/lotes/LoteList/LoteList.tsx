@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Lote } from "../../../types/Lote";
 import { getTypeStyle } from "../../../utils/styleUtils";
 import { useApp } from "../../../context";
+import LoteDetail from "../LoteDetail/LoteDetail";
 
 const LoteList: React.FC = () => {
   const { lotes, removeLote, openLoteDetail, openEditLote } = useApp();
@@ -146,8 +147,8 @@ const LoteList: React.FC = () => {
             <tbody className="bg-white divide-y divide-gray-200">
             {filteredAndSortedLotes.map((lote) => {
             const totalPrice = lote.precio_total || 0;
-            const quantity = lote.dolls?.length || 0;
-            const unitPrice = quantity > 0 ? totalPrice / quantity : 0;
+            const quantity = lote.cantidad_munecas || 0;
+            const unitPrice = lote.precio_unitario || 0;
 
 
                 return (
