@@ -72,7 +72,7 @@ export const updateLote = async (
     nombre: string;
     tipo: string;
     precio_total: number;
-    dolls: number[];
+    doll_ids: number[];
   }
 ): Promise<Lote> => {
   const response = await api.put(`/lotes/${id}`, data);

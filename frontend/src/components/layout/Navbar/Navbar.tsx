@@ -4,24 +4,43 @@ interface NavbarProps {
   activeTab: 'dolls' | 'lotes' | 'stats';
   setActiveTab: (tab: 'dolls' | 'lotes' | 'stats') => void;
   openMarcaModal: () => void;
+  onAddClick?: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openMarcaModal }) => {
+const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openMarcaModal, onAddClick }) => {
+  const getTitle = () => {
+    switch (activeTab) {
+      case 'dolls': return '🎎 Muñequitas';
+      case 'lotes': return '📦 Gestión de Lotes';
+      case 'stats': return '📊 Estadísticas';
+      default: return '';
+    }
+  };
+
+  const getAddButtonText = () => {
+    switch (activeTab) {
+      case 'dolls': return '+ Añadir Muñeca';
+      case 'lotes': return '+ Crear Lote';
+      default: return null;
+    }
+  };
+
   return (
-    <nav className="bg-white shadow-md px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between py-4">
-          <div className="flex space-x-4">
+    <nav className="bg-white shadow-md">
+      <div className="px-4 sm:px-6 lg:px-8">
+        {/* Primera fila: Navegación principal */}
+        <div className="flex justify-between py-4 border-b border-gray-200">
+          <div className="flex space-x-2">
             <button
               onClick={() => setActiveTab("dolls")}
-              className={`inline-flex items-center px-6 border-b-2 font-medium text-sm transition-colors duration-200 ${
+              className={`inline-flex items-center px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === "dolls"
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  ? "bg-blue-100 text-blue-700 shadow-sm"
+                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               }`}
             >
               <svg 
-                className={`mr-2 h-5 w-5 ${activeTab === "dolls" ? "text-blue-600" : "text-gray-400"}`}
+                className={`mr-2 h-5 w-5`}
                 fill="none" 
                 viewBox="0 0 24 24" 
                 stroke="currentColor"
@@ -32,14 +51,14 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openMarcaModal
             </button>
             <button
               onClick={() => setActiveTab("lotes")}
-              className={`inline-flex items-center px-6 border-b-2 font-medium text-sm transition-colors duration-200 ${
+              className={`inline-flex items-center px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === "lotes"
-                  ? "border-green-600 text-green-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  ? "bg-green-100 text-green-700 shadow-sm"
+                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               }`}
             >
               <svg 
-                className={`mr-2 h-5 w-5 ${activeTab === "lotes" ? "text-green-600" : "text-gray-400"}`}
+                className={`mr-2 h-5 w-5`}
                 fill="none" 
                 viewBox="0 0 24 24" 
                 stroke="currentColor"
@@ -50,14 +69,14 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openMarcaModal
             </button>
             <button
               onClick={() => setActiveTab("stats")}
-              className={`inline-flex items-center px-6 border-b-2 font-medium text-sm transition-colors duration-200 ${
+              className={`inline-flex items-center px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === "stats"
-                  ? "border-purple-600 text-purple-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  ? "bg-purple-100 text-purple-700 shadow-sm"
+                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               }`}
             >
               <svg 
-                className={`mr-2 h-5 w-5 ${activeTab === "stats" ? "text-purple-600" : "text-gray-400"}`}
+                className={`mr-2 h-5 w-5`}
                 fill="none" 
                 viewBox="0 0 24 24" 
                 stroke="currentColor"
@@ -70,7 +89,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openMarcaModal
           <div className="flex items-center">
             <button
               onClick={openMarcaModal}
-              className="inline-flex items-center px-4 py-2 border border-purple-600 rounded-md text-sm font-medium text-purple-600 bg-white hover:bg-purple-50 transition-colors duration-200"
+              className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 shadow-sm transition-all duration-200"
             >
               <svg 
                 className="mr-2 h-5 w-5" 
@@ -78,10 +97,39 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openMarcaModal
                 viewBox="0 0 24 24" 
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
               </svg>
               Añadir Marca
             </button>
+          </div>
+        </div>
+
+        {/* Segunda fila: Título de sección y acción específica */}
+        <div className="flex justify-between items-center py-4">
+          <h1 className="text-2xl font-bold text-gray-900">
+            {getTitle()}
+          </h1>
+          <div className="flex items-center gap-3">
+            {getAddButtonText() && onAddClick && (
+              <button
+                onClick={onAddClick}
+                className={`inline-flex items-center px-5 py-2.5 rounded-lg text-sm font-semibold text-white shadow-md transition-all duration-200 transform hover:scale-105 ${
+                  activeTab === 'dolls' 
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800' 
+                    : 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800'
+                }`}
+              >
+                <svg 
+                  className="mr-2 h-5 w-5" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                {getAddButtonText()}
+              </button>
+            )}
           </div>
         </div>
       </div>

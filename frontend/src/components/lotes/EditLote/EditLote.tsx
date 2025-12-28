@@ -78,7 +78,7 @@ const EditLote: React.FC<EditLoteProps> = ({
         nombre: formData.nombre,
         tipo: formData.tipo, // Type is now guaranteed to be valid
         precio_total: Number(formData.precio_total),
-        dolls: selectedDolls,
+        doll_ids: selectedDolls,
       };
 
       await editLote(lote.id, updateData);

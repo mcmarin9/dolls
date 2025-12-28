@@ -49,46 +49,40 @@ const AppContent: React.FC = () => {
     }
   };
 
+  const getAddClickHandler = () => {
+    switch (activeTab) {
+      case 'dolls':
+        return openDollModal;
+      case 'lotes':
+        return openLoteModal;
+      default:
+        return undefined;
+    }
+  };
+
   return (
     <Layout
       activeTab={activeTab}
       setActiveTab={setActiveTab}
       openMarcaModal={openMarcaModal}
+      onAddClick={getAddClickHandler()}
     >
       {activeTab === "dolls" && (
-        <Section title="Muñequitas">
-          <Button
-            onClick={openDollModal}
-            variant="primary"
-            icon={<span>+</span>}
-          >
-            Añadir muñeca
-          </Button>
-          <div className="mt-6">
-            <DollsList />
-          </div>
-        </Section>
+        <div className="p-6">
+          <DollsList />
+        </div>
       )}
   
       {activeTab === "lotes" && (
-        <Section title="Gestión de Lotes">
-          <Button
-            onClick={openLoteModal}
-            variant="success"
-            icon={<span>+</span>}
-          >
-            Crear Lote
-          </Button>
-          <div className="mt-6">
-            <LoteList />
-          </div>
-        </Section>
+        <div className="p-6">
+          <LoteList />
+        </div>
       )}
   
       {activeTab === "stats" && (
-        <Section title="Estadísticas">
+        <div className="p-6">
           <Stats dolls={dolls} lotes={lotes} />
-        </Section>
+        </div>
       )}
   
       {/* Modals */}

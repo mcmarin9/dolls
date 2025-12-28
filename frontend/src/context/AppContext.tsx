@@ -57,7 +57,7 @@ export interface AppContextType {
   openEditLote: (lote: Lote) => void;
   closeEditLote: () => void;
   removeLote: (id: number) => Promise<void>;
-  editLote: (id: number, data: Pick<Lote, "nombre" | "tipo"> & { precio_total: number; dolls: number[] }) => Promise<void>;
+  editLote: (id: number, data: Pick<Lote, "nombre" | "tipo"> & { precio_total: number; doll_ids: number[] }) => Promise<void>;
 
   // Actions - Brands
   fetchBrands: () => Promise<void>;
@@ -255,7 +255,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       id: number,
       loteData: Pick<Lote, "nombre" | "tipo"> & {
         precio_total: number;
-        dolls: number[];
+        doll_ids: number[];
       }
     ) => {
       try {
