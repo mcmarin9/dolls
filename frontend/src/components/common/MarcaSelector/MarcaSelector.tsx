@@ -97,14 +97,14 @@ const MarcaSelector: React.FC<MarcaSelectorProps> = ({
       {selectedMarcaId && currentMarca && (
         <div className="fabricante-select-container">
           {currentMarca.fabricantes && currentMarca.fabricantes.length === 1 ? (
-            <div className="w-full p-2 border rounded bg-gray-50">
+            <div className="w-full p-2 border rounded bg-gray-50 text-slate-700 font-medium">
               {currentMarca.fabricantes[0].nombre}
             </div>
           ) : (
             <select
               value={selectedFabricanteId || ""}
               onChange={(e) => onFabricanteChange(Number(e.target.value))}
-              className="w-full border rounded p-2"
+              className="w-full border rounded p-2 text-slate-700"
               required
             >
               <option value="">Selecciona un fabricante</option>

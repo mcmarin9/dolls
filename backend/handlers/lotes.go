@@ -206,9 +206,22 @@ func AddLote(w http.ResponseWriter, r *http.Request) {
 
 	loteID, _ := result.LastInsertId()
 
-	// Add doll associations
+	// Calculate unit price if we have dolls
+	var precioUnitario float64
+	if input.PrecioTotal != nil && len(input.DollIDs) > 0 {
+		precioUnitario = *input.PrecioTotal / float64(len(input.DollIDs))
+	}
+
+	// Add doll associations and update prices
 	for _, dollID := range input.DollIDs {
 		database.ExecuteUpdate("INSERT INTO lote_doll (lote_id, doll_id) VALUES (?, ?)", loteID, dollID)
+
+		// Update doll prices based on lote type
+		if tipo == "compra" && input.PrecioTotal != nil && len(input.DollIDs) > 0 {
+			database.ExecuteUpdate("UPDATE dolls SET precio_compra = ? WHERE id = ?", precioUnitario, dollID)
+		} else if tipo == "venta" && input.PrecioTotal != nil && len(input.DollIDs) > 0 {
+			database.ExecuteUpdate("UPDATE dolls SET precio_venta = ?, estado = 'vendida' WHERE id = ?", precioUnitario, dollID)
+		}
 	}
 
 	respondWithJSON(w, http.StatusCreated, models.SuccessResponse{
@@ -268,8 +281,52 @@ func UpdateLote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Update doll associations
-	// First, delete existing associations
+	// Get previously associated dolls to reset their prices if they're being removed
+	oldDollsQuery := "SELECT doll_id FROM lote_doll WHERE lote_id = ?"
+	oldDollsRows, err := database.ExecuteQuery(oldDollsQuery, id)
+	if err == nil {
+		defer oldDollsRows.Close()
+		var oldDollIDs []int
+		for oldDollsRows.Next() {
+			var dollID int
+			if err := oldDollsRows.Scan(&dollID); err == nil {
+				oldDollIDs = append(oldDollIDs, dollID)
+			}
+		}
+
+		// Reset prices for dolls being removed from this lote
+		for _, oldDollID := range oldDollIDs {
+			found := false
+			for _, newDollID := range input.DollIDs {
+				if oldDollID == newDollID {
+					found = true
+					break
+				}
+			}
+			if !found {
+				// Doll is being removed, check if it's in other lotes
+				if tipo == "compra" {
+					// Check if doll is in another compra lote
+					checkQuery := "SELECT COUNT(*) FROM lote_doll ld INNER JOIN lotes l ON ld.lote_id = l.id WHERE ld.doll_id = ? AND l.tipo = 'compra' AND l.id != ?"
+					var count int
+					database.ExecuteQueryRow(checkQuery, oldDollID, id).Scan(&count)
+					if count == 0 {
+						database.ExecuteUpdate("UPDATE dolls SET precio_compra = NULL WHERE id = ?", oldDollID)
+					}
+				} else if tipo == "venta" {
+					// Check if doll is in another venta lote
+					checkQuery := "SELECT COUNT(*) FROM lote_doll ld INNER JOIN lotes l ON ld.lote_id = l.id WHERE ld.doll_id = ? AND l.tipo = 'venta' AND l.id != ?"
+					var count int
+					database.ExecuteQueryRow(checkQuery, oldDollID, id).Scan(&count)
+					if count == 0 {
+						database.ExecuteUpdate("UPDATE dolls SET precio_venta = NULL WHERE id = ?", oldDollID)
+					}
+				}
+			}
+		}
+	}
+
+	// Update doll associations - ONLY delete associations for THIS lote
 	_, err = database.ExecuteUpdate("DELETE FROM lote_doll WHERE lote_id = ?", id)
 	if err != nil {
 		logger.Error("Error deleting existing lote_doll associations", err)
@@ -277,7 +334,13 @@ func UpdateLote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Then, insert new associations
+	// Calculate unit price if we have dolls
+	var precioUnitario float64
+	if input.PrecioTotal != nil && len(input.DollIDs) > 0 {
+		precioUnitario = *input.PrecioTotal / float64(len(input.DollIDs))
+	}
+
+	// Then, insert new associations and update prices
 	logger.Info("Inserting " + strconv.Itoa(len(input.DollIDs)) + " doll associations")
 	for i, dollID := range input.DollIDs {
 		logger.Info("Inserting doll ID " + strconv.Itoa(dollID) + " (index " + strconv.Itoa(i) + ")")
@@ -286,6 +349,13 @@ func UpdateLote(w http.ResponseWriter, r *http.Request) {
 			logger.Error("Error inserting lote_doll association", err)
 			respondWithError(w, http.StatusInternalServerError, "Error al asociar muñecas con el lote")
 			return
+		}
+
+		// Update doll prices based on lote type
+		if tipo == "compra" && input.PrecioTotal != nil && len(input.DollIDs) > 0 {
+			database.ExecuteUpdate("UPDATE dolls SET precio_compra = ? WHERE id = ?", precioUnitario, dollID)
+		} else if tipo == "venta" && input.PrecioTotal != nil && len(input.DollIDs) > 0 {
+			database.ExecuteUpdate("UPDATE dolls SET precio_venta = ?, estado = 'vendida' WHERE id = ?", precioUnitario, dollID)
 		}
 	}
 
@@ -302,6 +372,49 @@ func DeleteLote(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "ID inválido")
 		return
+	}
+
+	// Get lote type first
+	var tipo string
+	err = database.ExecuteQueryRow("SELECT tipo FROM lotes WHERE id = ?", id).Scan(&tipo)
+	if err != nil {
+		respondWithError(w, http.StatusNotFound, "Lote no encontrado")
+		return
+	}
+
+	// Get dolls associated with this lote to reset their prices
+	dollsQuery := "SELECT doll_id FROM lote_doll WHERE lote_id = ?"
+	dollsRows, err := database.ExecuteQuery(dollsQuery, id)
+	if err == nil {
+		defer dollsRows.Close()
+		var dollIDs []int
+		for dollsRows.Next() {
+			var dollID int
+			if err := dollsRows.Scan(&dollID); err == nil {
+				dollIDs = append(dollIDs, dollID)
+			}
+		}
+
+		// Reset prices for each doll if they're not in other lotes of the same type
+		for _, dollID := range dollIDs {
+			if tipo == "compra" {
+				// Check if doll is in another compra lote
+				checkQuery := "SELECT COUNT(*) FROM lote_doll ld INNER JOIN lotes l ON ld.lote_id = l.id WHERE ld.doll_id = ? AND l.tipo = 'compra' AND l.id != ?"
+				var count int
+				database.ExecuteQueryRow(checkQuery, dollID, id).Scan(&count)
+				if count == 0 {
+					database.ExecuteUpdate("UPDATE dolls SET precio_compra = NULL WHERE id = ?", dollID)
+				}
+			} else if tipo == "venta" {
+				// Check if doll is in another venta lote
+				checkQuery := "SELECT COUNT(*) FROM lote_doll ld INNER JOIN lotes l ON ld.lote_id = l.id WHERE ld.doll_id = ? AND l.tipo = 'venta' AND l.id != ?"
+				var count int
+				database.ExecuteQueryRow(checkQuery, dollID, id).Scan(&count)
+				if count == 0 {
+					database.ExecuteUpdate("UPDATE dolls SET precio_venta = NULL WHERE id = ?", dollID)
+				}
+			}
+		}
 	}
 
 	// Delete from lote_doll first

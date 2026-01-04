@@ -230,20 +230,7 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
                     placeholder="Modelo de la muñeca"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    � Modelo
-                  </label>
-                  <input
-                    type="text"
-                    name="modelo"
-                    value={formData.modelo}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                    placeholder="Modelo de la muñeca"
-                  />
-                </div>
+
 
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">

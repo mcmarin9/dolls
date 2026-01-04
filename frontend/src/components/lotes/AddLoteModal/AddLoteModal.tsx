@@ -20,7 +20,7 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
   isOpen,
   closeModal,
 }) => {
-  const { dolls, closeLoteModal } = useApp();
+  const { dolls, addLote } = useApp();
   const [formData, setFormData] = useState(initialFormData);
   const [availableDolls, setAvailableDolls] = useState<Doll[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,6 +64,13 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError("");
+
+    if (formData.tipo === "Seleccionar tipo") {
+      setError("Debes seleccionar un tipo de lote");
+      setIsSubmitting(false);
+      return;
+    }
 
     if (formData.precio_total <= 0) {
       setError("El precio total debe ser mayor que 0");
@@ -71,31 +78,23 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
       return;
     }
 
-    const submitData = {
-      ...formData,
-      dolls: Array.isArray(formData.dolls) ? formData.dolls : [],
-    };
+    if (formData.dolls.length === 0) {
+      setError("Debes seleccionar al menos una muñeca");
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
-      const response = await fetch("http://localhost:5000/api/lotes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(submitData),
+      await addLote({
+        nombre: formData.nombre,
+        tipo: formData.tipo as "compra" | "venta",
+        precio_total: formData.precio_total,
+        dolls: formData.dolls,
       });
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        setError(responseData.error || "Error creating lote");
-        return;
-      }
-
-      closeLoteModal();
+      closeModal();
     } catch (error) {
       console.error("Submission error:", error);
-      setError("Error creating lote");
+      setError("Error al crear el lote");
     } finally {
       setIsSubmitting(false);
     }

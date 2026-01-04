@@ -16,9 +16,9 @@ const DollsList: React.FC = () => {
   const filteredDolls = useMemo(
     () =>
       dolls.filter((doll) => {
-        const matchesName = doll.nombre
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase());
+        const matchesSearch = searchTerm === "" || 
+          doll.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          doll.modelo?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesBrand =
           !selectedBrand || doll.marca_nombre === selectedBrand;
         const matchesManufacturer =
@@ -27,7 +27,7 @@ const DollsList: React.FC = () => {
         const matchesStatus = !selectedStatus || doll.estado === selectedStatus;
         const matchesPhotoFilter = !showOnlyNoPhoto || !doll.imagen;
         return (
-          matchesName && matchesBrand && matchesManufacturer && matchesStatus && matchesPhotoFilter
+          matchesSearch && matchesBrand && matchesManufacturer && matchesStatus && matchesPhotoFilter
         );
       }),
     [dolls, searchTerm, selectedBrand, selectedManufacturer, selectedStatus, showOnlyNoPhoto]

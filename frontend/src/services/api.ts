@@ -57,8 +57,17 @@ export const getLote = async (id: number): Promise<Lote> => {
   return response.data;
 };
 
-export const createLote = async (lote: Lote): Promise<Lote> => {
-  const response = await api.post("/lotes", lote);
+export const createLote = async (lote: Lote | any): Promise<Lote> => {
+  // Transform dolls array to doll_ids for backend
+  const payload = {
+    nombre: lote.nombre,
+    tipo: lote.tipo,
+    precio_total: lote.precio_total,
+    doll_ids: Array.isArray(lote.dolls) 
+      ? lote.dolls.map((d: any) => typeof d === 'number' ? d : d.id)
+      : []
+  };
+  const response = await api.post("/lotes", payload);
   return response.data;
 };
 

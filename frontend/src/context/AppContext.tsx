@@ -7,6 +7,7 @@ import {
   createDoll,
   deleteDoll,
   getLotes,
+  createLote,
   deleteLote,
   createMarca,
   updateDoll,
@@ -56,6 +57,7 @@ export interface AppContextType {
   closeLoteDetail: () => void;
   openEditLote: (lote: Lote) => void;
   closeEditLote: () => void;
+  addLote: (data: { nombre: string; tipo: string; precio_total: number; dolls: number[] }) => Promise<void>;
   removeLote: (id: number) => Promise<void>;
   editLote: (id: number, data: Pick<Lote, "nombre" | "tipo"> & { precio_total: number; doll_ids: number[] }) => Promise<void>;
 
@@ -234,12 +236,41 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     [fetchDolls, closeEditDoll]
   );
 
+  const addLote = useCallback(
+    async (
+      loteData: {
+        nombre: string;
+        tipo: string;
+        precio_total: number;
+        dolls: number[];
+      }
+    ) => {
+      try {
+        setLoading(true);
+        await createLote({
+          nombre: loteData.nombre,
+          tipo: loteData.tipo as "compra" | "venta",
+          precio_total: loteData.precio_total,
+          dolls: loteData.dolls || [],
+        } as Lote);
+        await Promise.all([fetchLotes(), fetchDolls()]);
+        closeLoteModal();
+      } catch (error) {
+        console.error("Error creating lote:", error);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchLotes, fetchDolls, closeLoteModal]
+  );
+
   const removeLote = useCallback(
     async (id: number) => {
       try {
         setLoading(true);
         await deleteLote(id);
-        await fetchLotes();
+        await Promise.all([fetchLotes(), fetchDolls()]);
       } catch (error) {
         console.error("Error deleting lote:", error);
         throw error;
@@ -247,7 +278,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         setLoading(false);
       }
     },
-    [fetchLotes]
+    [fetchLotes, fetchDolls]
   );
 
   const editLote = useCallback(
@@ -261,7 +292,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         setLoading(true);
         await updateLote(id, loteData);
-        await fetchLotes();
+        await Promise.all([fetchLotes(), fetchDolls()]);
         closeEditLote();
       } catch (error) {
         console.error("Error updating lote:", error);
@@ -270,7 +301,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         setLoading(false);
       }
     },
-    [fetchLotes, closeEditLote]
+    [fetchLotes, fetchDolls, closeEditLote]
   );
 
   const addMarca = useCallback(
@@ -307,6 +338,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     isLoteModalOpen,
     isLoteDetailOpen,
     isMarcaModalOpen,
+    addLote,
     isEditModalOpen,
     isEditLoteModalOpen,
     loading,
