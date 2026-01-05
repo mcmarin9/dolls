@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Doll } from "../../../types/Doll";
+import { Lote } from "../../../types/Lote";
 import { getStatusStyle, getTypeStyle } from "../../../utils/styleUtils";
 import { fetchDollLotes } from "../../../utils/checkIfLote";
 
@@ -8,7 +9,7 @@ interface DollDetailProps {
   doll: Doll;
   isOpen: boolean;
   onClose: () => void;
-  onLoteClick?: (loteId: number) => void;
+  onLoteClick?: (lote: Lote) => void;
 }
 
 const DollDetail: React.FC<DollDetailProps> = ({
@@ -184,7 +185,7 @@ const DollDetail: React.FC<DollDetailProps> = ({
                       {dollWithLotes.lotes.map((lote) => (
                         <button
                           key={lote.id}
-                          onClick={() => onLoteClick?.(lote.id)}
+                          onClick={() => onLoteClick?.(lote)}
                           className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-105 hover:shadow-md flex items-center gap-2 ${getTypeStyle(
                             (lote.tipo || "").toLowerCase() as "compra" | "venta"
                           )}`}

@@ -3,6 +3,8 @@ import { Lote } from "../../../types/Lote";
 import { Doll } from "../../../types/Doll";
 import DollDetail from "../../dolls/DollDetail/DollDetail";
 import { getTypeStyle, getStatusStyle } from "../../../utils/styleUtils";
+import { useApp } from "../../../context";
+import { getLote } from "../../../services/api";
 
 interface LoteDetailProps {
   lote: Lote;
@@ -11,6 +13,8 @@ interface LoteDetailProps {
 }
 
 const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
+  const { openLoteDetail } = useApp();
+
   const [dolls, setDolls] = useState<Doll[]>(lote.dolls || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
@@ -36,29 +40,51 @@ const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
     : null;
 
   useEffect(() => {
-    if (isOpen && lote.id && (!lote.dolls || lote.dolls.length === 0)) {
-      setLoading(true);
-      fetch(`http://localhost:5000/api/lotes/${lote.id}`)
-        .then((res) => {
-          if (!res.ok) throw new Error("Error al cargar el lote");
-          return res.json();
-        })
-        .then((data) => {
-          setDolls(data.dolls || []);
-        })
-        .catch((err) => {
-          setError("No se pudieron cargar las muñecas.");
-          console.error(err);
-        })
-        .finally(() => setLoading(false));
-    }
-  }, [isOpen, lote]);
+    // Reset state when the lote changes to avoid showing stale dolls
+    setDolls(lote.dolls || []);
+    setError("");
+  }, [lote]);
+
+  useEffect(() => {
+    if (!isOpen || !lote.id) return;
+
+    setLoading(true);
+    fetch(`http://localhost:5000/api/lotes/${lote.id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Error al cargar el lote");
+        return res.json();
+      })
+      .then((data) => {
+        setDolls(data.dolls || []);
+      })
+      .catch((err) => {
+        setError("No se pudieron cargar las muñecas.");
+        console.error(err);
+      })
+      .finally(() => setLoading(false));
+  }, [isOpen, lote.id]);
 
   const handleClose = () => {
     // Cerrar todo de una vez
     setIsDollModalOpen(false);
     setSelectedDoll(null);
     onClose();
+  };
+
+  const handleLoteClickFromNestedDoll = async (targetLote: Lote) => {
+    if (!targetLote?.id) return;
+
+    // Cerrar la modal de muñeca y este detalle antes de abrir el nuevo lote
+    setIsDollModalOpen(false);
+    setSelectedDoll(null);
+    onClose();
+
+    try {
+      const loteDetallado = await getLote(targetLote.id);
+      openLoteDetail(loteDetallado);
+    } catch (err) {
+      openLoteDetail(targetLote);
+    }
   };
 
   if (!isOpen) return null;
@@ -260,10 +286,7 @@ const LoteDetail: React.FC<LoteDetailProps> = ({ lote, isOpen, onClose }) => {
               setIsDollModalOpen(false);
               setSelectedDoll(null);
             }}
-            onLoteClick={() => {
-              setIsDollModalOpen(false);
-              setSelectedDoll(null);
-            }}
+            onLoteClick={handleLoteClickFromNestedDoll}
           />
         )}
       </div>

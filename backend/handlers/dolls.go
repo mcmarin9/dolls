@@ -258,6 +258,16 @@ func UpdateDoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Obtener estado actual para usar como fallback en campos opcionales
+	var existing struct {
+		PrecioCompra sql.NullFloat64
+		PrecioVenta  sql.NullFloat64
+	}
+	database.ExecuteQueryRow(
+		"SELECT precio_compra, precio_venta FROM dolls WHERE id = ?",
+		id,
+	).Scan(&existing.PrecioCompra, &existing.PrecioVenta)
+
 	if err := r.ParseMultipartForm(32 << 20); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Error al parsear formulario")
 		return
@@ -334,6 +344,14 @@ func UpdateDoll(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Si no vienen precios en el formulario, preservar los actuales
+	if precioCompra == nil && existing.PrecioCompra.Valid {
+		precioCompra = &existing.PrecioCompra.Float64
+	}
+	if precioVenta == nil && existing.PrecioVenta.Valid {
+		precioVenta = &existing.PrecioVenta.Float64
+	}
+
 	comentarios := utils.StringPtr(r.FormValue("comentarios"))
 
 	// Update doll
@@ -355,15 +373,17 @@ func UpdateDoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Update lote associations
-	database.ExecuteUpdate("DELETE FROM lote_doll WHERE doll_id = ?", id)
-	loteIDsStr := r.FormValue("lote_ids")
-	if loteIDsStr != "" {
-		loteIDs := strings.Split(loteIDsStr, ",")
-		for _, loteIDStr := range loteIDs {
-			loteID, err := strconv.Atoi(strings.TrimSpace(loteIDStr))
-			if err == nil {
-				database.ExecuteUpdate("INSERT INTO lote_doll (lote_id, doll_id) VALUES (?, ?)", loteID, id)
+	// Update lote associations solo si el cliente envía lote_ids
+	if _, ok := r.MultipartForm.Value["lote_ids"]; ok {
+		database.ExecuteUpdate("DELETE FROM lote_doll WHERE doll_id = ?", id)
+		loteIDsStr := r.FormValue("lote_ids")
+		if loteIDsStr != "" {
+			loteIDs := strings.Split(loteIDsStr, ",")
+			for _, loteIDStr := range loteIDs {
+				loteID, err := strconv.Atoi(strings.TrimSpace(loteIDStr))
+				if err == nil {
+					database.ExecuteUpdate("INSERT INTO lote_doll (lote_id, doll_id) VALUES (?, ?)", loteID, id)
+				}
 			}
 		}
 	}

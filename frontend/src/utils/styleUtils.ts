@@ -1,7 +1,7 @@
 export const getTypeStyle = (type: "compra" | "venta"): string => {
-    return type === "compra"
+    return type === "venta"
         ? "bg-green-100 text-green-800"
-        : "bg-blue-100 text-blue-800";
+        : "bg-orange-100 text-orange-800";
 };
 
 export const getStatusStyle = (status: string): string => {

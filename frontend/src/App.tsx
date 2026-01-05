@@ -1,5 +1,6 @@
 import React from "react";
 import { useApp } from "./context";
+import { getLote } from "./services/api";
 import Layout from './components/layout/Layout/Layout';
 import Section from './components/common/Section/Section';
 import Modal from './components/common/Modal/Modal';
@@ -14,6 +15,7 @@ import LoteList from "./components/lotes/LoteList/LoteList";
 import LoteDetail from "./components/lotes/LoteDetail/LoteDetail";
 import AddMarcaModal from "./components/marcas/AddMarcaModal/AddMarcaModal";
 import Stats from "./components/Stats/Stats";
+import { Lote } from "./types/Lote";
 
 const AppContent: React.FC = () => {
   const {
@@ -43,11 +45,18 @@ const AppContent: React.FC = () => {
     openLoteDetail,
   } = useApp();
 
-  const handleLoteClickFromDoll = (loteId: number) => {
-    const lote = lotes.find((l) => l.id === loteId);
-    if (lote) {
-      closeDollDetail();
-      openLoteDetail(lote);
+  const handleLoteClickFromDoll = async (lote: Lote) => {
+    if (!lote?.id) return;
+
+    closeDollDetail();
+
+    try {
+      const loteDetallado = await getLote(lote.id);
+      openLoteDetail(loteDetallado);
+    } catch (err) {
+      // Fallback al lote recibido si la petición falla
+      const loteDesdeEstado = lotes.find((item) => item.id === lote.id);
+      openLoteDetail(loteDesdeEstado ?? lote);
     }
   };
 

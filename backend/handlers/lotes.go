@@ -14,6 +14,8 @@ import (
 	"github.com/mcmarin9/dolls/utils"
 )
 
+var lotesLogger = utils.NewLogger("lotes_handler")
+
 // GetLotes returns all lotes with their dolls
 func GetLotes(w http.ResponseWriter, r *http.Request) {
 	query := `
@@ -246,8 +248,8 @@ func UpdateLote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Debug: Log received data
-	logger.Info("Received update request for lote ID: " + strconv.Itoa(id))
-	logger.Info("Number of dolls to associate: " + strconv.Itoa(len(input.DollIDs)))
+	lotesLogger.Info("Received update request for lote ID: " + strconv.Itoa(id))
+	lotesLogger.Info("Number of dolls to associate: " + strconv.Itoa(len(input.DollIDs)))
 
 	// Validate input
 	if err := utils.ValidateLoteInput(input.Nombre); err != nil {
@@ -329,7 +331,7 @@ func UpdateLote(w http.ResponseWriter, r *http.Request) {
 	// Update doll associations - ONLY delete associations for THIS lote
 	_, err = database.ExecuteUpdate("DELETE FROM lote_doll WHERE lote_id = ?", id)
 	if err != nil {
-		logger.Error("Error deleting existing lote_doll associations", err)
+		lotesLogger.Error("Error deleting existing lote_doll associations", err)
 		respondWithError(w, http.StatusInternalServerError, "Error al actualizar asociaciones de muñecas")
 		return
 	}
@@ -341,12 +343,12 @@ func UpdateLote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Then, insert new associations and update prices
-	logger.Info("Inserting " + strconv.Itoa(len(input.DollIDs)) + " doll associations")
+	lotesLogger.Info("Inserting " + strconv.Itoa(len(input.DollIDs)) + " doll associations")
 	for i, dollID := range input.DollIDs {
-		logger.Info("Inserting doll ID " + strconv.Itoa(dollID) + " (index " + strconv.Itoa(i) + ")")
+		lotesLogger.Info("Inserting doll ID " + strconv.Itoa(dollID) + " (index " + strconv.Itoa(i) + ")")
 		_, err = database.ExecuteUpdate("INSERT INTO lote_doll (lote_id, doll_id) VALUES (?, ?)", id, dollID)
 		if err != nil {
-			logger.Error("Error inserting lote_doll association", err)
+			lotesLogger.Error("Error inserting lote_doll association", err)
 			respondWithError(w, http.StatusInternalServerError, "Error al asociar muñecas con el lote")
 			return
 		}
@@ -359,7 +361,7 @@ func UpdateLote(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	logger.Info("Lote updated successfully with " + strconv.Itoa(len(input.DollIDs)) + " dolls")
+	lotesLogger.Info("Lote updated successfully with " + strconv.Itoa(len(input.DollIDs)) + " dolls")
 	respondWithJSON(w, http.StatusOK, models.SuccessResponse{
 		Message: "Lote actualizado exitosamente",
 	})
