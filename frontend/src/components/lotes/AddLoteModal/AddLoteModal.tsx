@@ -12,7 +12,7 @@ interface AddLoteModalProps {
 const initialFormData = {
   nombre: "",
   tipo: "Seleccionar tipo",
-  precio_total: 0,
+  precio_total: "",
   dolls: [] as number[],
 };
 
@@ -42,7 +42,7 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "precio_total" ? parseFloat(value) || 0 : value,
+      [name]: name === "precio_total" ? value : value,
     }));
   };
 
@@ -72,7 +72,8 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
       return;
     }
 
-    if (formData.precio_total <= 0) {
+    const precioNumber = parseFloat(formData.precio_total as unknown as string) || 0;
+    if (precioNumber <= 0) {
       setError("El precio total debe ser mayor que 0");
       setIsSubmitting(false);
       return;
@@ -88,7 +89,7 @@ const AddLoteModal: React.FC<AddLoteModalProps> = ({
       await addLote({
         nombre: formData.nombre,
         tipo: formData.tipo as "compra" | "venta",
-        precio_total: formData.precio_total,
+        precio_total: precioNumber,
         dolls: formData.dolls,
       });
       closeModal();
