@@ -56,8 +56,8 @@ func GetMarcas(w http.ResponseWriter, r *http.Request) {
 // AddMarca creates a new marca
 func AddMarca(w http.ResponseWriter, r *http.Request) {
 	type MarcaInput struct {
-		Nombre       string `json:"nombre"`
-		FabricanteID int    `json:"fabricante_id"`
+		Nombre        string `json:"nombre"`
+		FabricanteIds []int  `json:"fabricanteIds"`
 	}
 
 	var input MarcaInput
@@ -72,17 +72,23 @@ func AddMarca(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if input.FabricanteID <= 0 {
-		respondWithError(w, http.StatusBadRequest, "fabricante_id inválido")
+	if len(input.FabricanteIds) == 0 {
+		respondWithError(w, http.StatusBadRequest, "Debe seleccionar al menos un fabricante")
 		return
 	}
 
-	// Validate that fabricante exists
-	var fabricanteExists int
-	err := database.ExecuteQueryRow("SELECT COUNT(*) FROM fabricantes WHERE id = ?", input.FabricanteID).Scan(&fabricanteExists)
-	if err != nil || fabricanteExists == 0 {
-		respondWithError(w, http.StatusBadRequest, "Fabricante no encontrado")
-		return
+	// Validate that all fabricantes exist
+	for _, fabricanteID := range input.FabricanteIds {
+		if fabricanteID <= 0 {
+			respondWithError(w, http.StatusBadRequest, "fabricante_id inválido")
+			return
+		}
+		var fabricanteExists int
+		err := database.ExecuteQueryRow("SELECT COUNT(*) FROM fabricantes WHERE id = ?", fabricanteID).Scan(&fabricanteExists)
+		if err != nil || fabricanteExists == 0 {
+			respondWithError(w, http.StatusBadRequest, "Fabricante no encontrado")
+			return
+		}
 	}
 
 	// Insert marca
@@ -95,13 +101,15 @@ func AddMarca(w http.ResponseWriter, r *http.Request) {
 
 	marcaID, _ := result.LastInsertId()
 
-	// Associate with fabricante
-	_, err = database.ExecuteUpdate("INSERT INTO marca_fabricante (marca_id, fabricante_id) VALUES (?, ?)",
-		marcaID, input.FabricanteID)
-	if err != nil {
-		logger.Error("Error creating marca_fabricante relationship", err)
-		respondWithError(w, http.StatusInternalServerError, "Error al asociar marca con fabricante")
-		return
+	// Associate with all fabricantes
+	for _, fabricanteID := range input.FabricanteIds {
+		_, err = database.ExecuteUpdate("INSERT INTO marca_fabricante (marca_id, fabricante_id) VALUES (?, ?)",
+			marcaID, fabricanteID)
+		if err != nil {
+			logger.Error("Error creating marca_fabricante relationship", err)
+			respondWithError(w, http.StatusInternalServerError, "Error al asociar marca con fabricante")
+			return
+		}
 	}
 
 	respondWithJSON(w, http.StatusCreated, models.SuccessResponse{

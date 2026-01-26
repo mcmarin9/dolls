@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-01-2026 a las 20:21:19
+-- Tiempo de generación: 25-01-2026 a las 18:04:00
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -326,7 +326,22 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (279, 'Barbie Superarticulada pelada', 1, 1, 'Made to Move', 'Barbie', 2018, 'a la venta', 1.00, NULL, 'Espalda rajada', NULL, '2026-01-11 09:33:43'),
 (280, 'Draculaura G1', 6, 1, 'Die-Ner', 'Draculaura', 2013, 'a la venta', 1.00, NULL, NULL, NULL, '2026-01-11 09:33:43'),
 (281, 'Barbie morena Superarticulada', 1, 1, 'Made to move', 'Latina', 2021, 'a la venta', 1.00, NULL, NULL, NULL, '2026-01-11 09:39:19'),
-(282, 'Jade Magic Hair', 2, 2, 'Magic Hair', 'Jade', 2007, 'guardada', 1.00, NULL, NULL, NULL, '2026-01-11 09:43:39');
+(282, 'Jade Magic Hair', 2, 2, 'Magic Hair', 'Jade', 2007, 'guardada', 1.00, NULL, NULL, NULL, '2026-01-11 09:43:39'),
+(283, 'Barbie Profesora', 1, 1, 'Proesora', 'Barbie', 1995, 'guardada', 1.00, NULL, NULL, NULL, '2026-01-18 17:32:44'),
+(284, 'LOL Icy', 3, 2, 'Winter Chill', 'Icy Gurl', 2020, 'guardada', 1.00, NULL, NULL, NULL, '2026-01-18 17:35:02'),
+(285, 'Barbie Dream Bestie', 34, 1, 'Signature', 'Barbie', 2016, 'guardada', 2.00, NULL, NULL, NULL, '2026-01-18 17:40:43'),
+(286, 'Aladdin', 8, 1, 'Básico', 'Aladdin', 1985, 'a la venta', 2.00, NULL, 'La chaqueta es de Ken de Barbie y la Magia de Pegaso. Los pantalones parecen del príncipe de la Bella Durmiente.', NULL, '2026-01-18 17:46:51'),
+(287, 'Barbie Ojos verdes Barbacoa', 1, 1, 'My House Barbecue', 'Barbie', 2008, 'a la venta', 1.00, NULL, NULL, NULL, '2026-01-25 15:27:01');
+INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `personaje`, `anyo`, `estado`, `precio_compra`, `precio_venta`, `comentarios`, `imagen`, `created_at`) VALUES
+(288, '4 Sylvanians', 14, 1, 'Syl', 'Sylvanian Families', 2026, 'guardada', 3.00, NULL, 'Ciervo Happy Families\r\nFreya Chocolate - Conejo\r\nImogen Hawthorn - Ratona madre - Grocery Shop\r\nPollito Happy Families\r\n', NULL, '2026-01-25 15:43:20'),
+(289, 'Skylar Bonica', 5, 2, 'Dream & Design Studio', 'Skyler Bradshaw', 2023, 'guardada', 1.97, NULL, 'Parece que tiene los ojos empañados', NULL, '2026-01-25 16:09:52'),
+(290, 'Bella 3', 5, 2, 'Serie 2', 'Bella Parker', 2020, 'guardada', 0.94, NULL, NULL, NULL, '2026-01-25 16:11:15'),
+(291, 'Bebé morros claros', 33, 2, '??', '?', 2026, 'guardada', 1.00, NULL, 'Comprobar si es también la krysta', NULL, '2026-01-25 16:19:34'),
+(292, 'Jane Boolittle', 6, 1, 'Signature', 'Jane Boolittle', 2013, 'a la venta', 1.60, NULL, NULL, NULL, '2026-01-25 16:30:26'),
+(293, 'Twyla', 6, 1, '13 Wishes', 'Twyla Boogeyman', 2013, 'a la venta', 1.60, NULL, NULL, NULL, '2026-01-25 16:31:16'),
+(294, 'Frankie Morros Verdes', 6, 1, 'Skultimate Roller Maze', 'Frankie Stein', 2012, 'a la venta', 1.60, NULL, NULL, NULL, '2026-01-25 16:38:54'),
+(295, 'Venus McFlytrap', 6, 1, 'Signature', 'Venus McFlytrap', 2012, 'a la venta', 1.60, NULL, NULL, NULL, '2026-01-25 16:39:35'),
+(296, 'Clawdeen Ojosmonster high ghouls alive', 6, 1, 'Ghouls Alive', 'Clawdeen Wolf ', 2012, 'a la venta', 1.60, NULL, NULL, NULL, '2026-01-25 16:45:07');
 
 -- --------------------------------------------------------
 
@@ -428,7 +443,8 @@ INSERT INTO `lotes` (`id`, `nombre`, `tipo`, `precio_total`, `created_at`) VALUE
 (53, 'Bratz Articuladas Kylie y Yasmin', 'venta', 9.60, '2026-01-04 22:00:28'),
 (54, 'Monster High', 'venta', 28.00, '2026-01-11 11:41:08'),
 (55, 'Bratz Movie Cloe Yasmin', 'venta', 17.00, '2026-01-13 20:39:02'),
-(56, 'Pareja Ever After', 'venta', 17.60, '2026-01-14 19:17:16');
+(56, 'Pareja Ever After', 'venta', 17.60, '2026-01-14 19:17:16'),
+(57, 'Monsters G1', 'compra', 8.00, '2026-01-25 16:45:42');
 
 -- --------------------------------------------------------
 
@@ -591,7 +607,12 @@ INSERT INTO `lote_doll` (`id`, `lote_id`, `doll_id`) VALUES
 (154, 54, 273),
 (149, 52, 276),
 (148, 52, 277),
-(147, 52, 278);
+(147, 52, 278),
+(166, 57, 292),
+(165, 57, 293),
+(164, 57, 294),
+(163, 57, 295),
+(162, 57, 296);
 
 -- --------------------------------------------------------
 
@@ -631,7 +652,8 @@ INSERT INTO `marca` (`id`, `nombre`, `created_at`) VALUES
 (30, 'Bratzillaz', '2025-04-20 20:21:08'),
 (31, 'Shadow High', '2025-05-04 10:13:07'),
 (32, 'Project Mc2', '2025-05-25 09:30:36'),
-(33, 'Bratz Babyz', '2025-08-25 20:37:37');
+(33, 'Bratz Babyz', '2025-08-25 20:37:37'),
+(34, 'Barbie Dream Besties', '2026-01-18 17:39:55');
 
 -- --------------------------------------------------------
 
@@ -678,7 +700,8 @@ INSERT INTO `marca_fabricante` (`marca_id`, `fabricante_id`) VALUES
 (30, 2),
 (31, 2),
 (32, 2),
-(33, 2);
+(33, 2),
+(34, 1);
 
 --
 -- Índices para tablas volcadas
@@ -735,7 +758,7 @@ ALTER TABLE `marca_fabricante`
 -- AUTO_INCREMENT de la tabla `dolls`
 --
 ALTER TABLE `dolls`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=283;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=298;
 
 --
 -- AUTO_INCREMENT de la tabla `fabricantes`
@@ -747,19 +770,19 @@ ALTER TABLE `fabricantes`
 -- AUTO_INCREMENT de la tabla `lotes`
 --
 ALTER TABLE `lotes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- AUTO_INCREMENT de la tabla `lote_doll`
 --
 ALTER TABLE `lote_doll`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=162;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=167;
 
 --
 -- AUTO_INCREMENT de la tabla `marca`
 --
 ALTER TABLE `marca`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- Restricciones para tablas volcadas
