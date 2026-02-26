@@ -1,6 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { Doll } from "../../types/Doll";
 import { Lote } from "../../types/Lote";
+import {
+  PieChart,
+  Pie,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
 
 interface StatsProps {
   dolls: Doll[];
@@ -22,46 +34,62 @@ const STATE_COLORS: Record<string, string> = {
   fuera: "bg-slate-400",
 };
 
-// Componentes auxiliares para la UI
-const StatRow: React.FC<{
-  label: string;
-  value: string | number;
-  isSmall?: boolean;
-  valueColor?: string;
-}> = ({ label, value, isSmall = false, valueColor = "" }) => (
-  <div className={`flex justify-between items-center ${isSmall ? "text-sm" : ""} py-2 border-b border-gray-200 last:border-0`}>
-    <span className="text-gray-700">{label}</span>
-    <span className={`font-bold ${valueColor || "text-gray-900"}`}>{value}</span>
-  </div>
-);
-
-const StatCard: React.FC<{
-  title: string;
-  subtitle?: string;
-  accent?: string;
-  children: React.ReactNode;
-}> = ({ title, subtitle, accent = "from-slate-100 via-white to-slate-50", children }) => (
-  <div className="h-full">
-    <div className={`h-full flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden`}>
-      <div className={`px-5 py-4 bg-gradient-to-r ${accent}`}>
-        <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
-        {subtitle && <p className="text-sm text-slate-500">{subtitle}</p>}
-      </div>
-      <div className="flex-1 p-5 bg-white">{children}</div>
-    </div>
-  </div>
-);
-
 const formatCurrency = (value: number) => `${value.toFixed(2)}€`;
 const formatPercent = (value: number) => `${value.toFixed(1)}%`;
 
-const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
+const Stats: React.FC<StatsProps> = ({ dolls }) => {
+  const [activeTab, setActiveTab] = useState<"stats" | "charts">("stats");
+
   // Verifica si los datos están cargados
   if (!dolls || dolls.length === 0) {
     return <div>Cargando datos...</div>;
   }
 
-  // Cálculos generales
+  // ==================== FUNCIONES AUXILIARES ====================
+
+  // Agrupar marcas: las principales se muestran individualmente, el resto en "Otros"
+  const getGroupedBrandData = () => {
+    const MAIN_BRANDS = ["Barbie", "Bratz", "MyScene", "Rainbow High"];
+    const dollsByBrand = dolls.reduce((acc, doll) => {
+      const brand = doll.marca_nombre || "Unknown";
+      acc[brand] = (acc[brand] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const grouped: Record<string, number> = {};
+    let otherCount = 0;
+
+    Object.entries(dollsByBrand)
+      .sort(([, a], [, b]) => b - a)
+      .forEach(([brand, count]) => {
+        if (MAIN_BRANDS.some((mb) => brand.toLowerCase().includes(mb.toLowerCase()) || mb.toLowerCase().includes(brand.toLowerCase()))) {
+          grouped[brand] = count;
+        } else {
+          otherCount += count;
+        }
+      });
+
+    if (otherCount > 0) {
+      grouped["Otros"] = otherCount;
+    }
+
+    return Object.entries(grouped).map(([name, value]) => ({
+      name,
+      value,
+    }));
+  };
+
+  // Colores para los gráficos
+  const CHART_COLORS = [
+    "#ec4899", // pink-500
+    "#f59e0b", // amber-500
+    "#8b5cf6", // violet-500
+    "#06b6d4", // cyan-500
+    "#10b981", // emerald-500
+    "#6366f1", // indigo-500
+  ];
+
+  // ==================== CÁLCULOS ====================
   const totalDolls = dolls.length;
   const soldDolls = dolls.filter((doll) => doll.estado === "vendida");
   const unsoldDolls = dolls.filter((doll) => doll.estado !== "vendida");
@@ -91,14 +119,14 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
   const netProfit = totalSales - totalInvestment;
 
   // Margen de beneficio (beneficio / ventas * 100)
-  const profitMargin = totalSales > 0 
-    ? (profitFromSold / totalSales) * 100 
-    : 0;
+  // const profitMargin = totalSales > 0 
+  //   ? (profitFromSold / totalSales) * 100 
+  //   : 0;
 
   // ROI - Return on Investment (beneficio / inversión * 100)
-  const roi = soldDollsInvestment > 0 
-    ? (profitFromSold / soldDollsInvestment) * 100 
-    : 0;
+  // const roi = soldDollsInvestment > 0 
+  //   ? (profitFromSold / soldDollsInvestment) * 100 
+  //   : 0;
 
   // Coste de inventario (muñecas no vendidas)
   const inventoryCost = unsoldDolls.reduce((sum, doll) => {
@@ -107,8 +135,8 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
   }, 0);
 
   // Porcentajes auxiliares
-  const soldPercentage = totalDolls > 0 ? (soldDolls.length / totalDolls) * 100 : 0;
-  const inventoryWeight = totalInvestment > 0 ? (inventoryCost / totalInvestment) * 100 : 0;
+  // const soldPercentage = totalDolls > 0 ? (soldDolls.length / totalDolls) * 100 : 0;
+  // const inventoryWeight = totalInvestment > 0 ? (inventoryCost / totalInvestment) * 100 : 0;
 
   // Precios medios
   const avgPurchasePrice = soldDolls.length > 0 
@@ -118,19 +146,6 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
   const avgSalePrice = soldDolls.length > 0 
     ? totalSales / soldDolls.length 
     : 0;
-
-  // Estadísticas de lotes
-  const lotesCompra = lotes.filter(l => l.tipo.toLowerCase() === 'compra').length;
-  const lotesVenta = lotes.filter(l => l.tipo.toLowerCase() === 'venta').length;
-
-  // Tasa de venta
-  const sellRate = totalDolls > 0 ? (soldDolls.length / totalDolls) * 100 : 0;
-
-  // Valor medio de inventario por muñeca
-  const avgInventoryValue = unsoldDolls.length > 0 ? inventoryCost / unsoldDolls.length : 0;
-
-  // Ratio de rentabilidad
-  const profitability = totalInvestment > 0 ? (netProfit / totalInvestment) * 100 : 0;
 
   // Distribución por estado
   const dollsByState = dolls.reduce((acc, doll) => {
@@ -149,6 +164,16 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
   // Muñecas en cada estado con valor
   const forSaleDolls = dolls.filter(d => d.estado === "a la venta");
   const storedDolls = dolls.filter(d => d.estado === "guardada");
+
+  // Tasa de venta (sobre muñecas a la venta o vendidas)
+  const activeListings = forSaleDolls.length + soldDolls.length;
+  const sellRate = activeListings > 0 ? (soldDolls.length / activeListings) * 100 : 0;
+
+  // Valor medio de inventario por muñeca
+  const avgInventoryValue = unsoldDolls.length > 0 ? inventoryCost / unsoldDolls.length : 0;
+
+  // Ratio de rentabilidad
+  const profitability = totalInvestment > 0 ? (netProfit / totalInvestment) * 100 : 0;
 
   // Top muñecas con mayor beneficio
   const topProfitDolls = dolls
@@ -169,8 +194,35 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
 
   return (
     <div className="space-y-4">
-      {/* KPIs principales */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+      {/* Tabs */}
+      <div className="flex gap-2 border-b border-slate-200">
+        <button
+          onClick={() => setActiveTab("stats")}
+          className={`px-6 py-3 font-semibold text-sm transition-all ${
+            activeTab === "stats"
+              ? "text-blue-600 border-b-2 border-blue-600 -mb-px"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          📊 Estadísticas
+        </button>
+        <button
+          onClick={() => setActiveTab("charts")}
+          className={`px-6 py-3 font-semibold text-sm transition-all ${
+            activeTab === "charts"
+              ? "text-blue-600 border-b-2 border-blue-600 -mb-px"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          📈 Gráficos
+        </button>
+      </div>
+
+      {/* Contenido - Tab Estadísticas */}
+      {activeTab === "stats" && (
+        <div className="space-y-4">
+          {/* KPIs principales */}
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-200 p-4">
           <p className="text-xs text-blue-600 font-semibold mb-1">INVENTARIO</p>
           <p className="text-3xl font-bold text-slate-900">{totalDolls}</p>
@@ -194,7 +246,7 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
         <div className="bg-gradient-to-br from-purple-50 to-white rounded-lg border border-purple-200 p-4">
           <p className="text-xs text-purple-600 font-semibold mb-1">TASA VENTA</p>
           <p className="text-3xl font-bold text-slate-900">{formatPercent(sellRate)}</p>
-          <p className="text-xs text-slate-600 mt-1">{soldDolls.length}/{totalDolls} vendidas</p>
+          <p className="text-xs text-slate-600 mt-1">{soldDolls.length}/{activeListings} vendidas</p>
         </div>
       </div>
 
@@ -378,6 +430,202 @@ const Stats: React.FC<StatsProps> = ({ dolls, lotes }) => {
           )}
         </div>
       </div>
+        </div>
+      )}
+
+      {/* Contenido - Tab Gráficos */}
+      {activeTab === "charts" && (
+        <div className="space-y-4">
+          {/* Gráfico de Marcas - Pie Chart */}
+          <div className="bg-white rounded-lg border border-slate-200 p-4">
+            <h3 className="text-lg font-bold text-slate-900 mb-4">🎨 Distribución de Marcas</h3>
+            <div className="flex flex-col lg:flex-row gap-8">
+              <div className="flex-1 flex items-center justify-center">
+                <ResponsiveContainer width="100%" height={350}>
+                  <PieChart>
+                    <Pie
+                      data={getGroupedBrandData()}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, value, percent = 0 }) =>
+                        `${name}: ${value} (${(percent * 100).toFixed(0)}%)`
+                      }
+                      outerRadius={120}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {getGroupedBrandData().map((_, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={CHART_COLORS[index % CHART_COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value) => `${value} muñecas`}
+                      contentStyle={{
+                        backgroundColor: "#fff",
+                        border: "1px solid #ccc",
+                        borderRadius: "8px",
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Leyenda detallada */}
+              <div className="flex-1 space-y-3">
+                <h4 className="font-semibold text-slate-900 mb-4">Detalles:</h4>
+                {getGroupedBrandData().map((item, index) => {
+                  const percentage = ((item.value / dolls.length) * 100).toFixed(1);
+                  return (
+                    <div key={item.name} className="flex items-center gap-3">
+                      <div
+                        className="w-4 h-4 rounded-full flex-shrink-0"
+                        style={{
+                          backgroundColor:
+                            CHART_COLORS[index % CHART_COLORS.length],
+                        }}
+                      />
+                      <div className="flex-1">
+                        <p className="font-semibold text-slate-900 text-sm">
+                          {item.name}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          {item.value} unidades • {percentage}%
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Gráfico de Estado - Bar Chart */}
+          <div className="bg-white rounded-lg border border-slate-200 p-4">
+            <h3 className="text-lg font-bold text-slate-900 mb-4">📦 Distribución por Estado</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart
+                data={Object.entries(dollsByState).map(([state, count]) => ({
+                  estado: STATE_DISPLAY_NAMES[state] || state,
+                  cantidad: count,
+                }))}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="estado" />
+                <YAxis />
+                <Tooltip formatter={(value) => `${value} muñecas`} />
+                <Bar dataKey="cantidad" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Estadísticas comparativas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Por marca - Tabla */}
+            <div className="bg-white rounded-lg border border-slate-200 p-4">
+              <h3 className="text-lg font-bold text-slate-900 mb-4">📊 Ranking de Marcas</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-50 border-b border-slate-200">
+                    <tr>
+                      <th className="text-left px-3 py-2 font-semibold text-slate-900">
+                        #
+                      </th>
+                      <th className="text-left px-3 py-2 font-semibold text-slate-900">
+                        Marca
+                      </th>
+                      <th className="text-center px-3 py-2 font-semibold text-slate-900">
+                        Cantidad
+                      </th>
+                      <th className="text-right px-3 py-2 font-semibold text-slate-900">
+                        %
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(dollsByBrand)
+                      .sort(([, a], [, b]) => b - a)
+                      .map(([brand, count], idx) => {
+                        const pct =
+                          totalDolls > 0
+                            ? ((count / totalDolls) * 100).toFixed(1)
+                            : "0.0";
+                        return (
+                          <tr
+                            key={brand}
+                            className="border-b border-slate-200 hover:bg-slate-50"
+                          >
+                            <td className="px-3 py-2 text-slate-500 font-semibold">
+                              {idx + 1}
+                            </td>
+                            <td className="px-3 py-2 text-slate-900 font-medium">
+                              {brand}
+                            </td>
+                            <td className="px-3 py-2 text-center text-slate-900 font-semibold">
+                              {count}
+                            </td>
+                            <td className="px-3 py-2 text-right text-slate-900 font-semibold">
+                              {pct}%
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Estadísticas de venta por marca */}
+            <div className="bg-white rounded-lg border border-slate-200 p-4">
+              <h3 className="text-lg font-bold text-slate-900 mb-4">
+                💰 Venta por Marca (Top 5)
+              </h3>
+              <div className="space-y-3">
+                {Object.entries(dollsByBrand)
+                  .sort(([, a], [, b]) => b - a)
+                  .slice(0, 5)
+                  .map(([brand, count]) => {
+                    const brandDolls = dolls.filter(
+                      (d) => d.marca_nombre === brand
+                    );
+                    const sold = brandDolls.filter(
+                      (d) => d.estado === "vendida"
+                    ).length;
+                    const sellRate =
+                      count > 0 ? ((sold / count) * 100).toFixed(0) : "0";
+
+                    return (
+                      <div
+                        key={brand}
+                        className="flex items-between justify-between p-3 bg-slate-50 rounded-lg"
+                      >
+                        <div>
+                          <p className="font-semibold text-slate-900">
+                            {brand}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {sold}/{count} vendidas
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-emerald-600">
+                            {sellRate}%
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            tasa venta
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

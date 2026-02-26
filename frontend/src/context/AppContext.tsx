@@ -30,6 +30,8 @@ export interface AppContextType {
   isMarcaModalOpen: boolean;
   isEditModalOpen: boolean;
   isEditLoteModalOpen: boolean;
+  isCopyDollModalOpen: boolean;
+  isPriceCalculatorModalOpen: boolean;
   loading: boolean;
 
   // Actions - Tab
@@ -44,6 +46,10 @@ export interface AppContextType {
   closeDollDetail: () => void;
   openEditDoll: (doll: Doll) => void;
   closeEditDoll: () => void;
+  openCopyDollModal: () => void;
+  closeCopyDollModal: () => void;
+  openPriceCalculator: () => void;
+  closePriceCalculator: () => void;
   addDoll: (formData: FormData) => Promise<void>;
   removeDoll: (id: number) => Promise<void>;
   editDoll: (id: number, formData: FormData) => Promise<void>;
@@ -88,7 +94,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const [brands, setBrands] = useState<Marca[]>([]);
   const [isMarcaModalOpen, setIsMarcaModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isPriceCalculatorModalOpen, setIsPriceCalculatorModalOpen] = useState(false);
   const [isEditLoteModalOpen, setIsEditLoteModalOpen] = useState(false);
+  const [isCopyDollModalOpen, setIsCopyDollModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // Fetch functions
@@ -158,6 +166,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsEditModalOpen(false);
     setSelectedDoll(null);
   }, []);
+
+  const openPriceCalculator = useCallback(() => setIsPriceCalculatorModalOpen(true), []);
+  const closePriceCalculator = useCallback(() => setIsPriceCalculatorModalOpen(false), []);
+
+  const openCopyDollModal = useCallback(() => setIsCopyDollModalOpen(true), []);
+  const closeCopyDollModal = useCallback(() => setIsCopyDollModalOpen(false), []);
 
   const openLoteModal = useCallback(() => setIsLoteModalOpen(true), []);
   const closeLoteModal = useCallback(() => setIsLoteModalOpen(false), []);
@@ -336,11 +350,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     isModalOpen,
     isDetailModalOpen,
     isLoteModalOpen,
+    isPriceCalculatorModalOpen,
     isLoteDetailOpen,
     isMarcaModalOpen,
     addLote,
     isEditModalOpen,
     isEditLoteModalOpen,
+    isCopyDollModalOpen,
     loading,
 
     // Actions
@@ -348,11 +364,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     setSelectedDoll,
     fetchDolls,
     openDollModal,
+    openPriceCalculator,
+    closePriceCalculator,
     closeDollModal,
     openDollDetail,
     closeDollDetail,
     openEditDoll,
     closeEditDoll,
+    openCopyDollModal,
+    closeCopyDollModal,
     addDoll,
     removeDoll,
     editDoll,

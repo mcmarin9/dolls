@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Lote } from "../../../types/Lote";
 import { Doll } from "../../../types/Doll";
-import axios from "axios";
 import { useApp } from "../../../context";
 
 interface AddLoteModalProps {

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 25-01-2026 a las 18:04:00
+-- Tiempo de generación: 26-02-2026 a las 22:03:54
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -59,7 +59,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (9, 'Spirit Queen', 3, 2, 'Movie Magic', 'Spirit Queen', 2021, 'vendida', 1.67, 6.00, NULL, '/uploads/8245630e736a4185957c621fd94b02b8.jpg', '2025-02-16 18:36:50'),
 (11, 'Fiat 500', 1, 1, 'Fiat 500', 'Barbie', 2009, 'a la venta', 1.67, NULL, NULL, '/uploads/f5ec0a85ab274c328de87b316f5da426.jpg', '2025-02-16 18:47:07'),
 (12, 'Rayla Leona', 1, 1, 'La magia de Pegaso', 'Rayla Reina de las Nubes', 2005, 'vendida', 1.50, 3.50, 'vendida con cara sapo', '/uploads/b9baa5838f394945b68b05b834106c86.jpg', '2025-02-16 19:19:00'),
-(13, 'Fake', 14, NULL, 'Fake', 'Fake', 2025, 'fuera', 1.50, NULL, 'Comprada por la ropa', NULL, '2025-02-16 19:26:48'),
+(13, 'Fake', 14, 1, 'Fake', 'Fake', 2025, 'a la venta', 1.50, NULL, 'Comprada por la ropa, la única medio decente es Cenicienta de Simba', '/uploads/76d7c04c-6fcc-48c3-8b58-00ed51cbc83d.jpg', '2025-02-16 19:26:48'),
 (14, 'Cloe Disaster', 2, 2, 'Básica', 'Cloe', 2025, 'vendida', 3.00, 2.50, NULL, '/uploads/75a383ed0f9842a78ee81048094b4d83.jpg', '2025-02-16 19:29:24'),
 (15, 'Yasmin Articulada', 2, 2, 'The Movie', 'Yasmin', 2007, 'vendida', 1.33, 4.80, NULL, '/uploads/bd9a4855eb52471eb3982d03e490fec0.jpg', '2025-02-16 19:30:44'),
 (16, 'Sasha Manca', 2, 2, 'The Movie', 'Sasha', 2007, 'vendida', 1.33, 6.00, NULL, '/uploads/a258d6bd28eb4c718888c3cb4ff5ccba.jpg', '2025-02-16 19:31:56'),
@@ -75,7 +75,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (26, 'Cloe Mechas rosas', 2, 2, 'Snow Kissed', 'Cloe', 2015, 'vendida', 1.25, 6.60, NULL, '/uploads/36797f6118e045dc916739e19466c22e.jpg', '2025-02-17 18:44:51'),
 (27, 'Barbie fea', 1, 1, 'Rollerblade', 'Barbie', 1995, 'vendida', 1.00, 7.00, NULL, '/uploads/c42ba53083214296ae6fd62eb675e2a4.jpg', '2025-02-17 19:00:25'),
 (28, 'Barbie con venecia', 1, 1, 'Special Expressions (USA) / Style Barbie (Europe)', 'Barbie', 1993, 'vendida', 1.00, 8.00, 'Con vestido de Venecia', '/uploads/7a566f2063e141988a37a90042197edf.jpg', '2025-02-17 19:02:55'),
-(29, 'Barbie vintage monísima', 1, 1, 'Veterinaria', 'Barbie', 1996, 'guardada', 1.00, NULL, 'la primera vintage pa mi, con el vestido ruso. comprobar año', NULL, '2025-02-17 19:04:08'),
+(29, 'Barbie vintage monísima', 1, 1, 'Veterinaria', 'Barbie', 1996, 'guardada', 1.00, NULL, 'la primera vintage pa mi, con el vestido ruso. comprobar año', '/uploads/7ade85ff-98d9-4491-98bd-4f3fcc9feb60.jpg', '2025-02-17 19:04:08'),
 (30, 'Barbie pelo corto', 1, 1, 'Fashion Style & Friendship', 'Barbie', 2008, 'a la venta', 1.50, NULL, 'El pantalón es oficial de Barbie School Cool de 1999 y la camiseta de Barbie Baywatch / Salvavidas de 1994.', '/uploads/3e3f943ce04943e0a592e459b5dae43e.jpg', '2025-02-17 19:06:42'),
 (31, 'Teresa pelo corto', 1, 1, 'Chic', 'Teresa', 2008, 'a la venta', 1.50, NULL, 'La ropa chaqueta y falda son oficiales de Barbie Chair Flair de 2002.', '/uploads/e0bb31174fe741a4aead6428783bd960.jpg', '2025-02-17 19:07:23'),
 (32, 'Christie', 1, 1, 'Really Rosy', 'Christie', 2004, 'vendida', 2.00, 10.00, NULL, '/uploads/079a9ac18c3a436fa6924af758276ea9.jpg', '2025-02-17 19:09:21'),
@@ -94,7 +94,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (46, 'Spectra', 6, 1, 'School\'s Out / Signature', 'Spectra Vondergeist', 2025, 'guardada', 1.00, NULL, NULL, '/uploads/c4798dd9f7d54f679fad9f78c7c2fa59.jpg', '2025-02-20 19:12:35'),
 (47, 'California', 1, 1, 'California Girl', 'Barbie', 2005, 'guardada', 2.00, NULL, 'No sabemos el modelo exacto', '/uploads/b9c7bb04307e4c48b07d736878637828.jpg', '2025-02-20 19:15:52'),
 (48, 'Bratz Tuerto', 2, 2, 'On the Mic', 'Eitan', 2011, 'vendida', 1.00, 5.00, NULL, '/uploads/7d6551fe284341e2bfba8d1e06ee4e4a.jpg', '2025-02-20 19:18:43'),
-(49, 'Yasmin Rock Angelz', 2, 2, 'Rock Angelz', 'Yasmin', 2005, 'guardada', 1.00, NULL, NULL, NULL, '2025-02-20 19:20:05'),
+(49, 'Yasmin Rock Angelz', 2, 2, 'Rock Angelz', 'Yasmin', 2005, 'guardada', 1.00, NULL, NULL, '/uploads/d30579a2-9117-487d-93ff-742df6c1971b.jpg', '2025-02-20 19:20:05'),
 (50, 'Barbie Guapa de rosa', 1, 1, 'Fashion Fever Hair Hightlights', 'Barbie', 2006, 'guardada', 1.00, NULL, NULL, '/uploads/59eade3a5c444241bc36c0f0f8811ce6.jpg', '2025-02-20 19:23:09'),
 (51, 'Poppy', 5, 2, 'Serie 1', 'Poppy Rowan', 2020, 'guardada', 3.00, NULL, 'Ya no es la manca', '/uploads/56a452978b5b4863a5176fcc95445321.jpg', '2025-02-20 19:24:26'),
 (52, 'Teresa Burbujas', 1, 1, 'Burbujas / Bubble Fairy', 'Teresa', 1998, 'guardada', 1.00, NULL, NULL, '/uploads/b2099156c7b24bf8921122c397177fa1.jpg', '2025-02-20 19:26:09'),
@@ -105,7 +105,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (57, 'Barbie Ojos Lilas', 1, 1, 'Sweet Treats', 'Barbie', 1999, 'a la venta', 1.00, NULL, NULL, '/uploads/12546cf6985649c2a250bb5647ced418.jpg', '2025-02-22 10:32:18'),
 (58, 'Barbie Ojos Verdes', 1, 1, 'Krissy Bedtime Baby', 'Barbie', 2000, 'vendida', 1.00, 8.00, NULL, '/uploads/67d31451d17b48e08238049f2eebfffb.jpg', '2025-02-22 10:33:29'),
 (59, 'Blancanieves Baño', 8, 5, 'Bathroom Vanity Snow o Bathroom Set', 'Blancanieves', 2000, 'vendida', 3.00, 8.00, NULL, '/uploads/9e3453e458ae4c45b85f64677f1b7adf.jpg', '2025-02-22 10:35:15'),
-(60, 'Hannah Montana Primera', 14, 1, 'Ropa azul', 'Hannah Montana', 2008, 'a la venta', 1.00, NULL, 'Pelo suave y cinturon', '/uploads/676deaf94cdb47b4aaa7f6c02b985113.jpg', '2025-02-22 10:38:57'),
+(60, 'Hannah Montana Primera', 14, 1, 'Ropa azul', 'Hannah Montana', 2008, 'vendida', 1.00, 9.00, 'Pelo suave y cinturon', '/uploads/676deaf94cdb47b4aaa7f6c02b985113.jpg', '2025-02-22 10:38:57'),
 (61, 'Hada Mia', 14, 1, 'Mia y Yo', 'Mia', 2012, 'vendida', 1.00, 5.00, NULL, '/uploads/e794cffad0cc421aa1568965767f376a.jpg', '2025-02-22 11:02:59'),
 (62, 'Cloe pirata', 2, 2, 'Treasures', 'Cloe', 2005, 'vendida', 1.00, 2.50, NULL, '/uploads/7d226a9dfd234571b973ef8b61bbc00c.jpg', '2025-02-22 11:13:28'),
 (64, 'Krysta', 33, 2, 'Babyz Twiins Krysta y Lela', 'Krysta', 2006, 'vendida', 1.00, 5.00, NULL, '/uploads/85c16fea7f5f400987cac761c8f60c92.jpg', '2025-02-22 16:00:34'),
@@ -121,11 +121,11 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (74, 'LOL Rubia', 3, 2, 'Serie 1', 'Lady Diva', 2019, 'vendida', 1.00, 5.00, NULL, '/uploads/11748d72f6dd4c68bdb70fd27fdcaf8c.jpg', '2025-03-01 12:51:32'),
 (75, 'Barbie Negra Afro Rubia', 1, 1, 'Fashionista', '#180', 2022, 'vendida', 1.00, 4.25, NULL, '/uploads/91d14242b48e4e5e97261d6888aeec9d.jpg', '2025-03-01 12:53:15'),
 (76, 'Abbie', 6, 1, 'G1', 'Abbey Bominable', 2011, 'vendida', 1.00, 7.00, NULL, '/uploads/262d5e21c45040bebe6f6c66f96a0440.jpg', '2025-03-01 12:54:56'),
-(77, 'Meygan', 2, 2, 'Xpress It!', 'Meygan', 2002, 'guardada', 1.00, NULL, NULL, '', '2025-03-01 12:56:09'),
+(77, 'Meygan', 2, 2, 'Xpress It!', 'Meygan', 2002, 'guardada', 1.00, NULL, NULL, '/uploads/5a079d3c-2763-4fbf-a2b8-96beec085051.jpg', '2025-03-01 12:56:09'),
 (78, 'Honeymaren', 8, 1, 'Frozen 2', 'Honeymaren', 2019, 'guardada', 2.00, NULL, NULL, '/uploads/ebe0c99a518b4f22b728a584409b2546.jpg', '2025-03-01 13:01:34'),
 (79, 'Troglodita Dinosaurio', 12, 1, 'Multi-Pack', 'Honeymaren', 2022, 'guardada', 2.00, NULL, 'La que viene con el Dinosaurio', '/uploads/1c53a0df6c3440daadff124f17af916c.jpg', '2025-03-01 13:04:34'),
 (80, 'Barbie Articulada Calva', 1, 1, 'Soccer Player', 'Barbie', 2017, 'vendida', 1.00, 13.00, 'Made to Move', '/uploads/78fd00d3f3f64136b1eaea5c8eb94ba6.jpg', '2025-03-01 13:06:37'),
-(81, 'Barbie Derrengá', 1, 1, 'Top Model Hair Wear', 'Barbie', 2008, 'guardada', 1.00, NULL, 'Cuerpo Model Muse', NULL, '2025-03-01 13:09:24'),
+(81, 'Barbie Derrengá', 1, 1, 'Top Model Hair Wear', 'Barbie', 2008, 'guardada', 1.00, NULL, 'Cuerpo Model Muse', '/uploads/a5668578-9e90-4576-95f7-a062ee928830.jpg', '2025-03-01 13:09:24'),
 (82, 'Barbie Pies Planos', 1, 1, 'Beach Party', 'Barbie', 2025, 'vendida', 1.00, 4.25, 'Pies planos grandes y de goma. Buscar año y modelo concretos.', '/uploads/c458258fa066439d87febfa0ec4b00dd.jpg', '2025-03-01 13:13:00'),
 (83, 'Skyler', 5, 2, 'Serie 1', 'Skyler Bradshaw', 2020, 'a la venta', 2.00, NULL, 'Manchitas de pintura', '/uploads/e03b235960054cc09e19a3974ce16f2c.jpg', '2025-03-01 13:14:55'),
 (84, 'Ben descendiente', 10, 1, 'Royal Couple Engagement / The Royal Wedding', 'Ben', 2020, 'a la venta', 2.00, NULL, NULL, '/uploads/b33b939ab0e741c8bebafb60d69c9a6c.jpg', '2025-03-01 19:52:04'),
@@ -150,9 +150,9 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (103, 'Neonlicius', 3, 2, 'Serie 1', 'Neonlicius', 2019, 'vendida', 1.25, 5.00, 'Comprobar pelo.', '/uploads/f8057c3d65c64b668d0d7db98e1193bc.jpg', '2025-03-02 14:31:15'),
 (104, 'Barbie Chef', 1, 1, ' I can be... Chef', 'Barbie', 2011, 'a la venta', 1.25, NULL, NULL, '/uploads/c40f804d68c44bc8a23db3cfec46aa34.jpg', '2025-03-02 14:32:16'),
 (105, 'Ken fotógrafo', 1, 1, 'Photographer', 'Ken Moreno?', 2001, 'vendida', 1.25, 5.00, NULL, '/uploads/eb8add645ea540c78a01a36a12bf4920.jpg', '2025-03-02 14:37:21'),
-(106, 'Sylvanian Erizos', 14, 1, 'Erizos', 'Sylvanian Families', 2025, 'vendida', 1.00, 5.00, NULL, '/uploads/18ca89026b5a497abd8736bdedbc0dad.jpg', '2025-03-02 14:38:31'),
+(106, 'Sylvanian Erizos', 35, 7, 'Erizos', 'Erizos', 2025, 'vendida', 1.00, 5.00, NULL, '/uploads/18ca89026b5a497abd8736bdedbc0dad.jpg', '2025-03-02 14:38:31'),
 (107, 'Hannah Montana Segunda', 14, 1, 'Ropa azul', 'Hannah Montana', 2008, 'a la venta', 1.00, NULL, 'Peor pelo y sin cinturon', '/uploads/f40d8baeb1a94e8c9fbe5c856b7a72e1.jpg', '2025-03-09 09:50:46'),
-(108, 'Bratz papel', 2, 2, 'Beach Style / Básico 2 Edición', 'Dylan', 2003, 'a la venta', 2.00, NULL, NULL, '/uploads/de74db7cfa7d4eef89ed9961361a1094.jpg', '2025-03-09 09:56:47'),
+(108, 'Dylan papel', 2, 2, 'Beach Style / Básico 2 Edición', 'Dylan', 2003, 'a la venta', 2.00, NULL, NULL, '/uploads/de74db7cfa7d4eef89ed9961361a1094.jpg', '2025-03-09 09:56:47'),
 (109, 'Rapunzel Mattel', 8, 1, 'Braiding Friends Hair Braider', '\r\n', 2010, 'a la venta', 2.00, NULL, NULL, '/uploads/70b24b8a851d4c19a4fcd773599e4793.jpg', '2025-03-09 10:02:15'),
 (110, 'Heath', 6, 1, 'Básico', 'Heath Burns', 2012, 'vendida', 1.00, 7.00, 'Puede ser: Classroom: 2-pack (2012) o Ghoul Fair (2015)', '/uploads/0b2189b686484e82a9de13bf138974d7.jpg', '2025-03-09 10:05:03'),
 (111, 'Jade Verde', 5, 2, 'Serie 1', 'Jade Hunter', 2020, 'a la venta', 3.00, NULL, 'La camiseta no es original.', '/uploads/0b3c6881ce2d4d609e163b8a69c5c6f3.jpg', '2025-03-09 10:06:21'),
@@ -189,7 +189,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (142, 'Cloe Genia', 2, 2, 'Genie Magic', 'Cloe', 2006, 'a la venta', 1.00, NULL, NULL, '/uploads/5046584601a3462392433c6122c244f1.jpg', '2025-03-15 15:42:32'),
 (143, 'Poison Ivy', 11, 1, 'Signature', 'Poison Ivy', 2016, 'a la venta', 2.00, NULL, 'Con las alas de Bumblebee ', '/uploads/3b0983a19bd54b21bbb7f146ce812003.jpg', '2025-03-15 15:48:38'),
 (144, 'LOL Gigante Trenzas', 16, 2, 'Serie 1', 'Swag ', 2022, 'vendida', 1.50, 8.00, NULL, '/uploads/e35454efbd7d4369a38b9828c029a44a.jpg', '2025-03-15 15:58:47'),
-(145, 'Blossom de verdad', 1, 1, 'Blossom Beauty', 'Barbie', 1996, 'guardada', 2.00, NULL, NULL, NULL, '2025-03-15 15:59:21'),
+(145, 'Blossom de verdad', 1, 1, 'Blossom Beauty', 'Barbie', 1996, 'guardada', 2.00, NULL, NULL, '/uploads/44f8b137-2b4f-49ba-8886-cfa12a89bed9.jpg', '2025-03-15 15:59:21'),
 (146, 'LOL Pequeña Bicolor', 4, 2, 'Masquerade Party', 'Kat Mischief', 2022, 'a la venta', 2.00, NULL, NULL, '/uploads/4a187839b7f64961b8b20fdee56b8194.jpg', '2025-03-15 16:01:04'),
 (147, 'Barbie Leoparda', 1, 1, 'Leopard Rainbow Hair', 'Barbie', 2021, 'a la venta', 1.00, NULL, NULL, '/uploads/3fa0fc593a3e4c448617dcd11ed9f66b.jpg', '2025-03-15 16:02:18'),
 (148, 'Mini Mulan', 8, 4, 'Mini Doll Pop-up Play Set', 'Mulan', 2019, 'guardada', 1.00, NULL, 'Mini Animators', '/uploads/47fd73b59a2b4eb3ba87dd197f2cd649.jpg', '2025-03-15 16:04:00'),
@@ -198,8 +198,8 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (151, 'Anna', 8, 1, '??', 'Anna', 2025, 'guardada', 2.00, NULL, 'la mia bonica', '/uploads/f7145f32b2514fb39cffadfb1b038861.jpg', '2025-03-15 21:53:57'),
 (152, 'Bratz Chico Rubio', 2, 2, 'Funk Out! Boyz', 'Cameron', 2004, 'a la venta', 1.00, NULL, NULL, '/uploads/b1cb14370dc348d69c4058266a532099.jpg', '2025-03-15 22:55:03'),
 (153, 'Figura Aurora', 8, 1, '??', 'Aurora', 2025, 'guardada', 1.00, NULL, NULL, NULL, '2025-03-15 22:56:04'),
-(154, 'Ken Negro', 1, 1, 'Fashionista', '#130', 2019, 'a la venta', 1.00, NULL, NULL, '/uploads/2d7abcc13e6d4b9eb06b8ceb51ddc25b.jpg', '2025-03-15 23:30:44'),
-(155, 'Ken Grande', 1, 1, 'Fashionista', '#131', 2019, 'a la venta', 1.00, NULL, NULL, '/uploads/b1577f71f0e3493c94a6e39e9d3a0ae4.jpg', '2025-03-15 23:31:38'),
+(154, 'Ken Negro', 1, 1, 'Fashionista', '#130', 2019, 'vendida', 1.00, 5.00, NULL, '/uploads/2d7abcc13e6d4b9eb06b8ceb51ddc25b.jpg', '2025-03-15 23:30:44'),
+(155, 'Ken Grande', 1, 1, 'Fashionista', '#131', 2019, 'vendida', 1.00, 5.00, NULL, '/uploads/b1577f71f0e3493c94a6e39e9d3a0ae4.jpg', '2025-03-15 23:31:38'),
 (156, 'Barbie Trencitas 2', 1, 1, 'Fashionista', '#123', 2025, 'a la venta', 1.00, NULL, NULL, '/uploads/dc8fdce012fa4b53af6bc536728ee460.jpg', '2025-03-15 23:32:48'),
 (157, 'Junior Azul', 17, 2, 'Serie 1', 'Skyler Bradshaw', 2022, 'a la venta', 2.50, NULL, NULL, '/uploads/61d1049dfaba4f2db22f1ebe19d4ae32.jpg', '2025-03-15 23:37:44'),
 (158, 'Barbie Respiración', 1, 1, 'Breathe with Me', 'Barbie', 2020, 'a la venta', 2.50, NULL, 'Maillot y medalla de Gymnast Playset.', '/uploads/ee53fefe1e9147f2895609b5490c433a.jpg', '2025-03-15 23:38:46'),
@@ -212,11 +212,11 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (165, 'Lote 8 Piezas de Ropa', 7, 1, 'Mix', 'Mix', 2025, 'a la venta', 1.00, NULL, 'Vestido Midge. Falda roja de tablas. Corpiño Barbie Prinsess Bride. Mochila negra. Chaqueta manga larga. Camiseta sin mangas. Pantalón My Scene goes to Hollywood. Pantalón negro brillo estropeado.', '/uploads/88cc56d6651c4be88032cef524e497ae.jpg', '2025-03-19 22:33:29'),
 (166, 'Lol moñetes sin mano', 4, 2, 'Masquerade Party', 'Regina Hartt', 2022, 'a la venta', 1.00, NULL, 'Le falta una mano', '/uploads/1d093bb9d1424dccb0940306409102c7.jpg', '2025-03-23 14:59:42'),
 (167, 'Bella Junior manos fijas', 17, 2, 'Pajama Party', 'Bella Parker', 2024, 'guardada', 3.00, NULL, NULL, '/uploads/e5acfe7dbf6f41b69abe068a941690d6.jpg', '2025-03-23 15:13:11'),
-(168, 'Leah Pelazo', 2, 2, 'Magic Hair Color', 'Leah', 2008, 'guardada', 3.00, NULL, NULL, NULL, '2025-03-23 15:14:06'),
+(168, 'Leah Pelazo', 2, 2, 'Magic Hair Color', 'Leah', 2008, 'guardada', 3.00, NULL, NULL, '/uploads/c66a68e7-72a9-40d8-adb9-3d76bebc8a14.jpg', '2025-03-23 15:14:06'),
 (169, 'MyScene Rubia Roller', 7, 1, 'Roller Girls', 'Kennedy', 2007, 'vendida', 1.00, 6.00, NULL, '/uploads/099bf71334294c12b95771ca84b9e2cf.jpg', '2025-03-23 15:15:06'),
 (170, 'MyScene Tatuaje', 7, 1, 'Club Birthday', 'Barbie', 2005, 'vendida', 1.00, 6.00, 'Cuello roto pero sin salir, le falta un pie.', '/uploads/7aeba496526742ae8ec9577fffd6203c.jpg', '2025-03-23 15:16:23'),
 (171, 'MyScene Rubia patas flojas', 7, 1, 'Club Disco', 'Kennedy', 2025, 'vendida', 1.00, 6.00, 'Parece ser que no es su cuerpo original.', '/uploads/983555ca667d48bd85b1f7c8da38328e.jpg', '2025-03-23 15:35:16'),
-(172, 'Alien', 28, 2, 'Signature', 'Alie Lectric', 2012, 'guardada', 1.00, NULL, NULL, '/uploads/35d6442165594130ab43896987e3400a.jpg', '2025-04-06 10:56:56'),
+(172, 'Alien', 28, 2, 'Signature', 'Alie Lectric', 2012, 'guardada', 1.00, NULL, NULL, '/uploads/f5c0eb4a-5929-4305-9264-7c2b1aef705d.jpg', '2025-04-06 10:56:56'),
 (173, 'Yasmin Morros Rojos', 2, 2, 'Play Sportz 1', 'Yasmin', 2005, 'guardada', 2.50, NULL, 'Futbolista', '/uploads/ee9843dc580f413594111f64b42f926c.jpg', '2025-04-13 09:34:46'),
 (174, 'Phoebe Cumpleaños', 2, 2, 'Birthday Bash / Party', 'Phoebe', 2005, 'guardada', 2.50, NULL, 'Solo le faltan los zapatos', '/uploads/fb4e940decc343609ef68808a1caad7d.jpg', '2025-04-13 09:36:29'),
 (175, 'Elina', 1, 1, 'Fairytopia', 'Elina', 2005, 'vendida', 2.50, 30.00, NULL, '/uploads/8516d0976afa400c8c30a96424fe357a.jpg', '2025-04-13 09:37:35'),
@@ -224,7 +224,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (177, 'Phoebe Pelo Largo', 2, 2, 'Campfire', 'Phoebe', 2005, 'guardada', 1.25, NULL, NULL, '/uploads/562760d879144cada3a872bd6e0e7067.jpg', '2025-04-20 19:12:23'),
 (178, 'Sasha Ojos Marrones', 2, 2, 'Strut It', 'Sasha', 2003, 'guardada', 1.25, NULL, NULL, '/uploads/c3b05cf96d90476eac955d1fa2bb8593.jpg', '2025-04-20 19:15:44'),
 (179, 'Cloe Pijama', 2, 2, 'Slumber Party', 'Cloe', 2003, 'guardada', 1.25, NULL, 'Primera edición', '/uploads/612284aa3ca84bd3b005cd46af7e9799.jpg', '2025-04-20 19:18:33'),
-(180, 'Dylan 2', 2, 2, 'Nu Cool', 'Dylan', 2003, 'a la venta', 1.25, NULL, NULL, NULL, '2025-04-20 20:19:19'),
+(180, 'Dylan 2', 2, 2, 'Nu Cool', 'Dylan', 2003, 'a la venta', 1.25, NULL, NULL, '/uploads/1b1212d1-eccf-4cc9-83c5-d41158f1d0e9.jpg', '2025-04-20 20:19:19'),
 (181, 'Meygana', 30, 2, 'Primera Edición', 'Meygana Broomstix', 2012, 'guardada', 3.00, NULL, NULL, '/uploads/fd3499a4cfcb4cab84ab35ce93987832.jpg', '2025-04-20 20:22:16'),
 (182, 'Woody y Jessie', 8, 1, 'Figuritas', 'Woody y Jessie', 2025, 'guardada', 1.00, NULL, NULL, '/uploads/bc0d9dfa9d564ee19eb7d0cf9073011a.jpg', '2025-04-20 20:22:44'),
 (183, 'Lola Pelonaranja', 4, 2, 'Babysitting Party', 'Ivy Winks', 2022, 'guardada', 1.00, NULL, NULL, '/uploads/6abd456620f746188c99fe5fa8d7e858.jpg', '2025-04-20 20:24:51'),
@@ -240,7 +240,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (193, 'Nolee Flequillo', 7, 1, 'Mall Maniacs', 'Nolee', 2006, 'vendida', 1.00, 16.00, NULL, '/uploads/579a3c145aae42329c5d5b5a5ad5dcc1.jpg', '2025-05-18 10:46:47'),
 (194, 'Candylicius', 3, 2, 'Serie 2', 'Candylicious', 2019, 'vendida', 1.50, 5.00, NULL, '/uploads/04fd81546e254a508168c45f681fc107.jpg', '2025-05-18 10:47:55'),
 (195, 'Sasha Baby', 33, 2, 'Primera edición', 'Sasha', 2004, 'guardada', 1.00, NULL, NULL, '/uploads/d860f5317fec42df999a5f1f02346eca.jpg', '2025-05-25 09:29:47'),
-(196, 'Project Ember', 32, 2, 'Experiment Dolls Wave 3', 'Ember Evergreem', 2006, 'guardada', 2.00, NULL, NULL, NULL, '2025-05-25 09:31:40'),
+(196, 'Project Ember', 32, 2, 'Experiment Dolls Wave 3', 'Ember Evergreem', 2006, 'guardada', 2.00, NULL, NULL, '/uploads/ea590b34-5206-4ed2-9cac-402292976da2.jpg', '2025-05-25 09:31:40'),
 (197, 'Miss Glam', 3, 2, 'Present Surprise', 'Miss Glam', 2021, 'a la venta', 3.00, NULL, 'Llevaba la mochila de Jade Junior High', '/uploads/7a9f6b70b6b74763999b674ae09ca755.jpg', '2025-05-25 09:33:36'),
 (198, 'Ken Novio', 1, 1, 'Groom / Fairytale Wedding', 'Ken', 2012, 'a la venta', 1.00, NULL, NULL, '/uploads/f989968e522c427bb80c15275356492b.jpg', '2025-05-25 09:41:43'),
 (199, 'Evie Signature', 10, 3, 'Signature', 'Evie', 2015, 'vendida', 1.00, 10.00, NULL, '/uploads/cc3e6a708fcd4fef823e8cd1fcb56923.jpg', '2025-05-31 11:21:03'),
@@ -264,8 +264,8 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (217, 'LOL Negra Afro 2', 3, 2, 'Movie Magic Studios', 'Agent Soul', 2021, 'a la venta', 2.00, NULL, 'Con pantalones originales y extra negros', '/uploads/9ade49251a9442cda4551389dc7d5beb.jpg', '2025-07-26 21:45:20'),
 (218, 'Meygan Safari', 2, 2, 'Wild Life Safari / Step out', 'Meygan', 2004, 'guardada', 1.00, NULL, NULL, '/uploads/ed3e257f9d2a4fbcacc6d065f7312c6f.jpg', '2025-07-27 08:52:06'),
 (219, 'Barbie Negra Afro', 1, 1, 'Barbie Fashion Party Doll and Accessories', 'Barbie', 2020, 'vendida', 1.50, 10.00, NULL, '/uploads/308af783da424766bc070cc5236bc1f5.jpg', '2025-07-27 09:09:13'),
-(220, 'Barbie Style Pink Luxe', 1, 1, 'Style', 'Barbie', 2014, 'a la venta', 2.00, NULL, NULL, '/uploads/2a5d9705d68f4d998f76d7a6d0fae83b.jpg', '2025-08-06 10:43:42'),
-(221, 'Cloe Magic Hair', 2, 2, 'Magic Hair Color', 'Cloe', 2008, 'guardada', 1.50, NULL, 'Valenciana, con armario verde y vestido tipo rusa rosa. Vestido puesto de la Be-Bratz Cloe y botas de Ice Champions', NULL, '2025-08-06 10:46:45'),
+(220, 'Barbie Style Pink Luxe', 1, 1, 'Style', 'Barbie', 2014, 'a la venta', 2.00, NULL, NULL, '/uploads/9fa94bb0-cd85-44e4-92c0-2fd1f4502789.jpg', '2025-08-06 10:43:42'),
+(221, 'Cloe Magic Hair', 2, 2, 'Magic Hair Color', 'Cloe', 2008, 'guardada', 1.50, NULL, 'Valenciana, con armario verde y vestido tipo rusa rosa. Vestido puesto de la Be-Bratz Cloe y botas de Ice Champions', '/uploads/1c32ef43-7c00-4b90-b279-578d474ff594.jpg', '2025-08-06 10:46:45'),
 (222, 'Bella Grande', 5, 2, 'Serie 2', 'Bella Parker', 2020, 'vendida', 2.00, 9.00, NULL, '/uploads/705d3beede1d430b9c85aa98cee44b99.jpg', '2025-08-14 13:58:11'),
 (223, 'Violet Junior 2', 17, 2, 'Serie 1', 'Violet Willow', 2022, 'a la venta', 1.00, NULL, 'Con camisa original', '/uploads/85f76069ce784ef886f0eb74bcd0d979.jpg', '2025-08-18 16:04:46'),
 (224, 'Aira', 33, 2, 'Triiiplets 2nd Ed', 'Aira', 2007, 'vendida', 1.20, 5.00, 'La falda no es suya', '/uploads/ab9e1b6bdeec4c3eb205a54da21218f7.jpg', '2025-08-25 20:41:22'),
@@ -278,8 +278,8 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (231, 'Ruby Nieve', 5, 2, 'Winter Break', 'Ruby Anderson', 2021, 'vendida', 1.00, 6.25, NULL, '/uploads/207e7ee69cd24b32aef849b4ea036b34.jpg', '2025-09-27 08:57:16'),
 (232, 'Bella Grande 2', 5, 2, 'Serie 2', 'Bella Parker', 2020, 'a la venta', 1.00, NULL, NULL, '/uploads/29f9d7c96d7141d5b5f9ece0d8633b42.jpg', '2025-09-27 08:57:59'),
 (233, 'Gabriella', 5, 2, 'Serie 3', 'Gabriella Icely', 2021, 'vendida', 1.00, 6.25, NULL, '/uploads/a611739d70bf4a76b877ac42405dc505.jpg', '2025-09-27 08:58:54'),
-(234, 'Westley Carantoñas', 7, 1, 'Fab Faces', 'Westley / Madison', 2006, 'a la venta', 1.00, NULL, 'Tiene un agujero en la ceja y el casco se despega', '/uploads/2e6aea16962148ec8826147e6a4a25f5.jpg', '2025-09-27 09:08:04'),
-(235, 'Barbie Hip 2 Be Sin cuerpo', 1, 1, 'Hipo 2 Be Square', 'Barbie', 2000, 'a la venta', 1.00, NULL, 'No se dio cuenta que el cuerpo es fake, solo vale la cabeza. El vestido azul parece falso. Habemus vestido para ponerle.', NULL, '2025-09-27 09:10:24'),
+(234, 'Westley Carantoñas', 7, 1, 'Fab Faces', 'Westley / Madison', 2006, 'vendida', 1.00, 7.50, 'Tiene un agujero en la ceja y el casco se despega', '/uploads/2e6aea16962148ec8826147e6a4a25f5.jpg', '2025-09-27 09:08:04'),
+(235, 'Barbie Hip 2 Be Sin cuerpo', 1, 1, 'Hipo 2 Be Square', 'Barbie', 2000, 'a la venta', 1.00, NULL, 'No se dio cuenta que el cuerpo es fake, solo vale la cabeza.', '/uploads/0d86acfc-a14a-49dd-82a9-300a9b783d73.jpg', '2025-09-27 09:10:24'),
 (236, 'Barbie Rubia y morena', 1, 1, 'Fashion Show', 'Barbie', 2004, 'a la venta', 1.00, NULL, 'Llevaba traje de iMessage Girl', '/uploads/83a52619-8263-4d20-a48b-a8cbae542fa1.jpg', '2025-09-27 09:16:46'),
 (237, 'Amaya Grande', 5, 2, 'Serie 1', 'Amaya Raine', 2020, 'guardada', 2.00, NULL, NULL, '/uploads/ab3a32f05ce54b30bc1ba461ab8afc46.jpg', '2025-09-27 09:18:12'),
 (238, 'Jade Básica 2', 2, 2, 'Primera Edición', 'Jade', 2001, 'guardada', 2.00, NULL, 'Pelo más marrón que negro y pelo más largo', '/uploads/23c05e1ec2f541f6b3b01027415bf261.jpg', '2025-10-18 08:33:51'),
@@ -289,7 +289,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (242, 'Blanca ojos lilas', 5, 2, 'Color & Create', 'Ojos lilas', 2023, 'vendida', 2.00, 12.00, 'Vendemos porque el pelo no se limpia', '/uploads/e2136094a3aa4ee59eccaedf61edab4e.jpg', '2025-10-19 13:16:06'),
 (243, 'Amaya Grande 2', 5, 2, 'Serie 1', 'Amaya Raine', 2020, 'a la venta', 2.00, NULL, 'Ropa, chaqueta y botas', '/uploads/a0dd591331c04ab387b8366850efe205.jpg', '2025-10-19 13:17:10'),
 (244, 'Ashlynn', 9, 1, 'Core Royals & Rebels', 'Ashlynn Ella', 2013, 'vendida', 3.00, 8.80, 'Va con el cazador orginialmente', '/uploads/b5a3da8df21342d582605c4ab71bb886.jpg', '2025-10-19 13:21:06'),
-(245, 'Rubia collar', 7, 1, 'Hanging Out', 'Barbie', 2003, 'a la venta', 1.00, NULL, NULL, '/uploads/49a9ffa329ff445abc51f013fbdfa5f5.jpg', '2025-11-02 11:29:13'),
+(245, 'Rubia collar', 7, 1, 'Hanging Out', 'Barbie', 2003, 'vendida', 1.00, 7.50, NULL, '/uploads/49a9ffa329ff445abc51f013fbdfa5f5.jpg', '2025-11-02 11:29:13'),
 (246, 'Ken BMR', 1, 1, 'BMR1959', 'Asiático', 2019, 'guardada', 2.00, NULL, NULL, '/uploads/6bd4fd3134184561934650f1822eb871.jpg', '2025-11-02 11:38:08'),
 (247, 'Sasha Playa', 2, 2, 'Beach Party', 'Sasha', 2002, 'guardada', 2.00, NULL, NULL, '/uploads/508cc26608364bd3be09535c1802a9b1.jpg', '2025-11-08 16:10:46'),
 (248, 'Mini LOL 2 Cabezas', 4, 2, 'Surprise Swap', 'Bailey', 2023, 'a la venta', 2.00, NULL, NULL, '/uploads/a74fe0da946640f082a6405ebf042b9e.jpg', '2025-11-08 16:12:05'),
@@ -308,14 +308,14 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (261, 'Amaya Pelo Azul', 5, 2, 'Serie 2', 'Amaya Raine', 2021, 'a la venta', 1.50, NULL, 'Lleva un mechoncito cortado', '/uploads/0b82c2cc-626a-4d04-b84d-4ad0e3f2167c.jpg', '2025-12-06 13:01:10'),
 (262, 'Alicia', 33, 2, 'Babyz Sitter', 'Alicia', 2006, 'guardada', 2.00, NULL, NULL, '/uploads/1c366d70f1e94ce2a1d4b2672fa5a47b.jpg', '2025-12-06 13:02:04'),
 (263, 'Armario Rainbow', 5, 2, 'Deluxe Fashion Closet', '-', 2021, 'guardada', 3.00, NULL, NULL, NULL, '2025-12-21 10:42:45'),
-(264, 'Meygan manca', 2, 2, 'Strut It!', 'Meygan', 2003, 'a la venta', 1.00, NULL, 'Sin manos', NULL, '2025-12-21 10:43:49'),
+(264, 'Meygan manca', 2, 2, 'Strut It!', 'Meygan', 2003, 'a la venta', 1.00, NULL, 'Sin manos', '/uploads/914c6faf-4aa7-45d5-8f41-df67c9881fb1.jpg', '2025-12-21 10:43:49'),
 (265, 'Furby', 14, 3, 'Emoto-Tronic', 'Marshmallow', 2005, 'guardada', 4.00, NULL, 'No funciona', NULL, '2025-12-21 10:45:30'),
 (266, 'Minnie Choi', 5, 2, 'Rainbow Vision The Royal 3', 'Minnie Choi', 2022, 'guardada', 2.00, NULL, NULL, '/uploads/d4866e1d862249a99947eb933ff1f49e.jpg', '2025-12-21 10:47:12'),
-(267, 'Meygan Safari 2', 2, 2, 'Wild Life Safari / Step out', 'Meygan', 2004, 'guardada', 1.50, NULL, NULL, NULL, '2025-12-21 10:48:00'),
+(267, 'Meygan Safari 2', 2, 2, 'Wild Life Safari / Step out', 'Meygan', 2004, 'a la venta', 1.50, NULL, NULL, '/uploads/0b1daf8f-6832-42c1-b2ff-eea044dde20a.jpg', '2025-12-21 10:48:00'),
 (268, 'Cloe Articulada', 2, 2, 'The Movie', 'Cloe', 2007, 'vendida', 2.00, 8.50, 'Con vestido y zapatos', '/uploads/e7f81823-922e-4590-b1be-59a5ce75620d.jpg', '2025-12-21 10:49:14'),
 (269, 'Lola Mondrian', 3, 2, 'Lights', 'Angles', 2020, 'a la venta', 3.00, NULL, NULL, '/uploads/171e78fb-b0ad-4c47-9c35-e8073f1766e4.jpg', '2025-12-27 21:23:25'),
 (270, 'Barbie Totally', 1, 1, 'Totally Hair', 'Barbie', 1992, 'guardada', 1.00, NULL, NULL, '/uploads/a52de0bf-0bc9-4f88-90ea-1c58afc0fdff.jpg', '2025-12-27 21:24:21'),
-(271, 'Figura Dumbo', 8, 1, 'Bullyland', 'Dumbo', 2025, 'guardada', 1.00, NULL, 'Bullyland', NULL, '2025-12-27 21:25:44'),
+(271, 'Figura Dumbo', 8, 1, 'Bullyland', 'Dumbo', 2025, 'guardada', 1.00, NULL, 'Bullyland', '/uploads/32e1e8fe-fbca-43c1-90d2-21110e9ac10a.jpg', '2025-12-27 21:25:44'),
 (272, 'Barbie Ojos verdes', 1, 1, 'Shoes Galore', 'Barbie', 2003, 'a la venta', 1.00, NULL, NULL, '/uploads/91d9b331-dd34-4f02-9c68-5f134235680f.jpg', '2025-12-28 16:12:51'),
 (273, 'Clawdeen Pelo rosa', 6, 1, 'Creepover Party', 'Clawdeen Wolf', 2022, 'vendida', 1.00, 7.00, NULL, '/uploads/f0a8cbbb-9e7a-4291-9272-868742007b99.jpg', '2025-12-28 16:16:45'),
 (274, 'Cleo brazos tiesos', 6, 1, 'Buried Secrets, Cozy Creepover Dolls', 'Cleo De Nile', 2024, 'guardada', 1.00, NULL, 'Le falta un zapato', '/uploads/acec8777-fa02-43dd-a5de-d82fced7cf3d.jpg', '2025-12-28 16:20:08'),
@@ -323,25 +323,40 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (276, 'Bella 15cm', 8, 1, 'Petite Glitter', 'Bella', 2024, 'a la venta', 1.00, NULL, NULL, '/uploads/6a44e9ee-6fa7-4a0a-926f-6d039f95773f.jpg', '2026-01-04 14:09:12'),
 (277, 'Aurora 15cm', 8, 1, 'Petite Glitter', 'Aurora', 2024, 'a la venta', 1.00, NULL, NULL, '/uploads/2d256b20-309c-4ebb-966a-754c9f9eca65.jpg', '2026-01-04 14:09:44'),
 (278, 'Rapunzel 15cm', 8, 1, 'Petite Glitter', 'Rapunzel', 2024, 'a la venta', 1.00, NULL, NULL, '/uploads/3563a51a-4479-4649-93f4-ba13d17f90f2.jpg', '2026-01-04 14:10:17'),
-(279, 'Barbie Superarticulada pelada', 1, 1, 'Made to Move', 'Barbie', 2018, 'a la venta', 1.00, NULL, 'Espalda rajada', NULL, '2026-01-11 09:33:43'),
-(280, 'Draculaura G1', 6, 1, 'Die-Ner', 'Draculaura', 2013, 'a la venta', 1.00, NULL, NULL, NULL, '2026-01-11 09:33:43'),
-(281, 'Barbie morena Superarticulada', 1, 1, 'Made to move', 'Latina', 2021, 'a la venta', 1.00, NULL, NULL, NULL, '2026-01-11 09:39:19'),
-(282, 'Jade Magic Hair', 2, 2, 'Magic Hair', 'Jade', 2007, 'guardada', 1.00, NULL, NULL, NULL, '2026-01-11 09:43:39'),
-(283, 'Barbie Profesora', 1, 1, 'Proesora', 'Barbie', 1995, 'guardada', 1.00, NULL, NULL, NULL, '2026-01-18 17:32:44'),
-(284, 'LOL Icy', 3, 2, 'Winter Chill', 'Icy Gurl', 2020, 'guardada', 1.00, NULL, NULL, NULL, '2026-01-18 17:35:02'),
-(285, 'Barbie Dream Bestie', 34, 1, 'Signature', 'Barbie', 2016, 'guardada', 2.00, NULL, NULL, NULL, '2026-01-18 17:40:43'),
-(286, 'Aladdin', 8, 1, 'Básico', 'Aladdin', 1985, 'a la venta', 2.00, NULL, 'La chaqueta es de Ken de Barbie y la Magia de Pegaso. Los pantalones parecen del príncipe de la Bella Durmiente.', NULL, '2026-01-18 17:46:51'),
-(287, 'Barbie Ojos verdes Barbacoa', 1, 1, 'My House Barbecue', 'Barbie', 2008, 'a la venta', 1.00, NULL, NULL, NULL, '2026-01-25 15:27:01');
+(279, 'Barbie Superarticulada pelada', 1, 1, 'Made to Move', 'Barbie', 2018, 'a la venta', 1.00, NULL, 'Espalda rajada', '/uploads/d55370ef-5854-49ad-9d0a-9104192a14da.jpg', '2026-01-11 09:33:43'),
+(280, 'Draculaura G1', 6, 1, 'Die-Ner', 'Draculaura', 2013, 'a la venta', 1.00, NULL, NULL, '/uploads/ea3a06d9-c648-48b9-be82-bd56573728c4.jpg', '2026-01-11 09:33:43'),
+(281, 'Barbie morena Superarticulada', 1, 1, 'Made to move', 'Latina', 2021, 'a la venta', 1.00, NULL, NULL, '/uploads/1c9ab6be-c0c4-4841-9340-8b6cf85c4000.jpg', '2026-01-11 09:39:19'),
+(282, 'Jade Magic Hair', 2, 2, 'Magic Hair', 'Jade', 2007, 'guardada', 1.00, NULL, NULL, NULL, '2026-01-11 09:43:39');
 INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `personaje`, `anyo`, `estado`, `precio_compra`, `precio_venta`, `comentarios`, `imagen`, `created_at`) VALUES
-(288, '4 Sylvanians', 14, 1, 'Syl', 'Sylvanian Families', 2026, 'guardada', 3.00, NULL, 'Ciervo Happy Families\r\nFreya Chocolate - Conejo\r\nImogen Hawthorn - Ratona madre - Grocery Shop\r\nPollito Happy Families\r\n', NULL, '2026-01-25 15:43:20'),
-(289, 'Skylar Bonica', 5, 2, 'Dream & Design Studio', 'Skyler Bradshaw', 2023, 'guardada', 1.97, NULL, 'Parece que tiene los ojos empañados', NULL, '2026-01-25 16:09:52'),
-(290, 'Bella 3', 5, 2, 'Serie 2', 'Bella Parker', 2020, 'guardada', 0.94, NULL, NULL, NULL, '2026-01-25 16:11:15'),
-(291, 'Bebé morros claros', 33, 2, '??', '?', 2026, 'guardada', 1.00, NULL, 'Comprobar si es también la krysta', NULL, '2026-01-25 16:19:34'),
-(292, 'Jane Boolittle', 6, 1, 'Signature', 'Jane Boolittle', 2013, 'a la venta', 1.60, NULL, NULL, NULL, '2026-01-25 16:30:26'),
-(293, 'Twyla', 6, 1, '13 Wishes', 'Twyla Boogeyman', 2013, 'a la venta', 1.60, NULL, NULL, NULL, '2026-01-25 16:31:16'),
-(294, 'Frankie Morros Verdes', 6, 1, 'Skultimate Roller Maze', 'Frankie Stein', 2012, 'a la venta', 1.60, NULL, NULL, NULL, '2026-01-25 16:38:54'),
-(295, 'Venus McFlytrap', 6, 1, 'Signature', 'Venus McFlytrap', 2012, 'a la venta', 1.60, NULL, NULL, NULL, '2026-01-25 16:39:35'),
-(296, 'Clawdeen Ojosmonster high ghouls alive', 6, 1, 'Ghouls Alive', 'Clawdeen Wolf ', 2012, 'a la venta', 1.60, NULL, NULL, NULL, '2026-01-25 16:45:07');
+(283, 'Barbie Profesora', 1, 1, 'Profesora Teacher', 'Barbie', 1995, 'a la venta', 1.00, NULL, NULL, '/uploads/1759ad1e-c2c5-4d3b-8956-bb09fd696d30.jpg', '2026-01-18 17:32:44'),
+(284, 'LOL Icy', 3, 2, 'Winter Chill', 'Icy Gurl', 2020, 'guardada', 1.00, NULL, NULL, '/uploads/0321c015-d7ca-4f26-b4d3-9ed68bc56c48.jpg', '2026-01-18 17:35:02'),
+(285, 'Barbie Dream Bestie', 34, 1, 'Signature', 'Barbie', 2016, 'guardada', 2.00, NULL, NULL, '/uploads/f75b4d91-6e32-40ef-ac6b-e16e78143b7a.jpg', '2026-01-18 17:40:43'),
+(286, 'Aladdin', 8, 1, 'Básico', 'Aladdin', 1985, 'vendida', 2.00, 9.00, 'La chaqueta es de Ken de Barbie y la Magia de Pegaso. Los pantalones parecen del príncipe de la Bella Durmiente.', '/uploads/4ae9ce0a-5b57-4aa8-9a52-45640611ca95.jpg', '2026-01-18 17:46:51'),
+(287, 'Barbie Ojos verdes Barbacoa', 1, 1, 'My House Barbecue', 'Barbie', 2008, 'a la venta', 1.00, NULL, NULL, '/uploads/e15222e5-c47c-45db-974c-b2177c209544.jpg', '2026-01-25 15:27:01'),
+(288, '2 Sylvanians Blancos', 14, 1, 'Conejo y Ratón', 'Conejo y Ratón', 2026, 'guardada', 1.50, NULL, 'Freya Chocolate - Conejo\r\nImogen Hawthorn - Ratona madre - Grocery Shop', '/uploads/ec2fba04-c9b9-4dc4-88bc-1d83cdb4cd8b.jpg', '2026-01-25 15:43:20'),
+(289, 'Pollo y Ciervo', 35, 7, 'Syl', 'Pollo y Ciervo', 2026, 'guardada', 1.50, NULL, 'Falsos Happy Families', '/uploads/56fcd9ce-14e9-4442-af04-21c9ce9abaa5.jpg', '2026-01-25 15:43:20'),
+(290, 'Skylar Bonica', 5, 2, 'Dream & Design Studio', 'Skyler Bradshaw', 2023, 'a la venta', 2.00, NULL, 'Ojos empañados', '/uploads/9d22f255-4523-41e7-90e8-28a1f87c85f6.jpg', '2026-01-25 16:09:52'),
+(291, 'Bella 3', 5, 2, 'Serie 2', 'Bella Parker', 2020, 'guardada', 1.00, NULL, 'Cuerpo un poco amarillo', '/uploads/fbd5c528-cc75-43b0-b3ef-236835bfbfd8.jpg', '2026-01-25 16:11:15'),
+(292, 'Bebé cochambrosa', 33, 2, 'Babyz Twiins Krysta y Lela', 'Krysta', 2006, 'guardada', 1.00, NULL, 'Para labubu', '/uploads/f97f0490-07ea-40d1-bc0e-2fe4810688a4.jpg', '2026-01-25 16:19:34'),
+(293, 'Jane Boolittle', 6, 1, 'Signature', 'Jane Boolittle', 2013, 'a la venta', 1.60, NULL, NULL, '/uploads/c77940a6-93ba-43d9-a344-b413af2d7a1c.jpg', '2026-01-25 16:30:26'),
+(294, 'Twyla', 6, 1, '13 Wishes', 'Twyla Boogeyman', 2013, 'a la venta', 1.60, NULL, NULL, '/uploads/a9f63127-0ccf-4f8a-bfd6-f1da963cf00a.jpg', '2026-01-25 16:31:16'),
+(295, 'Frankie Morros Verdes', 6, 1, 'Skultimate Roller Maze', 'Frankie Stein', 2012, 'a la venta', 1.60, NULL, NULL, '/uploads/fd76c277-44c6-4acf-8c8f-7e9d512c3350.jpg', '2026-01-25 16:38:54'),
+(296, 'Venus McFlytrap', 6, 1, 'Signature', 'Venus McFlytrap', 2012, 'a la venta', 1.60, NULL, NULL, '/uploads/68c7e671-b734-4909-a678-a5a376cb4be7.jpg', '2026-01-25 16:39:35'),
+(297, 'Clawdeen Ojos', 6, 1, 'Ghouls Alive', 'Clawdeen Wolf', 2012, 'vendida', 1.60, 10.00, NULL, '/uploads/1fe0c74c-4016-46e1-9fa4-fdbde129058b.jpg', '2026-01-25 16:45:07'),
+(298, 'Vinessa Gigante', 33, 2, 'Ice Champions', 'Vinessa', 2006, 'guardada', 4.00, NULL, NULL, '/uploads/1c62a97a-a645-4f83-945c-9d1efd9ab3ce.jpg', '2026-02-01 13:09:12'),
+(299, 'Mini Jasmine', 8, 1, 'Mini Princess Doll Set', 'Jasmine', 2012, 'guardada', 1.00, NULL, NULL, '/uploads/d3ec195f-13c2-4bc4-b3a4-d24649db4f7a.jpg', '2026-02-01 13:09:48'),
+(300, 'Nolee Sonrisota 2', 7, 1, 'Getting Ready My Room', 'Nolee', 2004, 'a la venta', 1.00, NULL, 'Comprobar si solo están estas con sonrisa', '/uploads/f6411f5a-214c-487f-9c20-47c3054b4908.jpg', '2026-02-01 13:10:47'),
+(301, 'Profe Vestida', 1, 1, 'Profesora Teacher', 'Barbie', 1995, 'guardada', 1.50, NULL, NULL, '/uploads/eeba16f4-ce0a-4d0c-ab99-be43ed437b90.jpg', '2026-02-01 13:12:30'),
+(302, 'Cria', 1, 1, 'Profesora Teacher', 'Cria', 1995, 'guardada', 1.50, NULL, NULL, '/uploads/feec5574-f1b8-4f5f-becf-9bb135381699.jpg', '2026-02-01 13:13:10'),
+(303, 'Yasmin Fashion', 2, 2, 'Fashion Designer', 'Yasmin', 2008, 'a la venta', 1.00, NULL, NULL, '/uploads/e3aa9af8-4839-450d-b853-da493faee34a.jpg', '2026-02-01 14:29:51'),
+(304, 'Yasmin Super Gigante', 33, 2, 'Big Super Babyz', 'Yasmin', 2007, 'guardada', 4.00, NULL, NULL, '/uploads/627c3d70-2a6d-4f1c-b4f0-2393a1d97178.jpg', '2026-02-07 14:18:37'),
+(305, 'Cloe Andadora Guapa 2', 2, 2, 'The Fashion Show Evening Wear Collection', 'Cloe', 2008, 'guardada', 1.00, NULL, 'Comprada sobre todo por la ropa', '/uploads/70db1e95-bfa2-4181-9cde-4a92417e11c3.jpg', '2026-02-14 21:31:33'),
+(306, 'Perro Caramelo Niña', 35, 7, 'Perro Caramelo', 'Perro Caramelo', 2026, 'guardada', 0.50, NULL, NULL, NULL, '2026-02-14 21:39:55'),
+(307, 'Figuras Monster High', 6, 1, 'Figuras RBA', 'Frankie y Clawdeen', 2017, 'guardada', 2.00, NULL, NULL, '/uploads/1960f179-9402-4262-a198-b0141cbb040a.jpg', '2026-02-14 21:42:28'),
+(308, 'Tori Escoliosis', 1, 1, 'American Idol Music Fever', 'Tori', 2005, 'a la venta', 2.00, NULL, NULL, NULL, '2026-02-22 09:21:42'),
+(309, 'Westley Bonica', 7, 1, 'Shopping Spree', 'Westley / Madison', 2004, 'a la venta', 2.00, NULL, NULL, NULL, '2026-02-22 12:25:48'),
+(310, 'Rubia collar 2', 7, 1, 'Hanging Out', 'Barbie', 2003, 'a la venta', 2.00, NULL, 'Vestido del fashion pack Perfectly cool for school', NULL, '2026-02-22 12:27:02'),
+(311, 'Nona', 2, 2, 'Twiins', 'Nona', 2004, 'a la venta', 2.00, NULL, NULL, NULL, '2026-02-22 12:28:03');
 
 -- --------------------------------------------------------
 
@@ -444,7 +459,13 @@ INSERT INTO `lotes` (`id`, `nombre`, `tipo`, `precio_total`, `created_at`) VALUE
 (54, 'Monster High', 'venta', 28.00, '2026-01-11 11:41:08'),
 (55, 'Bratz Movie Cloe Yasmin', 'venta', 17.00, '2026-01-13 20:39:02'),
 (56, 'Pareja Ever After', 'venta', 17.60, '2026-01-14 19:17:16'),
-(57, 'Monsters G1', 'compra', 8.00, '2026-01-25 16:45:42');
+(57, 'Sylvanians', 'compra', 3.00, '2026-01-25 15:43:20'),
+(58, 'Monsters G1', 'compra', 8.00, '2026-01-25 16:45:42'),
+(59, 'Profe y Cria', 'compra', 3.00, '2026-02-01 14:33:24'),
+(60, 'Hannah y Aladdin', 'venta', 18.00, '2026-02-16 21:00:34'),
+(61, 'Kens Fashionistas', 'venta', 10.00, '2026-02-18 21:04:11'),
+(62, 'MyScene', 'venta', 15.00, '2026-02-18 21:06:22'),
+(63, 'Mix con Escoliosis', 'compra', 8.00, '2026-02-22 12:28:29');
 
 -- --------------------------------------------------------
 
@@ -511,6 +532,7 @@ INSERT INTO `lote_doll` (`id`, `lote_id`, `doll_id`) VALUES
 (138, 49, 43),
 (52, 20, 48),
 (114, 41, 55),
+(172, 60, 60),
 (41, 15, 62),
 (145, 51, 64),
 (44, 16, 65),
@@ -550,6 +572,8 @@ INSERT INTO `lote_doll` (`id`, `lote_id`, `doll_id`) VALUES
 (64, 25, 135),
 (63, 25, 136),
 (135, 49, 137),
+(173, 61, 154),
+(174, 61, 155),
 (68, 26, 157),
 (67, 26, 158),
 (70, 27, 159),
@@ -595,7 +619,9 @@ INSERT INTO `lote_doll` (`id`, `lote_id`, `doll_id`) VALUES
 (119, 44, 228),
 (133, 48, 231),
 (132, 48, 233),
+(176, 62, 234),
 (161, 56, 244),
+(175, 62, 245),
 (157, 54, 251),
 (131, 48, 254),
 (152, 46, 256),
@@ -608,11 +634,20 @@ INSERT INTO `lote_doll` (`id`, `lote_id`, `doll_id`) VALUES
 (149, 52, 276),
 (148, 52, 277),
 (147, 52, 278),
-(166, 57, 292),
-(165, 57, 293),
-(164, 57, 294),
-(163, 57, 295),
-(162, 57, 296);
+(171, 60, 286),
+(170, 57, 288),
+(169, 57, 289),
+(166, 58, 293),
+(165, 58, 294),
+(164, 58, 295),
+(163, 58, 296),
+(162, 58, 297),
+(167, 59, 301),
+(168, 59, 302),
+(184, 63, 308),
+(183, 63, 309),
+(182, 63, 310),
+(181, 63, 311);
 
 -- --------------------------------------------------------
 
@@ -653,7 +688,8 @@ INSERT INTO `marca` (`id`, `nombre`, `created_at`) VALUES
 (31, 'Shadow High', '2025-05-04 10:13:07'),
 (32, 'Project Mc2', '2025-05-25 09:30:36'),
 (33, 'Bratz Babyz', '2025-08-25 20:37:37'),
-(34, 'Barbie Dream Besties', '2026-01-18 17:39:55');
+(34, 'Barbie Dream Besties', '2026-01-18 17:39:55'),
+(35, 'Sylvanian Families', '2026-02-14 21:37:54');
 
 -- --------------------------------------------------------
 
@@ -701,7 +737,8 @@ INSERT INTO `marca_fabricante` (`marca_id`, `fabricante_id`) VALUES
 (31, 2),
 (32, 2),
 (33, 2),
-(34, 1);
+(34, 1),
+(35, 7);
 
 --
 -- Índices para tablas volcadas
@@ -758,7 +795,7 @@ ALTER TABLE `marca_fabricante`
 -- AUTO_INCREMENT de la tabla `dolls`
 --
 ALTER TABLE `dolls`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=298;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=312;
 
 --
 -- AUTO_INCREMENT de la tabla `fabricantes`
@@ -770,19 +807,19 @@ ALTER TABLE `fabricantes`
 -- AUTO_INCREMENT de la tabla `lotes`
 --
 ALTER TABLE `lotes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT de la tabla `lote_doll`
 --
 ALTER TABLE `lote_doll`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=167;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=185;
 
 --
 -- AUTO_INCREMENT de la tabla `marca`
 --
 ALTER TABLE `marca`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- Restricciones para tablas volcadas

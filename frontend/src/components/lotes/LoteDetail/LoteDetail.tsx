@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Lote } from "../../../types/Lote";
 import { Doll } from "../../../types/Doll";
 import DollDetail from "../../dolls/DollDetail/DollDetail";
-import { getTypeStyle, getStatusStyle } from "../../../utils/styleUtils";
+import { getStatusStyle } from "../../../utils/styleUtils";
 import { useApp } from "../../../context";
 import { getLote } from "../../../services/api";
 

@@ -7,6 +7,8 @@ interface LayoutProps {
   setActiveTab: (tab: "dolls" | "lotes" | "stats") => void;
   openMarcaModal: () => void;
   onAddClick?: () => void;
+  onCopyClick?: () => void;
+  onPriceCalculatorClick?: () => void;
 }
 
 const Layout: React.FC<LayoutProps> = ({
@@ -14,7 +16,9 @@ const Layout: React.FC<LayoutProps> = ({
   activeTab,
   setActiveTab,
   openMarcaModal,
-  onAddClick
+  onAddClick,
+  onCopyClick,
+  onPriceCalculatorClick
 }) => {
   return (
     <div className="h-screen w-screen bg-gray-50 flex flex-col overflow-hidden">
@@ -23,6 +27,8 @@ const Layout: React.FC<LayoutProps> = ({
         setActiveTab={setActiveTab}
         openMarcaModal={openMarcaModal}
         onAddClick={onAddClick}
+        onCopyClick={onCopyClick}
+        onPriceCalculatorClick={onPriceCalculatorClick}
       />
       <main className="flex-1 overflow-auto">
         {children}

@@ -3,9 +3,10 @@ import { deleteImage } from "../../../services/api";
 import { Doll } from "../../../types/Doll";
 import { getStatusStyle } from "../../../utils/styleUtils";
 import { useApp } from "../../../context";
+import PriceCalculatorModal from "../PriceCalculatorModal/PriceCalculatorModal";
 
 const DollsList: React.FC = () => {
-  const { dolls, brands, removeDoll, openDollDetail, openEditDoll } = useApp();
+  const { dolls, brands, removeDoll, openDollDetail, openEditDoll, isPriceCalculatorModalOpen, closePriceCalculator } = useApp();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedManufacturer, setSelectedManufacturer] = useState("");
@@ -233,7 +234,7 @@ const DollsList: React.FC = () => {
 
       {/* Panel de estadísticas */}
       {sortedDolls.length > 0 && (
-        <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2">
+        <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
             <div className="text-xs text-blue-600 font-medium">Total</div>
             <div className="text-xl font-bold text-blue-900">{stats.total}</div>
@@ -258,10 +259,7 @@ const DollsList: React.FC = () => {
             <div className="text-xs text-teal-600 font-medium">Vendidas</div>
             <div className="text-xl font-bold text-teal-900">{stats.vendidas}</div>
           </div>
-          <div className="bg-orange-50 border border-orange-200 rounded-lg p-2">
-            <div className="text-xs text-orange-600 font-medium">Inversión</div>
-            <div className="text-lg font-bold text-orange-900">{stats.totalCompra.toFixed(2)}€</div>
-          </div>
+         
         </div>
       )}
 
@@ -528,6 +526,12 @@ const DollsList: React.FC = () => {
           </div>
         </div>
       )}
+
+      <PriceCalculatorModal
+        isOpen={isPriceCalculatorModalOpen}
+        onClose={closePriceCalculator}
+        dolls={dolls}
+      />
     </div>
   );
 };

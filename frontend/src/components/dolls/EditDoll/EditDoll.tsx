@@ -121,6 +121,10 @@ const EditDoll: React.FC<EditDollProps> = ({
     }));
   };
 
+  const handleNumberInputWheel = (e: React.WheelEvent<HTMLInputElement>) => {
+    e.currentTarget.blur();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -445,6 +449,7 @@ const EditDoll: React.FC<EditDollProps> = ({
                           name="precio_compra"
                           value={formData.precio_compra || ""}
                           onChange={handleChange}
+                          onWheel={handleNumberInputWheel}
                           step="0.01"
                           min="0"
                           disabled={enLoteCompraState}
@@ -550,6 +555,7 @@ const EditDoll: React.FC<EditDollProps> = ({
                             name="precio_venta"
                             value={formData.precio_venta || ""}
                             onChange={handleChange}
+                            onWheel={handleNumberInputWheel}
                             step="0.01"
                             min="0"
                             disabled={enLoteVentaState}

@@ -77,8 +77,11 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
     }));
   };
 
-  // Update handleSubmit
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleNumberInputWheel = (e: React.WheelEvent<HTMLInputElement>) => {
+    e.currentTarget.blur();
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Validate required fields
@@ -429,6 +432,7 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
                         name="precio_compra"
                         value={formData.precio_compra || ""}
                         onChange={handleChange}
+                        onWheel={handleNumberInputWheel}
                         step="0.01"
                         min="0"
                         className="w-full pl-10 pr-4 py-2.5 border border-orange-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -510,6 +514,7 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
                         name="precio_venta"
                         value={formData.precio_venta || ""}
                         onChange={handleChange}
+                        onWheel={handleNumberInputWheel}
                         step="0.01"
                         min="0"
                         className="w-full pl-10 pr-4 py-2.5 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"

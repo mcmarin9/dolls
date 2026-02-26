@@ -2,11 +2,9 @@ import React from "react";
 import { useApp } from "./context";
 import { getLote } from "./services/api";
 import Layout from './components/layout/Layout/Layout';
-import Section from './components/common/Section/Section';
-import Modal from './components/common/Modal/Modal';
-import Button from './components/common/Button/Button';
 import DollsList from "./components/dolls/DollsList/DollsList";
 import AddDollModal from "./components/dolls/AddDollModal/AddDollModal";
+import CopyDollModal from "./components/dolls/CopyDollModal/CopyDollModal";
 import DollDetail from "./components/dolls/DollDetail/DollDetail";
 import AddLoteModal from "./components/lotes/AddLoteModal/AddLoteModal";
 import EditDoll from "./components/dolls/EditDoll/EditDoll";
@@ -15,7 +13,6 @@ import LoteList from "./components/lotes/LoteList/LoteList";
 import LoteDetail from "./components/lotes/LoteDetail/LoteDetail";
 import AddMarcaModal from "./components/marcas/AddMarcaModal/AddMarcaModal";
 import Stats from "./components/Stats/Stats";
-import { Lote } from "./types/Lote";
 
 const AppContent: React.FC = () => {
   const {
@@ -32,10 +29,14 @@ const AppContent: React.FC = () => {
     isMarcaModalOpen,
     isEditModalOpen,
     isEditLoteModalOpen,
+    isCopyDollModalOpen,
     openDollModal,
     closeDollModal,
     closeDollDetail,
     closeEditDoll,
+    openCopyDollModal,
+    closeCopyDollModal,
+    openPriceCalculator,
     openLoteModal,
     closeLoteModal,
     closeLoteDetail,
@@ -77,6 +78,8 @@ const AppContent: React.FC = () => {
       setActiveTab={setActiveTab}
       openMarcaModal={openMarcaModal}
       onAddClick={getAddClickHandler()}
+      onCopyClick={activeTab === 'dolls' ? openCopyDollModal : undefined}
+      onPriceCalculatorClick={activeTab === 'dolls' ? openPriceCalculator : undefined}
     >
       {activeTab === "dolls" && (
         <div className="p-6">
@@ -100,6 +103,11 @@ const AppContent: React.FC = () => {
       <AddDollModal
         isOpen={isModalOpen}
         closeModal={closeDollModal}
+      />
+      <CopyDollModal
+        isOpen={isCopyDollModalOpen}
+        closeModal={closeCopyDollModal}
+        dolls={dolls}
       />
       <AddLoteModal
         isOpen={isLoteModalOpen}

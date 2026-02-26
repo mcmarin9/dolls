@@ -5,9 +5,11 @@ interface NavbarProps {
   setActiveTab: (tab: 'dolls' | 'lotes' | 'stats') => void;
   openMarcaModal: () => void;
   onAddClick?: () => void;
+  onCopyClick?: () => void;
+  onPriceCalculatorClick?: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openMarcaModal, onAddClick }) => {
+const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openMarcaModal, onAddClick, onCopyClick, onPriceCalculatorClick }) => {
   const getTitle = () => {
     switch (activeTab) {
       case 'dolls': return '🎎 Muñequitas';
@@ -105,6 +107,24 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openMarcaModal
             >
               Añadir Marca
             </button>
+            {activeTab === 'dolls' && onPriceCalculatorClick && (
+              <button
+                onClick={onPriceCalculatorClick}
+                className="px-5 py-2.5 rounded-lg text-sm font-semibold text-green-700 bg-green-100 hover:bg-green-200 border border-green-300 transition-all duration-200"
+                title="Calcular precio de varias muñecas"
+              >
+                💰 Calcular Precio
+              </button>
+            )}
+            {activeTab === 'dolls' && onCopyClick && (
+              <button
+                onClick={onCopyClick}
+                className="px-5 py-2.5 rounded-lg text-sm font-semibold text-cyan-700 bg-cyan-100 hover:bg-cyan-200 border border-cyan-300 transition-all duration-200"
+                title="Copiar una muñeca existente"
+              >
+                📋 Copiar Muñeca
+              </button>
+            )}
             {getAddButtonText() && onAddClick && (
               <button
                 onClick={onAddClick}
