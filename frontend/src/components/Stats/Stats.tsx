@@ -147,6 +147,16 @@ const Stats: React.FC<StatsProps> = ({ dolls }) => {
     ? totalSales / soldDolls.length 
     : 0;
 
+  // Tasa de venta (sobre muñecas a la venta o vendidas)
+  const activeListings = forSaleDolls.length + soldDolls.length;
+  const sellRate = activeListings > 0 ? (soldDolls.length / activeListings) * 100 : 0;
+
+  // Valor medio de inventario por muñeca
+  const avgInventoryValue = unsoldDolls.length > 0 ? inventoryCost / unsoldDolls.length : 0;
+
+  // Ratio de rentabilidad
+  const profitability = totalInvestment > 0 ? (netProfit / totalInvestment) * 100 : 0;
+
   // Distribución por estado
   const dollsByState = dolls.reduce((acc, doll) => {
     const state = doll.estado || "No especificado";
@@ -164,16 +174,6 @@ const Stats: React.FC<StatsProps> = ({ dolls }) => {
   // Muñecas en cada estado con valor
   const forSaleDolls = dolls.filter(d => d.estado === "a la venta");
   const storedDolls = dolls.filter(d => d.estado === "guardada");
-
-  // Tasa de venta (sobre muñecas a la venta o vendidas)
-  const activeListings = forSaleDolls.length + soldDolls.length;
-  const sellRate = activeListings > 0 ? (soldDolls.length / activeListings) * 100 : 0;
-
-  // Valor medio de inventario por muñeca
-  const avgInventoryValue = unsoldDolls.length > 0 ? inventoryCost / unsoldDolls.length : 0;
-
-  // Ratio de rentabilidad
-  const profitability = totalInvestment > 0 ? (netProfit / totalInvestment) * 100 : 0;
 
   // Top muñecas con mayor beneficio
   const topProfitDolls = dolls

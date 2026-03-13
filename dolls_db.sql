@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-02-2026 a las 22:03:54
+-- Tiempo de generación: 13-03-2026 a las 16:27:21
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -60,7 +60,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (11, 'Fiat 500', 1, 1, 'Fiat 500', 'Barbie', 2009, 'a la venta', 1.67, NULL, NULL, '/uploads/f5ec0a85ab274c328de87b316f5da426.jpg', '2025-02-16 18:47:07'),
 (12, 'Rayla Leona', 1, 1, 'La magia de Pegaso', 'Rayla Reina de las Nubes', 2005, 'vendida', 1.50, 3.50, 'vendida con cara sapo', '/uploads/b9baa5838f394945b68b05b834106c86.jpg', '2025-02-16 19:19:00'),
 (13, 'Fake', 14, 1, 'Fake', 'Fake', 2025, 'a la venta', 1.50, NULL, 'Comprada por la ropa, la única medio decente es Cenicienta de Simba', '/uploads/76d7c04c-6fcc-48c3-8b58-00ed51cbc83d.jpg', '2025-02-16 19:26:48'),
-(14, 'Cloe Disaster', 2, 2, 'Básica', 'Cloe', 2025, 'vendida', 3.00, 2.50, NULL, '/uploads/75a383ed0f9842a78ee81048094b4d83.jpg', '2025-02-16 19:29:24'),
+(14, 'Cloe Disaster', 2, 2, 'Básica', 'Cloe', 2001, 'vendida', 3.00, 2.50, NULL, '/uploads/75a383ed0f9842a78ee81048094b4d83.jpg', '2025-02-16 19:29:24'),
 (15, 'Yasmin Articulada', 2, 2, 'The Movie', 'Yasmin', 2007, 'vendida', 1.33, 4.80, NULL, '/uploads/bd9a4855eb52471eb3982d03e490fec0.jpg', '2025-02-16 19:30:44'),
 (16, 'Sasha Manca', 2, 2, 'The Movie', 'Sasha', 2007, 'vendida', 1.33, 6.00, NULL, '/uploads/a258d6bd28eb4c718888c3cb4ff5ccba.jpg', '2025-02-16 19:31:56'),
 (17, 'Teresa Sapo', 1, 1, 'My House', 'Teresa', 2008, 'vendida', 1.33, 3.50, NULL, '/uploads/7fecd2edcb83458fafc06db63d728f52.jpg', '2025-02-16 19:33:13'),
@@ -285,7 +285,7 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (238, 'Jade Básica 2', 2, 2, 'Primera Edición', 'Jade', 2001, 'guardada', 2.00, NULL, 'Pelo más marrón que negro y pelo más largo', '/uploads/23c05e1ec2f541f6b3b01027415bf261.jpg', '2025-10-18 08:33:51'),
 (239, 'Barbie Negra Yoga', 1, 1, 'Yoga', 'Negra', 2018, 'guardada', 4.00, NULL, NULL, '/uploads/20b2156e7b0640a0919adbde37895de6.jpg', '2025-10-18 08:35:21'),
 (240, 'Violet Manos tiesas', 5, 2, 'Rainbow World', 'Violet Willow', 2024, 'guardada', 2.00, NULL, NULL, '/uploads/d7cdee82dbe24eaab39de80cadae88ad.jpg', '2025-10-18 08:37:18'),
-(241, 'Monster Gigante', 6, 1, 'Freak du Chic', 'Gooliope Jellington', 2014, 'a la venta', 3.00, NULL, NULL, '/uploads/a670d779ef4e4c2193d82b6e8f78fe5f.jpg', '2025-10-18 08:38:38'),
+(241, 'Monster Gigante', 6, 1, 'Freak du Chic', 'Gooliope Jellington', 2014, 'vendida', 3.00, 16.00, NULL, '/uploads/a670d779ef4e4c2193d82b6e8f78fe5f.jpg', '2025-10-18 08:38:38'),
 (242, 'Blanca ojos lilas', 5, 2, 'Color & Create', 'Ojos lilas', 2023, 'vendida', 2.00, 12.00, 'Vendemos porque el pelo no se limpia', '/uploads/e2136094a3aa4ee59eccaedf61edab4e.jpg', '2025-10-19 13:16:06'),
 (243, 'Amaya Grande 2', 5, 2, 'Serie 1', 'Amaya Raine', 2020, 'a la venta', 2.00, NULL, 'Ropa, chaqueta y botas', '/uploads/a0dd591331c04ab387b8366850efe205.jpg', '2025-10-19 13:17:10'),
 (244, 'Ashlynn', 9, 1, 'Core Royals & Rebels', 'Ashlynn Ella', 2013, 'vendida', 3.00, 8.80, 'Va con el cazador orginialmente', '/uploads/b5a3da8df21342d582605c4ab71bb886.jpg', '2025-10-19 13:21:06'),
@@ -356,7 +356,12 @@ INSERT INTO `dolls` (`id`, `nombre`, `marca_id`, `fabricante_id`, `modelo`, `per
 (308, 'Tori Escoliosis', 1, 1, 'American Idol Music Fever', 'Tori', 2005, 'a la venta', 2.00, NULL, NULL, NULL, '2026-02-22 09:21:42'),
 (309, 'Westley Bonica', 7, 1, 'Shopping Spree', 'Westley / Madison', 2004, 'a la venta', 2.00, NULL, NULL, NULL, '2026-02-22 12:25:48'),
 (310, 'Rubia collar 2', 7, 1, 'Hanging Out', 'Barbie', 2003, 'a la venta', 2.00, NULL, 'Vestido del fashion pack Perfectly cool for school', NULL, '2026-02-22 12:27:02'),
-(311, 'Nona', 2, 2, 'Twiins', 'Nona', 2004, 'a la venta', 2.00, NULL, NULL, NULL, '2026-02-22 12:28:03');
+(311, 'Nona', 2, 2, 'Twiins', 'Nona', 2004, 'a la venta', 2.00, NULL, NULL, NULL, '2026-02-22 12:28:03'),
+(312, 'Sasha Genie', 2, 2, 'Genie Magic', 'Sasha', 2006, 'guardada', 3.00, NULL, NULL, NULL, '2026-03-01 17:43:34'),
+(313, 'Polly Conejitos', 14, 1, 'Furry Pets', 'Polly and Her Bunnies', 1993, 'guardada', 2.00, NULL, 'Con novia de Polly Plays a Bride 1990', NULL, '2026-03-01 17:45:20'),
+(314, 'Cloe Básica 2', 2, 2, 'Básica', 'Cloe', 2001, 'guardada', 0.96, NULL, NULL, NULL, '2026-03-13 14:20:31'),
+(315, 'Aira 2', 33, 2, 'Triiiplets 2nd Ed', 'Aira', 2007, 'guardada', 1.00, NULL, NULL, NULL, '2026-03-13 14:21:36'),
+(316, 'Sutton', 7, 1, 'Back To School', 'Sutton', 2003, 'guardada', 1.00, NULL, 'Comprobar cara\r\n', NULL, '2026-03-13 14:23:51');
 
 -- --------------------------------------------------------
 
@@ -795,7 +800,7 @@ ALTER TABLE `marca_fabricante`
 -- AUTO_INCREMENT de la tabla `dolls`
 --
 ALTER TABLE `dolls`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=312;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=317;
 
 --
 -- AUTO_INCREMENT de la tabla `fabricantes`
