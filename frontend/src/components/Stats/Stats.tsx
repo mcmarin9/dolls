@@ -92,6 +92,7 @@ const Stats: React.FC<StatsProps> = ({ dolls }) => {
   // ==================== CÁLCULOS ====================
   const totalDolls = dolls.length;
   const soldDolls = dolls.filter((doll) => doll.estado === "vendida");
+  const forSaleDolls = dolls.filter((doll) => doll.estado === "a la venta");
   const unsoldDolls = dolls.filter((doll) => doll.estado !== "vendida");
 
   // Inversión total (suma de todos los precios de compra)
@@ -172,7 +173,6 @@ const Stats: React.FC<StatsProps> = ({ dolls }) => {
   }, {} as Record<string, number>);
 
   // Muñecas en cada estado con valor
-  const forSaleDolls = dolls.filter(d => d.estado === "a la venta");
   const storedDolls = dolls.filter(d => d.estado === "guardada");
 
   // Top muñecas con mayor beneficio

@@ -19,10 +19,6 @@ go.work
 # Environment variables
 .env
 
-# Uploads directory (except .gitkeep)
-uploads/*
-!uploads/.gitkeep
-
 # IDE
 .vscode/
 .idea/
