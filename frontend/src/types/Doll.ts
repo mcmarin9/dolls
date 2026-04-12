@@ -14,6 +14,7 @@ export interface Doll {
     imagen?: string | File;
     created_at?: string;
     estado?: string;
+    tipo?: string;
     fecha_compra?: string;
     precio_compra?: number;
     fecha_venta?: string;

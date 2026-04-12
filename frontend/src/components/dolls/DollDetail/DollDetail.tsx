@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Doll } from "../../../types/Doll";
 import { Lote } from "../../../types/Lote";
-import { getStatusStyle, getTypeStyle } from "../../../utils/styleUtils";
+import { getStatusStyle, getTypeStyle, getDollTypeStyle, getDollTypeEmoji } from "../../../utils/styleUtils";
 import { fetchDollLotes } from "../../../utils/checkIfLote";
 
 
@@ -119,6 +119,13 @@ const DollDetail: React.FC<DollDetailProps> = ({
                       )}`}
                     >
                       {doll.estado}
+                    </span>
+                  </div>
+                  <div className="col-span-2">
+                    <span className="text-slate-500 block">Tipo</span>
+                    <span className={`inline-block px-3 py-1.5 rounded-full text-xs font-semibold ${getDollTypeStyle(doll.tipo)}`}>
+                      <span className="mr-1">{getDollTypeEmoji(doll.tipo)}</span>
+                      {(doll.tipo || "Muñeca").charAt(0).toUpperCase() + (doll.tipo || "Muñeca").slice(1)}
                     </span>
                   </div>
                 </div>

@@ -50,7 +50,7 @@ func GetDolls(w http.ResponseWriter, r *http.Request) {
 
 		err := rows.Scan(
 			&doll.ID, &doll.Nombre, &doll.MarcaID, &doll.FabricanteID,
-			&doll.Modelo, &doll.Personaje, &doll.Anyo, &doll.Estado,
+			&doll.Modelo, &doll.Personaje, &doll.Anyo, &doll.Estado, &doll.Tipo,
 			&doll.PrecioCompra, &doll.PrecioVenta, &doll.Comentarios, &doll.Imagen,
 			&doll.CreatedAt,
 			&doll.MarcaNombre, &doll.FabricanteNombre,
@@ -105,7 +105,7 @@ func GetDoll(w http.ResponseWriter, r *http.Request) {
 	var doll models.Doll
 	err = database.ExecuteQueryRow(query, id).Scan(
 		&doll.ID, &doll.Nombre, &doll.MarcaID, &doll.FabricanteID,
-		&doll.Modelo, &doll.Personaje, &doll.Anyo, &doll.Estado,
+		&doll.Modelo, &doll.Personaje, &doll.Anyo, &doll.Estado, &doll.Tipo,
 		&doll.PrecioCompra, &doll.PrecioVenta, &doll.Comentarios, &doll.Imagen,
 		&doll.CreatedAt,
 		&doll.MarcaNombre, &doll.FabricanteNombre,
@@ -184,6 +184,11 @@ func AddDoll(w http.ResponseWriter, r *http.Request) {
 		estado = "guardada"
 	}
 
+	tipo := r.FormValue("tipo")
+	if tipo == "" {
+		tipo = "muñeca"
+	}
+
 	var precioCompra, precioVenta *float64
 	if pc := r.FormValue("precio_compra"); pc != "" {
 		if p, err := strconv.ParseFloat(pc, 64); err == nil {
@@ -213,14 +218,14 @@ func AddDoll(w http.ResponseWriter, r *http.Request) {
 	// Insert doll
 	insertQuery := `
 		INSERT INTO dolls (
-			nombre, marca_id, fabricante_id, modelo, personaje, anyo, estado,
+			nombre, marca_id, fabricante_id, modelo, personaje, anyo, estado, tipo,
 			precio_compra, precio_venta, comentarios, imagen
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	result, err := database.ExecuteUpdate(insertQuery,
-		nombre, marcaID, fabricanteID, modelo, personaje, anyo, estado,
+		nombre, marcaID, fabricanteID, modelo, personaje, anyo, estado, tipo,
 		precioCompra, precioVenta, comentarios, imagePath,
 	)
 	if err != nil {
@@ -332,6 +337,11 @@ func UpdateDoll(w http.ResponseWriter, r *http.Request) {
 		estado = "guardada"
 	}
 
+	tipo := r.FormValue("tipo")
+	if tipo == "" {
+		tipo = "muñeca"
+	}
+
 	var precioCompra, precioVenta *float64
 	if pc := r.FormValue("precio_compra"); pc != "" {
 		if p, err := strconv.ParseFloat(pc, 64); err == nil {
@@ -358,13 +368,13 @@ func UpdateDoll(w http.ResponseWriter, r *http.Request) {
 	updateQuery := `
 		UPDATE dolls SET
 			nombre = ?, marca_id = ?, fabricante_id = ?, modelo = ?, personaje = ?,
-			anyo = ?, estado = ?, precio_compra = ?, precio_venta = ?,
+			anyo = ?, estado = ?, tipo = ?, precio_compra = ?, precio_venta = ?,
 			comentarios = ?, imagen = ?
 		WHERE id = ?
 	`
 
 	_, err = database.ExecuteUpdate(updateQuery,
-		nombre, marcaID, fabricanteID, modelo, personaje, anyo, estado,
+		nombre, marcaID, fabricanteID, modelo, personaje, anyo, estado, tipo,
 		precioCompra, precioVenta, comentarios, imagePath, id,
 	)
 	if err != nil {

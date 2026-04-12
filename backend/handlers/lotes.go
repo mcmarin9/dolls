@@ -307,7 +307,8 @@ func UpdateLote(w http.ResponseWriter, r *http.Request) {
 			}
 			if !found {
 				// Doll is being removed, check if it's in other lotes
-				if tipo == "compra" {
+				switch tipo {
+				case "compra":
 					// Check if doll is in another compra lote
 					checkQuery := "SELECT COUNT(*) FROM lote_doll ld INNER JOIN lotes l ON ld.lote_id = l.id WHERE ld.doll_id = ? AND l.tipo = 'compra' AND l.id != ?"
 					var count int
@@ -315,7 +316,7 @@ func UpdateLote(w http.ResponseWriter, r *http.Request) {
 					if count == 0 {
 						database.ExecuteUpdate("UPDATE dolls SET precio_compra = NULL WHERE id = ?", oldDollID)
 					}
-				} else if tipo == "venta" {
+				case "venta":
 					// Check if doll is in another venta lote
 					checkQuery := "SELECT COUNT(*) FROM lote_doll ld INNER JOIN lotes l ON ld.lote_id = l.id WHERE ld.doll_id = ? AND l.tipo = 'venta' AND l.id != ?"
 					var count int
@@ -399,7 +400,8 @@ func DeleteLote(w http.ResponseWriter, r *http.Request) {
 
 		// Reset prices for each doll if they're not in other lotes of the same type
 		for _, dollID := range dollIDs {
-			if tipo == "compra" {
+			switch tipo {
+			case "compra":
 				// Check if doll is in another compra lote
 				checkQuery := "SELECT COUNT(*) FROM lote_doll ld INNER JOIN lotes l ON ld.lote_id = l.id WHERE ld.doll_id = ? AND l.tipo = 'compra' AND l.id != ?"
 				var count int
@@ -407,7 +409,7 @@ func DeleteLote(w http.ResponseWriter, r *http.Request) {
 				if count == 0 {
 					database.ExecuteUpdate("UPDATE dolls SET precio_compra = NULL WHERE id = ?", dollID)
 				}
-			} else if tipo == "venta" {
+			case "venta":
 				// Check if doll is in another venta lote
 				checkQuery := "SELECT COUNT(*) FROM lote_doll ld INNER JOIN lotes l ON ld.lote_id = l.id WHERE ld.doll_id = ? AND l.tipo = 'venta' AND l.id != ?"
 				var count int

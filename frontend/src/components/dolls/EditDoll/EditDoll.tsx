@@ -140,6 +140,7 @@ const EditDoll: React.FC<EditDollProps> = ({
     submitData.append("personaje", formData.personaje.trim());
     submitData.append("anyo", formData.anyo.toString());
     submitData.append("estado", formData.estado || doll.estado || "guardada");
+    submitData.append("tipo", formData.tipo || "muñeca");
 
     const comentarios = formData.comentarios?.trim() ?? "";
     submitData.append("comentarios", comentarios);
@@ -199,7 +200,7 @@ const EditDoll: React.FC<EditDollProps> = ({
         <div className="p-6 overflow-y-auto max-h-[calc(95vh-140px)]">
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Columna izquierda - Información básica */}
+              {/* Columna 1 - Información básica */}
               <div className="space-y-5">
                 <div className="flex items-center gap-2 pb-2 border-b-2 border-pink-200">
                   <span className="text-2xl">📋</span>
@@ -234,19 +235,36 @@ const EditDoll: React.FC<EditDollProps> = ({
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    📦 Modelo
-                  </label>
-                  <input
-                    type="text"
-                    name="modelo"
-                    value={formData.modelo}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                    placeholder="Modelo de la muñeca"
-                  />
+                {/* Modelo y Año en la misma fila */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="col-span-2">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      📦 Modelo
+                    </label>
+                    <input
+                      type="text"
+                      name="modelo"
+                      value={formData.modelo}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      placeholder="Modelo de la muñeca"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      📅 Año
+                    </label>
+                    <input
+                      type="number"
+                      name="anyo"
+                      value={formData.anyo}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      placeholder="Año"
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -266,17 +284,19 @@ const EditDoll: React.FC<EditDollProps> = ({
 
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    📅 Año
+                    🏷️ Tipo
                   </label>
-                  <input
-                    type="number"
-                    name="anyo"
-                    value={formData.anyo}
+                  <select
+                    name="tipo"
+                    value={formData.tipo}
                     onChange={handleChange}
-                    required
                     className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                    placeholder="Año de fabricación"
-                  />
+                  >
+                    <option value="muñeca">🎎 Muñeca</option>
+                    <option value="figurita">🎀 Figurita</option>
+                    <option value="playset">🎮 Playset</option>
+                    <option value="ropa">👗 Ropa</option>
+                  </select>
                 </div>
 
                 <div>
@@ -376,230 +396,11 @@ const EditDoll: React.FC<EditDollProps> = ({
                 </div>
               </div>
 
-              {/* Columna derecha - Precios y detalles */}
+              {/* Columna 2 - Detalles y Precios */}
               <div className="space-y-5">
                 <div className="flex items-center gap-2 pb-2 border-b-2 border-purple-200">
-                  <span className="text-2xl">💰</span>
-                  <h3 className="font-bold text-lg text-slate-800">Precios y Detalles</h3>
-                </div>
-
-                {/* Precio de Compra */}
-                <div className="bg-gradient-to-br from-orange-50 to-white border-2 border-orange-200 rounded-xl p-4">
-                    <label className="block text-sm font-bold text-orange-800 mb-3 flex items-center gap-2">
-                      <span className="text-xl">🛒</span>
-                      Precio de Compra
-                    </label>
-                    <div className="flex gap-3 mb-3">
-                      <label className={`flex-1 flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                        pricingMethod.compra === "individual"
-                          ? "border-orange-500 bg-orange-100 shadow-md"
-                          : "border-orange-200 hover:border-orange-400 hover:bg-orange-50"
-                      } ${enLoteCompraState ? "opacity-50 cursor-not-allowed" : ""}`}>
-                        <input
-                          type="radio"
-                          name="precio_compra_method"
-                          value="individual"
-                          checked={pricingMethod.compra === "individual"}
-                          onChange={() =>
-                            setPricingMethod((prev) => ({
-                              ...prev,
-                              compra: "individual",
-                            }))
-                          }
-                          disabled={enLoteCompraState}
-                          className="sr-only"
-                        />
-                        <span className={`font-semibold text-sm ${
-                          pricingMethod.compra === "individual" ? "text-orange-700" : "text-slate-600"
-                        }`}>
-                          Individual
-                        </span>
-                      </label>
-                      <label className={`flex-1 flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                        pricingMethod.compra === "lote"
-                          ? "border-orange-500 bg-orange-100 shadow-md"
-                          : "border-orange-200 hover:border-orange-400 hover:bg-orange-50"
-                      } ${enLoteCompraState ? "opacity-50 cursor-not-allowed" : ""}`}>
-                        <input
-                          type="radio"
-                          name="precio_compra_method"
-                          value="lote"
-                          checked={pricingMethod.compra === "lote"}
-                          onChange={() =>
-                            setPricingMethod((prev) => ({
-                              ...prev,
-                              compra: "lote",
-                            }))
-                          }
-                          disabled={enLoteCompraState}
-                          className="sr-only"
-                        />
-                        <span className={`font-semibold text-sm ${
-                          pricingMethod.compra === "lote" ? "text-orange-700" : "text-slate-600"
-                        }`}>
-                          Por Lote
-                        </span>
-                      </label>
-                    </div>
-                    {pricingMethod.compra === "individual" && (
-                      <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">€</span>
-                        <input
-                          type="number"
-                          name="precio_compra"
-                          value={formData.precio_compra || ""}
-                          onChange={handleChange}
-                          onWheel={handleNumberInputWheel}
-                          step="0.01"
-                          min="0"
-                          disabled={enLoteCompraState}
-                          className="w-full pl-10 pr-4 py-2.5 border border-orange-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:bg-slate-100 disabled:cursor-not-allowed"
-                          placeholder="0.00"
-                        />
-                      </div>
-                    )}
-                    {pricingMethod.compra === "lote" && (
-                      <div>
-                        {enLoteCompraState ? (
-                          <>
-                            <div className="relative">
-                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-semibold">€</span>
-                              <input
-                                type="number"
-                                value={formData.precio_compra || ""}
-                                disabled
-                                className="w-full pl-10 pr-4 py-2.5 border border-orange-200 rounded-lg bg-slate-100 text-slate-500"
-                              />
-                            </div>
-                            <div className="mt-2 bg-orange-50 border border-orange-200 rounded-lg p-2 flex items-center gap-2">
-                              <span className="text-orange-600">🔒</span>
-                              <span className="text-xs text-orange-700 font-medium">Precio establecido en lote</span>
-                            </div>
-                          </>
-                        ) : (
-                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
-                            <span className="text-blue-600 text-lg">ℹ️</span>
-                            <p className="text-sm text-blue-700">
-                              Añade la muñeca a un <strong>lote de compra</strong> para establecer su precio.
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Precio de Venta */}
-                  <div className="bg-gradient-to-br from-emerald-50 to-white border-2 border-emerald-200 rounded-xl p-4">
-                    <label className="block text-sm font-bold text-emerald-800 mb-3 flex items-center gap-2">
-                      <span className="text-xl">💵</span>
-                      Precio de Venta
-                    </label>
-                    <div className="flex gap-3 mb-3">
-                      <label className={`flex-1 flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                        pricingMethod.venta === "individual"
-                          ? "border-emerald-500 bg-emerald-100 shadow-md"
-                          : "border-emerald-200 hover:border-emerald-400 hover:bg-emerald-50"
-                      } ${enLoteVentaState ? "opacity-50 cursor-not-allowed" : ""}`}>
-                        <input
-                          type="radio"
-                          name="precio_venta_method"
-                          value="individual"
-                          checked={pricingMethod.venta === "individual"}
-                          onChange={() =>
-                            setPricingMethod((prev) => ({
-                              ...prev,
-                              venta: "individual",
-                            }))
-                          }
-                          disabled={enLoteVentaState}
-                          className="sr-only"
-                        />
-                        <span className={`font-semibold text-sm ${
-                          pricingMethod.venta === "individual" ? "text-emerald-700" : "text-slate-600"
-                        }`}>
-                          Individual
-                        </span>
-                      </label>
-                      <label className={`flex-1 flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                        pricingMethod.venta === "lote"
-                          ? "border-emerald-500 bg-emerald-100 shadow-md"
-                          : "border-emerald-200 hover:border-emerald-400 hover:bg-emerald-50"
-                      } ${enLoteVentaState ? "opacity-50 cursor-not-allowed" : ""}`}>
-                        <input
-                          type="radio"
-                          name="precio_venta_method"
-                          value="lote"
-                          checked={pricingMethod.venta === "lote"}
-                          onChange={() =>
-                            setPricingMethod((prev) => ({
-                              ...prev,
-                              venta: "lote",
-                            }))
-                          }
-                          disabled={enLoteVentaState}
-                          className="sr-only"
-                        />
-                        <span className={`font-semibold text-sm ${
-                          pricingMethod.venta === "lote" ? "text-emerald-700" : "text-slate-600"
-                        }`}>
-                          Por Lote
-                        </span>
-                      </label>
-                    </div>
-                    {pricingMethod.venta === "individual" && (
-                      <div>
-                        <div className="relative">
-                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">€</span>
-                          <input
-                            type="number"
-                            name="precio_venta"
-                            value={formData.precio_venta || ""}
-                            onChange={handleChange}
-                            onWheel={handleNumberInputWheel}
-                            step="0.01"
-                            min="0"
-                            disabled={enLoteVentaState}
-                            className="w-full pl-10 pr-4 py-2.5 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-slate-100 disabled:cursor-not-allowed"
-                            placeholder="0.00"
-                          />
-                        </div>
-                        {ventaMessage && (
-                          <div className="mt-2 bg-yellow-50 border border-yellow-200 rounded-lg p-2 flex items-start gap-2">
-                            <span className="text-yellow-600 text-lg">⚠️</span>
-                            <span className="text-sm text-yellow-700">{ventaMessage}</span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    {pricingMethod.venta === "lote" && (
-                      <div>
-                        {enLoteVentaState ? (
-                          <>
-                            <div className="relative">
-                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-semibold">€</span>
-                              <input
-                                type="number"
-                                value={formData.precio_venta || ""}
-                                disabled
-                                className="w-full pl-10 pr-4 py-2.5 border border-emerald-200 rounded-lg bg-slate-100 text-slate-500"
-                              />
-                            </div>
-                            <div className="mt-2 bg-emerald-50 border border-emerald-200 rounded-lg p-2 flex items-center gap-2">
-                              <span className="text-emerald-600">🔒</span>
-                              <span className="text-xs text-emerald-700 font-medium">Precio establecido en lote</span>
-                            </div>
-                          </>
-                        ) : (
-                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
-                            <span className="text-blue-600 text-lg">ℹ️</span>
-                            <p className="text-sm text-blue-700">
-                              Añade la muñeca a un <strong>lote de venta</strong> para establecer su precio.
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  <span className="text-2xl">⚙️</span>
+                  <h3 className="font-bold text-lg text-slate-800">Detalles y Precios</h3>
                 </div>
 
                 {/* Comentarios */}
@@ -647,7 +448,226 @@ const EditDoll: React.FC<EditDollProps> = ({
                     )}
                   </div>
                 </div>
+
+                {/* Precio de Compra */}
+                <div className="bg-gradient-to-br from-orange-50 to-white border-2 border-orange-200 rounded-xl p-4">
+                  <label className="block text-sm font-bold text-orange-800 mb-3 flex items-center gap-2">
+                    <span className="text-xl">🛒</span>
+                    Precio de Compra
+                  </label>
+                  <div className="flex gap-3 mb-3">
+                    <label className={`flex-1 flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                      pricingMethod.compra === "individual"
+                        ? "border-orange-500 bg-orange-100 shadow-md"
+                        : "border-orange-200 hover:border-orange-400 hover:bg-orange-50"
+                    } ${enLoteCompraState ? "opacity-50 cursor-not-allowed" : ""}`}>
+                      <input
+                        type="radio"
+                        name="precio_compra_method"
+                        value="individual"
+                        checked={pricingMethod.compra === "individual"}
+                        onChange={() =>
+                          setPricingMethod((prev) => ({
+                            ...prev,
+                            compra: "individual",
+                          }))
+                        }
+                        disabled={enLoteCompraState}
+                        className="sr-only"
+                      />
+                      <span className={`font-semibold text-sm ${
+                        pricingMethod.compra === "individual" ? "text-orange-700" : "text-slate-600"
+                      }`}>
+                        Individual
+                      </span>
+                    </label>
+                    <label className={`flex-1 flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                      pricingMethod.compra === "lote"
+                        ? "border-orange-500 bg-orange-100 shadow-md"
+                        : "border-orange-200 hover:border-orange-400 hover:bg-orange-50"
+                    } ${enLoteCompraState ? "opacity-50 cursor-not-allowed" : ""}`}>
+                      <input
+                        type="radio"
+                        name="precio_compra_method"
+                        value="lote"
+                        checked={pricingMethod.compra === "lote"}
+                        onChange={() =>
+                          setPricingMethod((prev) => ({
+                            ...prev,
+                            compra: "lote",
+                          }))
+                        }
+                        disabled={enLoteCompraState}
+                        className="sr-only"
+                      />
+                      <span className={`font-semibold text-sm ${
+                        pricingMethod.compra === "lote" ? "text-orange-700" : "text-slate-600"
+                      }`}>
+                        Por Lote
+                      </span>
+                    </label>
+                  </div>
+                  {pricingMethod.compra === "individual" && (
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">€</span>
+                      <input
+                        type="number"
+                        name="precio_compra"
+                        value={formData.precio_compra || ""}
+                        onChange={handleChange}
+                        onWheel={handleNumberInputWheel}
+                        step="0.01"
+                        min="0"
+                        disabled={enLoteCompraState}
+                        className="w-full pl-10 pr-4 py-2.5 border border-orange-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:bg-slate-100 disabled:cursor-not-allowed"
+                        placeholder="0.00"
+                      />
+                    </div>
+                  )}
+                  {pricingMethod.compra === "lote" && (
+                    <div>
+                      {enLoteCompraState ? (
+                        <>
+                          <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-semibold">€</span>
+                            <input
+                              type="number"
+                              value={formData.precio_compra || ""}
+                              disabled
+                              className="w-full pl-10 pr-4 py-2.5 border border-orange-200 rounded-lg bg-slate-100 text-slate-500"
+                            />
+                          </div>
+                          <div className="mt-2 bg-orange-50 border border-orange-200 rounded-lg p-2 flex items-center gap-2">
+                            <span className="text-orange-600">🔒</span>
+                            <span className="text-xs text-orange-700 font-medium">Precio establecido en lote</span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
+                          <span className="text-blue-600 text-lg">ℹ️</span>
+                          <p className="text-sm text-blue-700">
+                            Añade la muñeca a un <strong>lote de compra</strong> para establecer su precio.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Precio de Venta */}
+                <div className="bg-gradient-to-br from-emerald-50 to-white border-2 border-emerald-200 rounded-xl p-4">
+                  <label className="block text-sm font-bold text-emerald-800 mb-3 flex items-center gap-2">
+                    <span className="text-xl">💵</span>
+                    Precio de Venta
+                  </label>
+                  <div className="flex gap-3 mb-3">
+                    <label className={`flex-1 flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                      pricingMethod.venta === "individual"
+                        ? "border-emerald-500 bg-emerald-100 shadow-md"
+                        : "border-emerald-200 hover:border-emerald-400 hover:bg-emerald-50"
+                    } ${enLoteVentaState ? "opacity-50 cursor-not-allowed" : ""}`}>
+                      <input
+                        type="radio"
+                        name="precio_venta_method"
+                        value="individual"
+                        checked={pricingMethod.venta === "individual"}
+                        onChange={() =>
+                          setPricingMethod((prev) => ({
+                            ...prev,
+                            venta: "individual",
+                          }))
+                        }
+                        disabled={enLoteVentaState}
+                        className="sr-only"
+                      />
+                      <span className={`font-semibold text-sm ${
+                        pricingMethod.venta === "individual" ? "text-emerald-700" : "text-slate-600"
+                      }`}>
+                        Individual
+                      </span>
+                    </label>
+                    <label className={`flex-1 flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                      pricingMethod.venta === "lote"
+                        ? "border-emerald-500 bg-emerald-100 shadow-md"
+                        : "border-emerald-200 hover:border-emerald-400 hover:bg-emerald-50"
+                    } ${enLoteVentaState ? "opacity-50 cursor-not-allowed" : ""}`}>
+                      <input
+                        type="radio"
+                        name="precio_venta_method"
+                        value="lote"
+                        checked={pricingMethod.venta === "lote"}
+                        onChange={() =>
+                          setPricingMethod((prev) => ({
+                            ...prev,
+                            venta: "lote",
+                          }))
+                        }
+                        disabled={enLoteVentaState}
+                        className="sr-only"
+                      />
+                      <span className={`font-semibold text-sm ${
+                        pricingMethod.venta === "lote" ? "text-emerald-700" : "text-slate-600"
+                      }`}>
+                        Por Lote
+                      </span>
+                    </label>
+                  </div>
+                  {pricingMethod.venta === "individual" && (
+                    <div>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">€</span>
+                        <input
+                          type="number"
+                          name="precio_venta"
+                          value={formData.precio_venta || ""}
+                          onChange={handleChange}
+                          onWheel={handleNumberInputWheel}
+                          step="0.01"
+                          min="0"
+                          disabled={enLoteVentaState}
+                          className="w-full pl-10 pr-4 py-2.5 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-slate-100 disabled:cursor-not-allowed"
+                          placeholder="0.00"
+                        />
+                      </div>
+                      {ventaMessage && (
+                        <div className="mt-2 bg-yellow-50 border border-yellow-200 rounded-lg p-2 flex items-start gap-2">
+                          <span className="text-yellow-600 text-lg">⚠️</span>
+                          <span className="text-sm text-yellow-700">{ventaMessage}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {pricingMethod.venta === "lote" && (
+                    <div>
+                      {enLoteVentaState ? (
+                        <>
+                          <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-semibold">€</span>
+                            <input
+                              type="number"
+                              value={formData.precio_venta || ""}
+                              disabled
+                              className="w-full pl-10 pr-4 py-2.5 border border-emerald-200 rounded-lg bg-slate-100 text-slate-500"
+                            />
+                          </div>
+                          <div className="mt-2 bg-emerald-50 border border-emerald-200 rounded-lg p-2 flex items-center gap-2">
+                            <span className="text-emerald-600">🔒</span>
+                            <span className="text-xs text-emerald-700 font-medium">Precio establecido en lote</span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
+                          <span className="text-blue-600 text-lg">ℹ️</span>
+                          <p className="text-sm text-blue-700">
+                            Añade la muñeca a un <strong>lote de venta</strong> para establecer su precio.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
+            </div>
 
             {/* Footer */}
             <div className="bg-slate-50 px-6 py-4 border-t border-slate-200 flex justify-end gap-3 -mx-6 -mb-6 mt-6">

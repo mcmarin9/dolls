@@ -17,6 +17,7 @@ type Doll struct {
 	Personaje    sql.NullString  `json:"personaje"`
 	Anyo         sql.NullInt64   `json:"anyo"`
 	Estado       string          `json:"estado"`
+	Tipo         string          `json:"tipo"`
 	PrecioCompra sql.NullFloat64 `json:"precio_compra"`
 	PrecioVenta  sql.NullFloat64 `json:"precio_venta"`
 	Comentarios  sql.NullString  `json:"comentarios"`
@@ -38,6 +39,7 @@ type DollInput struct {
 	Personaje    *string  `json:"personaje"`
 	Anyo         *int     `json:"anyo"`
 	Estado       string   `json:"estado"`
+	Tipo         string   `json:"tipo"`
 	PrecioCompra *float64 `json:"precio_compra"`
 	PrecioVenta  *float64 `json:"precio_venta"`
 	Comentarios  *string  `json:"comentarios"`

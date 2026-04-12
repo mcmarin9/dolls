@@ -26,6 +26,7 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
     personaje: "",
     anyo: new Date().getFullYear(),
     estado: "guardada",
+    tipo: "muñeca",
     comentarios: "",
     imagen: "",
     precio_compra: undefined,
@@ -106,6 +107,7 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
     submitData.append("personaje", formData.personaje);
     submitData.append("anyo", formData.anyo.toString());
     submitData.append("estado", formData.estado);
+    submitData.append("tipo", formData.tipo || "muñeca");
 
     // Append prices based on pricing method
     if (
@@ -140,6 +142,7 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
         modelo: "",
         personaje: "",
         anyo: new Date().getFullYear(),
+        tipo: "muñeca",
         estado: "guardada",
         comentarios: "",
         imagen: "",
@@ -184,7 +187,7 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
         <div className="p-6 overflow-y-auto max-h-[calc(95vh-140px)]">
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Columna izquierda - Información básica */}
+              {/* Columna 1 - Información básica */}
               <div className="space-y-5">
                 <div className="flex items-center gap-2 pb-2 border-b-2 border-pink-200">
                   <span className="text-2xl">📋</span>
@@ -219,21 +222,37 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    📦 Modelo
-                  </label>
-                  <input
-                    type="text"
-                    name="modelo"
-                    value={formData.modelo}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                    placeholder="Modelo de la muñeca"
-                  />
+                {/* Modelo y Año en la misma fila */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="col-span-2">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      📦 Modelo
+                    </label>
+                    <input
+                      type="text"
+                      name="modelo"
+                      value={formData.modelo}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      placeholder="Modelo de la muñeca"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      📅 Año
+                    </label>
+                    <input
+                      type="number"
+                      name="anyo"
+                      value={formData.anyo || ""}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      placeholder="Año"
+                    />
+                  </div>
                 </div>
-
 
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -252,17 +271,19 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
 
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    📅 Año
+                    🏷️ Tipo
                   </label>
-                  <input
-                    type="number"
-                    name="anyo"
-                    value={formData.anyo || ""}
+                  <select
+                    name="tipo"
+                    value={formData.tipo}
                     onChange={handleChange}
-                    required
                     className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                    placeholder="Año de fabricación"
-                  />
+                  >
+                    <option value="muñeca">🎎 Muñeca</option>
+                    <option value="figurita">🎀 Figurita</option>
+                    <option value="playset">🎮 Playset</option>
+                    <option value="ropa">👗 Ropa</option>
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -359,13 +380,58 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
                     </label>
                   </div>
                 </div>
+
               </div>
 
-              {/* Columna derecha - Precios y detalles */}
+              {/* Columna 2 - Detalles y tipo */}
+              <div className="space-y-5">
+                <div className="flex items-center gap-2 pb-2 border-b-2 border-purple-200">
+                  <span className="text-2xl">⚙️</span>
+                  <h3 className="font-bold text-lg text-slate-800">Detalles</h3>
+                </div>
+
+                {/* Comentarios */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    💬 Comentarios
+                  </label>
+                  <textarea
+                    name="comentarios"
+                    value={formData.comentarios || ""}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none"
+                    rows={4}
+                    placeholder="Notas adicionales sobre la muñeca..."
+                  />
+                </div>
+
+                {/* Imagen */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    📸 Imagen
+                  </label>
+                  <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 hover:border-pink-400 transition-colors">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100 cursor-pointer"
+                    />
+                    {imageFile && (
+                      <p className="mt-2 text-sm text-emerald-600 flex items-center gap-2">
+                        <span>✓</span>
+                        <span>Archivo: {imageFile.name}</span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Columna 3 - Precios */}
               <div className="space-y-5">
                 <div className="flex items-center gap-2 pb-2 border-b-2 border-purple-200">
                   <span className="text-2xl">💰</span>
-                  <h3 className="font-bold text-lg text-slate-800">Precios y Detalles</h3>
+                  <h3 className="font-bold text-lg text-slate-800">Precios</h3>
                 </div>
 
                 {/* Precio de Compra */}
@@ -530,42 +596,6 @@ const AddDollModal: React.FC<AddDollModalProps> = ({
                       </p>
                     </div>
                   )}
-                </div>
-
-                {/* Comentarios */}
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    💬 Comentarios
-                  </label>
-                  <textarea
-                    name="comentarios"
-                    value={formData.comentarios || ""}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none"
-                    rows={3}
-                    placeholder="Notas adicionales sobre la muñeca..."
-                  />
-                </div>
-
-                {/* Imagen */}
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    📸 Imagen
-                  </label>
-                  <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 hover:border-pink-400 transition-colors">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100 cursor-pointer"
-                    />
-                    {imageFile && (
-                      <p className="mt-2 text-sm text-emerald-600 flex items-center gap-2">
-                        <span>✓</span>
-                        <span>Archivo: {imageFile.name}</span>
-                      </p>
-                    )}
-                  </div>
                 </div>
               </div>
             </div>

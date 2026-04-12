@@ -11,6 +11,7 @@ const DollsList: React.FC = () => {
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedManufacturer, setSelectedManufacturer] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedType, setSelectedType] = useState("");
   const [showOnlyNoPhoto, setShowOnlyNoPhoto] = useState(false);
   const [dollToDelete, setDollToDelete] = useState<Doll | null>(null);
 
@@ -26,12 +27,13 @@ const DollsList: React.FC = () => {
           !selectedManufacturer ||
           doll.fabricante_nombre === selectedManufacturer;
         const matchesStatus = !selectedStatus || doll.estado === selectedStatus;
+        const matchesType = !selectedType || doll.tipo === selectedType;
         const matchesPhotoFilter = !showOnlyNoPhoto || !doll.imagen;
         return (
-          matchesSearch && matchesBrand && matchesManufacturer && matchesStatus && matchesPhotoFilter
+          matchesSearch && matchesBrand && matchesManufacturer && matchesStatus && matchesType && matchesPhotoFilter
         );
       }),
-    [dolls, searchTerm, selectedBrand, selectedManufacturer, selectedStatus, showOnlyNoPhoto]
+    [dolls, searchTerm, selectedBrand, selectedManufacturer, selectedStatus, selectedType, showOnlyNoPhoto]
   );
 
   const manufacturers = useMemo(() => {
@@ -193,7 +195,7 @@ const DollsList: React.FC = () => {
         </div>
         
         {/* Segunda fila: Selectores */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <select
             value={selectedBrand}
             onChange={(e) => setSelectedBrand(e.target.value)}
@@ -228,6 +230,17 @@ const DollsList: React.FC = () => {
             <option value="a la venta">🏪 A la venta</option>
             <option value="vendida">✅ Vendida</option>
             <option value="fuera">❌ Fuera</option>
+          </select>
+          <select
+            value={selectedType}
+            onChange={(e) => setSelectedType(e.target.value)}
+            className="p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">📦 Todos los tipos</option>
+            <option value="muñeca">🎎 Muñeca</option>
+            <option value="figurita">🎀 Figurita</option>
+            <option value="playset">🎮 Playset</option>
+            <option value="ropa">👗 Ropa</option>
           </select>
         </div>
       </div>
